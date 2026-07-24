@@ -1,0 +1,153 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NewsCard from '../components/NewsCard.astro';
+import ThreatAlert from '../components/ThreatAlert.astro';
+import { newsItems, getBreakingAlerts, getNewsByType } from '../utils/newsData';
+---
+
+<Layout title="SAFE - News & Alerts" currentPage="more" description="Stay updated with latest cyber threats and safety tips.">
+ <!-- Google tag (gtag.js) -->
+
+  <main class="news-page">
+    <div class="container">
+      <div class="page-header">
+        <h1>News & Alerts</h1>
+        <p>Stay informed about the latest cyber threats.</p>
+      </div>
+
+      {getBreakingAlerts().length > 0 && (
+        <div class="breaking-section">
+          <h2 class="section-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Breaking Alerts
+          </h2>
+          {getBreakingAlerts().map((alert) => (
+            <ThreatAlert
+              severity={alert.severity || 'HIGH'}
+              title={alert.title}
+              description={alert.summary}
+            />
+          ))}
+        </div>
+      )}
+
+      <div class="news-filters">
+        <button class="filter-btn active" data-filter="all" onclick="filterNews('all')">All</button>
+        <button class="filter-btn" data-filter="alert" onclick="filterNews('alert')">Alerts</button>
+        <button class="filter-btn" data-filter="advisory" onclick="filterNews('advisory')">Advisories</button>
+        <button class="filter-btn" data-filter="tip" onclick="filterNews('tip')">Tips</button>
+      </div>
+
+      <div id="news-list" class="news-list">
+        {newsItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((item) => (
+          <div class="news-item-wrapper" data-type={item.type}>
+            <NewsCard item={item} />
+          </div>
+        ))}
+      </div>
+
+      <div class="news-source-note">
+        <p>Sources: SAFE Intelligence, CERT-In, Ministry of Home Affairs, State Police Cyber Cells, RBI</p>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  window.filterNews = function(type) {
+    document.querySelectorAll('.filter-btn').forEach(el => el.classList.remove('active'));
+    document.querySelector(`.filter-btn[data-filter="${type}"]`).classList.add('active');
+    document.querySelectorAll('.news-item-wrapper').forEach(el => {
+      if (type === 'all') {
+        el.style.display = 'block';
+      } else {
+        el.style.display = el.dataset.type === type ? 'block' : 'none';
+      }
+    });
+  };
+</script>
+
+<style is:global>
+  .news-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--space-lg) 0;
+  }
+
+  .page-header {
+    text-align: center;
+    padding: 0 var(--space-md) var(--space-lg);
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+    color: var(--ink);
+    margin-bottom: var(--space-xs);
+  }
+
+  .page-header p {
+    font-size: 14px;
+    color: var(--body);
+  }
+
+  .breaking-section {
+    padding: 0 var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--red);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: var(--space-sm);
+  }
+
+  .news-filters {
+    display: flex;
+    gap: var(--space-xs);
+    padding: 0 var(--space-md);
+    margin-bottom: var(--space-lg);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-btn {
+    padding: var(--space-xs) var(--space-md);
+    background: var(--canvas);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    color: var(--body);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+
+  .filter-btn.active {
+    background: rgba(0, 255, 136, 0.08);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .news-list {
+    padding: 0 var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .news-source-note {
+    padding: 0 var(--space-md) var(--space-lg);
+    text-align: center;
+  }
+
+  .news-source-note p {
+    font-size: 11px;
+    color: var(--body);
+    opacity: 0.6;
+    line-height: 1.5;
+  }
+</style>

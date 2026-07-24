@@ -1,0 +1,148 @@
+---
+import type { CheckupItem } from '../utils/types';
+
+export interface Props {
+  item: CheckupItem;
+}
+
+const { item } = Astro.props;
+
+const statusConfig = {
+  secure: { label: 'Secure', color: 'var(--green)' },
+  at_risk: { label: 'At Risk', color: 'var(--amber)' },
+  action_needed: { label: 'Action Needed', color: 'var(--red)' },
+  unknown: { label: 'Unknown', color: 'var(--text-dim)' },
+};
+
+const severityLabels = {
+  low: 'Low Priority',
+  medium: 'Medium Priority',
+  high: 'High Priority',
+};
+---
+
+<div class="checkup-card" data-status={item.status}>
+  <div class="checkup-header">
+    <span class="checkup-icon">{item.icon}</span>
+    <div class="checkup-info">
+      <h3 class="checkup-title">{item.title}</h3>
+      <span class="checkup-status" style="--status-color: {statusConfig[item.status].color}">
+        {statusConfig[item.status].label}
+      </span>
+    </div>
+    <div class="checkup-severity" data-severity={item.severity}>
+      {severityLabels[item.severity]}
+    </div>
+  </div>
+
+  <p class="checkup-desc">{item.description}</p>
+
+  <div class="checkup-recommendation">
+    <div class="rec-label">Recommendation</div>
+    <p>{item.recommendation}</p>
+  </div>
+</div>
+
+<style is:global>
+  .checkup-card {
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+  }
+
+  .checkup-card[data-status="secure"] {
+    border-color: rgba(0, 255, 136, 0.2);
+  }
+
+  .checkup-card[data-status="action_needed"] {
+    border-color: rgba(255, 23, 68, 0.2);
+  }
+
+  .checkup-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .checkup-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .checkup-info {
+    flex: 1;
+  }
+
+  .checkup-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .checkup-status {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--status-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .checkup-severity {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .checkup-severity[data-severity="high"] {
+    background: rgba(255, 23, 68, 0.1);
+    color: var(--red);
+  }
+
+  .checkup-severity[data-severity="medium"] {
+    background: rgba(255, 184, 0, 0.1);
+    color: var(--amber);
+  }
+
+  .checkup-severity[data-severity="low"] {
+    background: rgba(0, 255, 136, 0.1);
+    color: var(--green);
+  }
+
+  .checkup-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  .checkup-recommendation {
+    padding: 14px;
+    background: rgba(0, 255, 136, 0.03);
+    border: 1px solid rgba(0, 255, 136, 0.08);
+    border-radius: 10px;
+  }
+
+  .rec-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .checkup-recommendation p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+</style>

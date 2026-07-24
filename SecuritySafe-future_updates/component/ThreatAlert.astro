@@ -1,0 +1,121 @@
+---
+export interface Props {
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  title: string;
+  description: string;
+  count?: number;
+}
+
+const { severity, title, description, count } = Astro.props;
+
+const severityConfig = {
+  CRITICAL: { color: 'var(--red)', glow: 'glow-red', label: 'URGENT' },
+  HIGH: { color: 'var(--amber)', glow: 'glow-amber', label: 'WARNING' },
+  MEDIUM: { color: 'var(--purple)', glow: '', label: 'CAUTION' },
+  LOW: { color: 'var(--green)', glow: '', label: 'INFO' },
+};
+---
+
+<div class="threat-alert" style="--alert-color: {severityConfig[severity].color}" data-severity={severity}>
+  <div class="alert-icon">
+    {severity === 'CRITICAL' ? (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    ) : severity === 'HIGH' ? (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    ) : (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+      </svg>
+    )}
+  </div>
+  <div class="alert-content">
+    <div class="alert-header">
+      <span class="alert-severity">{severityConfig[severity].label}</span>
+      {count && <span class="alert-count">{count} reports</span>}
+    </div>
+    <h4 class="alert-title">{title}</h4>
+    <p class="alert-desc">{description}</p>
+  </div>
+</div>
+
+<style is:global>
+  .threat-alert {
+    display: flex;
+    gap: 14px;
+    padding: 16px;
+    background: var(--bg-card);
+    border: 1px solid color-mix(in srgb, var(--alert-color) 25%, transparent);
+    border-radius: 14px;
+    margin-bottom: 12px;
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .threat-alert[data-severity="CRITICAL"] {
+    background: rgba(255, 23, 68, 0.04);
+    box-shadow: 0 0 20px rgba(255, 23, 68, 0.08);
+  }
+
+  .threat-alert[data-severity="HIGH"] {
+    background: rgba(255, 184, 0, 0.04);
+  }
+
+  .alert-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--alert-color) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--alert-color) 25%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--alert-color);
+    flex-shrink: 0;
+  }
+
+  .alert-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .alert-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .alert-severity {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--alert-color);
+    letter-spacing: 1px;
+  }
+
+  .alert-count {
+    font-size: 10px;
+    color: var(--text-dim);
+    padding: 2px 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 4px;
+  }
+
+  .alert-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+
+  .alert-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+</style>

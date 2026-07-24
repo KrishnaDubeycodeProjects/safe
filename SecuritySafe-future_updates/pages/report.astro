@@ -1,0 +1,299 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ReportForm from '../components/ReportForm.astro';
+import { getRecentReports, getVerifiedCount, getHotReports } from '../utils/communityReports';
+---
+
+<Layout title="SAFE - Community Reporting" currentPage="report" description="Report scams and protect the community.">
+
+  <main class="report-page">
+    <div class="container">
+      <div class="page-header">
+        <h1>Community Reports</h1>
+        <p>Together we stay safe. {getVerifiedCount()} verified reports and counting.</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="stat-num">{getRecentReports().length}</span>
+          <span class="stat-desc">Recent Reports</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">{getVerifiedCount()}</span>
+          <span class="stat-desc">Verified</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">{getHotReports().length}</span>
+          <span class="stat-desc">Hot Reports</span>
+        </div>
+      </div>
+
+      <div class="section-tabs">
+        <button class="tab-btn active" data-tab="report" onclick="switchTab('report')">Report a Scam</button>
+        <button class="tab-btn" data-tab="recent" onclick="switchTab('recent')">Recent Reports</button>
+      </div>
+
+      <div id="tab-report" class="tab-content">
+        <ReportForm />
+      </div>
+
+      <div id="tab-recent" class="tab-content hidden">
+        <h2 class="section-title">Recent Community Reports</h2>
+        <div class="reports-list">
+          {getRecentReports(10).map((report) => (
+            <div class="report-card" data-status={report.status}>
+              <div class="report-card-header">
+                <span class="report-type-badge">{report.type.replace(/_/g, ' ')}</span>
+                <span class="report-status">{report.status}</span>
+              </div>
+              <div class="report-value">{report.value}</div>
+              <p class="report-desc">{report.description}</p>
+              <div class="report-footer">
+                {report.city && report.state && (
+                  <span class="report-location">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    {report.city}, {report.state}
+                  </span>
+                )}
+                <span class="report-date">{new Date(report.timestamp).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                <div class="report-votes">
+                  <span class="vote up">▲ {report.upvotes}</span>
+                  <span class="vote down">▼ {report.downvotes}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  window.switchTab = function(tab) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.remove('hidden');
+    document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+  };
+</script>
+
+<style is:global>
+  .report-page {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-lg) 0;
+  }
+
+  @media (min-width: 768px) {
+    .report-page {
+      padding: var(--space-2xl) 0;
+    }
+
+    .page-header h1 {
+      font-size: 32px;
+    }
+
+    .stats-row {
+      gap: var(--space-md);
+    }
+
+    .stat-box {
+      padding: var(--space-lg) var(--space-md);
+    }
+
+    .stat-num {
+      font-size: 36px;
+    }
+  }
+
+  .page-header {
+    text-align: center;
+    padding: 0 var(--space-md) var(--space-lg);
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+    color: var(--ink);
+    margin-bottom: var(--space-xs);
+  }
+
+  .page-header p {
+    font-size: 14px;
+    color: var(--body);
+    line-height: 1.5;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+    padding: 0 var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .stat-box {
+    text-align: center;
+    padding: var(--space-md) var(--space-xs);
+    background: var(--canvas);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+  }
+
+  .stat-num {
+    display: block;
+    font-size: 28px;
+    font-weight: 800;
+    font-family: var(--font-display);
+    color: var(--green);
+    margin-bottom: 4px;
+  }
+
+  .stat-desc {
+    font-size: 11px;
+    color: var(--body);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .section-tabs {
+    display: flex;
+    gap: 0;
+    margin: 0 var(--space-md) var(--space-lg);
+    background: var(--canvas);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: var(--space-sm);
+    background: transparent;
+    color: var(--body);
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .tab-btn.active {
+    background: rgba(0, 255, 136, 0.08);
+    color: var(--green);
+  }
+
+  .tab-content {
+    padding: 0 var(--space-md) var(--space-lg);
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--body);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: var(--space-md);
+  }
+
+  .reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .report-card {
+    padding: var(--space-md);
+    background: var(--canvas);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    transition: all 0.2s ease;
+  }
+
+  .report-card[data-status="verified"] {
+    border-color: rgba(0, 255, 136, 0.15);
+  }
+
+  .report-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-xs);
+  }
+
+  .report-type-badge {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: var(--space-xxs) var(--space-xs);
+    border-radius: var(--radius-xs);
+    background: rgba(0, 255, 136, 0.06);
+    border: 1px solid rgba(0, 255, 136, 0.1);
+    color: var(--green);
+  }
+
+  .report-status {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: var(--space-xxs) var(--space-xs);
+    border-radius: var(--radius-xs);
+  }
+
+  .report-card[data-status="verified"] .report-status {
+    color: var(--green);
+    background: rgba(0, 255, 136, 0.08);
+  }
+
+  .report-card[data-status="pending"] .report-status {
+    color: var(--amber);
+    background: rgba(255, 184, 0, 0.08);
+  }
+
+  .report-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+    word-break: break-all;
+  }
+
+  .report-desc {
+    font-size: 13px;
+    color: var(--body);
+    line-height: 1.5;
+    margin-bottom: var(--space-sm);
+  }
+
+  .report-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+    font-size: 11px;
+    color: var(--body);
+  }
+
+  .report-location {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xxs);
+  }
+
+  .report-votes {
+    display: flex;
+    gap: var(--space-xs);
+    margin-left: auto;
+  }
+
+  .vote {
+    font-size: 11px;
+  }
+
+  .vote.up { color: var(--green); }
+  .vote.down { color: var(--red); }
+
+  .hidden {
+    display: none !important;
+  }
+</style>
