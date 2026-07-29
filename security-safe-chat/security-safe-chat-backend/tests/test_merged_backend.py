@@ -430,7 +430,7 @@ def client():
     os.environ.setdefault("SUPABASE_SERVICE_KEY", "")
 
     from fastapi.testclient import TestClient
-    from app.main import app
+    from main import app
     return TestClient(app)
 
 

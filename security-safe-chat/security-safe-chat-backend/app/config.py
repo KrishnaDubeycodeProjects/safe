@@ -49,6 +49,12 @@ class Settings(BaseSettings):
         return v  # kept as raw string; split in main.py
 
     def get_cors_origins(self) -> List[str]:
+        # In production: CORS must be explicitly set — never allow wildcard
+        if self.is_production and self.cors_origins == "*":
+            raise ValueError(
+                "CORS_ORIGINS must be explicitly set in production. "
+                "Set it to your frontend domain e.g. https://yourdomain.com"
+            )
         if self.cors_origins == "*":
             return ["*"]
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
@@ -59,6 +65,17 @@ class Settings(BaseSettings):
 
     # ── Security ───────────────────────────────────────────────────────────────
     api_secret_key: str = ""  # empty = auth disabled
+    # Comma-separated list of allowed hostnames (for TrustedHostMiddleware in prod)
+    trusted_hosts: str = "*"  # e.g. "yourdomain.com,www.yourdomain.com"
+
+    # ── Admin Blog Management ─────────────────────────────────────────────────
+    # Strong key required in X-Admin-Key header for blog approve/reject/pending
+    admin_blog_key: str = ""
+    # Path to JSON file where approved/pending blogs are persisted
+    blog_storage_path: str = "/app/data/blogs_store.json"
+
+    # ── AI Backend (Digital-arrest-detector) ──────────────────────────────────
+    ai_api_base_url: str = "http://localhost:8001"
 
     # ── Supabase Logging ───────────────────────────────────────────────────────
     # URL and service-role key are available in your Supabase project settings.
@@ -83,6 +100,21 @@ class Settings(BaseSettings):
     @property
     def auth_enabled(self) -> bool:
         return bool(self.api_secret_key)
+
+    @property
+    def blog_admin_enabled(self) -> bool:
+        return bool(self.admin_blog_key)
+
+    @property
+    def trusted_hosts_list(self) -> List[str]:
+        if self.trusted_hosts == "*":
+            return ["*"]
+        return [h.strip() for h in self.trusted_hosts.split(",") if h.strip()]
+
+    @property
+    def docs_enabled(self) -> bool:
+        # Hide API docs in production to reduce attack surface
+        return not self.is_production
 
     @property
     def is_production(self) -> bool:
