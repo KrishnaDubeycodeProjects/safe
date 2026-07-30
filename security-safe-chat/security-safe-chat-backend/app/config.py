@@ -62,6 +62,8 @@ class Settings(BaseSettings):
     # ── Rate Limiting ──────────────────────────────────────────────────────────
     rate_limit_requests: int = 30
     rate_limit_window_seconds: int = 60
+    max_image_upload_bytes: int = 10 * 1024 * 1024
+    max_image_pixels: int = 25_000_000
 
     # ── Security ───────────────────────────────────────────────────────────────
     api_secret_key: str = ""  # empty = auth disabled

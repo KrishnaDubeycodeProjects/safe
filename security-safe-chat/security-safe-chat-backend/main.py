@@ -22,9 +22,11 @@ Endpoints
 """
 import asyncio
 import base64 as b64lib
+import io
 import logging
 import os
 import re
+import tempfile
 from email.mime.text import MIMEText
 from pathlib import Path
 from typing import Annotated, List, Optional
@@ -37,6 +39,7 @@ from pydantic import BaseModel
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
+from PIL import Image, UnidentifiedImageError
 
 # ── Internal modules ──────────────────────────────────────────────────────────
 from app import bedrock, ocr, parser, supabase_logger
@@ -119,6 +122,44 @@ class LinkScanRequest(BaseModel):
 class FeedbackRequest(BaseModel):
     email: Optional[str] = None
     message: str
+
+
+_IMAGE_EXTENSIONS = {"JPEG": ".jpg", "PNG": ".png", "WEBP": ".webp", "GIF": ".gif"}
+_ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+
+
+async def _read_validated_image_upload(file: UploadFile) -> tuple[bytes, str]:
+    """Read a bounded upload and verify it is a supported, non-bomb image."""
+    content_type = (file.content_type or "").lower()
+    if content_type not in _ALLOWED_IMAGE_TYPES:
+        raise HTTPException(415, "Only JPEG, PNG, WebP, and GIF images are supported.")
+
+    chunks: list[bytes] = []
+    total = 0
+    while chunk := await file.read(1024 * 1024):
+        total += len(chunk)
+        if total > settings.max_image_upload_bytes:
+            raise HTTPException(413, "Image exceeds the configured upload limit.")
+        chunks.append(chunk)
+    data = b"".join(chunks)
+    if not data:
+        raise HTTPException(400, "Uploaded file is empty.")
+
+    try:
+        with Image.open(io.BytesIO(data)) as image:
+            image.verify()
+        with Image.open(io.BytesIO(data)) as image:
+            if image.width * image.height > settings.max_image_pixels:
+                raise HTTPException(413, "Image dimensions exceed the configured limit.")
+            extension = _IMAGE_EXTENSIONS.get(image.format or "")
+    except HTTPException:
+        raise
+    except (UnidentifiedImageError, OSError, SyntaxError, ValueError):
+        raise HTTPException(415, "Uploaded file is not a valid supported image.") from None
+
+    if not extension:
+        raise HTTPException(415, "Uploaded image format is not supported.")
+    return data, extension
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -307,9 +348,7 @@ async def analyze_text(body: AnalyzeTextRequest, request: Request):
 @app.post("/analyze/image", response_model=AnalyzeResponse, tags=["Analyze"], summary="Upload image → OCR → Bedrock")
 async def analyze_image_endpoint(request: Request, file: UploadFile = File(...)):
     """Upload a screenshot → OCR.space → Bedrock taxonomy classification."""
-    image_bytes = await file.read()
-    if not image_bytes:
-        raise HTTPException(400, "Uploaded file is empty.")
+    image_bytes, _ = await _read_validated_image_upload(file)
     try:
         extracted = await ocr.ocr_from_bytes(
             image_bytes, filename=file.filename or "upload.jpg",
@@ -396,11 +435,12 @@ async def api_scan_image(file: UploadFile = File(...)):
 
     Returns combined_prob, scam_score/10, breakdown, and contextual suggestions.
     """
-    suffix = Path(file.filename or "upload.png").suffix or ".png"
-    temp_path = f"temp_scan_{id(file)}{suffix}"
+    image_bytes, suffix = await _read_validated_image_upload(file)
+    temp_path = ""
     try:
-        with open(temp_path, "wb") as f:
-            f.write(await file.read())
+        with tempfile.NamedTemporaryFile(prefix="safe_scan_", suffix=suffix, delete=False) as temp_file:
+            temp_file.write(image_bytes)
+            temp_path = temp_file.name
         cascade_result = await image_cascade_engine.scan_async(temp_path)
         return _build_cascade_scan_response(cascade_result)
     except Exception as exc:
@@ -408,7 +448,7 @@ async def api_scan_image(file: UploadFile = File(...)):
         raise HTTPException(500, str(exc))
     finally:
         try:
-            if os.path.exists(temp_path):
+            if temp_path and os.path.exists(temp_path):
                 os.remove(temp_path)
         except Exception:
             pass

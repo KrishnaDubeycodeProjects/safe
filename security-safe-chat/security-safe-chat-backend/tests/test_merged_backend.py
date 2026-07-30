@@ -19,6 +19,7 @@ Run: python -m pytest tests/test_merged_backend.py -v
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
 import sys
 import os
@@ -471,12 +472,8 @@ class TestHTTPEndpoints:
         mock_ocr.return_value = "Your account is blocked. Call 9999999999."
         mock_bedrock.return_value = "2.1.1|name=User"
         import io
-        # Tiny 1x1 PNG (valid image bytes)
-        png_bytes = (
-            b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01"
-            b"\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde"
-            b"\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01"
-            b"\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82"
+        png_bytes = base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC"
         )
         r = client.post(
             "/analyze/image",
@@ -539,11 +536,8 @@ class TestHTTPEndpoints:
             "meta": {},
         }
         import io
-        png_bytes = (
-            b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01"
-            b"\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde"
-            b"\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01"
-            b"\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82"
+        png_bytes = base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC"
         )
         r = client.post(
             "/api/scan/image",
