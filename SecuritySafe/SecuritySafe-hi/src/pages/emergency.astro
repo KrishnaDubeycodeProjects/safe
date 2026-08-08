@@ -1,0 +1,9 @@
+---
+import Layout from '../layouts/Layout.astro';
+// 1. Get the slug from the URL parameters
+import HomePage from '../components/emergency/HomePage.svelte';
+---
+
+<Layout title="Emergency Fraud Guide">
+  <HomePage client:load />
+</Layout>

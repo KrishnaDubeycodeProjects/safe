@@ -1,0 +1,525 @@
+---
+// Obfuscated admin panel — URL matches PUBLIC_ADMIN_PATH in .env
+import Layout from '../layouts/Layout.astro';
+
+const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL ?? 'http://localhost:8000';
+---
+<!-- Block search engines from indexing this page -->
+<meta name="robots" content="noindex, nofollow" />
+<!-- DOMPurify to safely render blog HTML in preview -->
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" integrity="sha384-Y43z85H4b36Y7LKLNJknV/lLPGmO7dWV4o6gOHC5I11qdXXVc2MYTl+gCXQWPhsm" crossorigin="anonymous"></script>
+
+<Layout title="Admin — SAFE Platform" currentPage="">
+  <main class="admin-main">
+
+    <!-- Password Gate -->
+    <div class="gate-overlay" id="gateOverlay">
+      <div class="gate-card">
+        <div class="gate-logo">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4" stroke-width="2"/></svg>
+          <span>SAFE Admin</span>
+        </div>
+        <h1>Restricted Access</h1>
+        <p>This panel is for authorised SAFE administrators only. Enter the admin key to continue.</p>
+        <form id="gateForm">
+          <div class="gate-field">
+            <input type="password" id="gateKey" placeholder="Enter admin key" autocomplete="off" required />
+            <button type="submit">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </div>
+          <div class="gate-error" id="gateError" style="display:none;">Incorrect key. Try again.</div>
+        </form>
+        <p class="gate-hint">3 wrong attempts will lock this session.</p>
+      </div>
+    </div>
+
+    <!-- Admin Dashboard (shown after auth) -->
+    <div class="admin-dashboard" id="adminDashboard" style="display:none;">
+      <header class="admin-header">
+        <div class="admin-header-inner">
+          <div class="admin-brand">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>SAFE Blog Admin</span>
+          </div>
+          <div class="admin-meta">
+            <span class="admin-badge">Authenticated</span>
+            <button class="logout-btn" id="logoutBtn">Sign out</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="admin-body">
+        <!-- Stats bar -->
+        <div class="stats-bar">
+          <div class="stat-box">
+            <span class="stat-num" id="statPending">—</span>
+            <span class="stat-label">Pending Review</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num" id="statApproved">—</span>
+            <span class="stat-label">Published</span>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-bar">
+          <button class="tab active" data-tab="pending">Pending</button>
+          <button class="tab" data-tab="approved">Published</button>
+        </div>
+
+        <!-- Pending tab -->
+        <div class="tab-content" id="tab-pending">
+          <div class="blog-list" id="pendingList">
+            <div class="loading-pulse"></div>
+            <div class="loading-pulse"></div>
+          </div>
+          <div class="empty-msg" id="pendingEmpty" style="display:none;">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--mute)" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <p>No pending submissions. The queue is clear!</p>
+          </div>
+        </div>
+
+        <!-- Approved tab -->
+        <div class="tab-content" id="tab-approved" style="display:none;">
+          <div class="blog-list" id="approvedList">
+            <div class="loading-pulse"></div>
+            <div class="loading-pulse"></div>
+          </div>
+          <div class="empty-msg" id="approvedEmpty" style="display:none;">
+            <p>No published blogs yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blog preview drawer -->
+      <div class="drawer-overlay" id="drawerOverlay">
+        <div class="drawer" id="previewDrawer">
+          <div class="drawer-header">
+            <h3 id="drawerTitle">Blog Preview</h3>
+            <button class="drawer-close" id="drawerClose">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="drawer-content ql-editor" id="drawerContent"></div>
+          <div class="drawer-actions" id="drawerActions"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<!-- Quill CSS for rendering content in preview -->
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
+
+<script define:vars={{ MAIN_API }}>
+  let adminKey = '';
+  let attemptCount = parseInt(sessionStorage.getItem('_sa_attempts') || '0', 10);
+
+  // SHA-256 hash comparison — compares entered password hash against stored hash
+  let blogsCache = { pending: [], approved: [] };
+
+  // ── Gate ────────────────────────────────────────────────────────────────────
+  document.getElementById('gateForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const entered = document.getElementById('gateKey').value;
+    attemptCount++;
+    sessionStorage.setItem('_sa_attempts', String(attemptCount));
+
+    if (attemptCount >= 4) {
+      document.getElementById('gateError').textContent = 'Too many attempts. Refresh to try again.';
+      document.getElementById('gateError').style.display = 'block';
+      document.getElementById('gateKey').disabled = true;
+      e.target.querySelector('button').disabled = true;
+      return;
+    }
+
+    // The entered credential is validated only by the backend and is kept in memory.
+    if (entered) {
+      // The backend validates this secret. It must never be embedded in this
+      // public page or exposed through a PUBLIC_* environment variable.
+      adminKey = entered;
+      sessionStorage.removeItem('_sa_attempts');
+      document.getElementById('gateOverlay').style.display = 'none';
+      document.getElementById('adminDashboard').style.display = 'block';
+      loadAll();
+    } else {
+      document.getElementById('gateError').style.display = 'block';
+      document.getElementById('gateKey').value = '';
+    }
+  });
+
+  // Logout
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    adminKey = '';
+    attemptCount = 0;
+    sessionStorage.removeItem('_sa_attempts');
+    document.getElementById('adminDashboard').style.display = 'none';
+    document.getElementById('gateOverlay').style.display = 'flex';
+    document.getElementById('gateKey').value = '';
+  });
+
+  // ── Tabs ────────────────────────────────────────────────────────────────────
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      tab.classList.add('active');
+      document.getElementById(`tab-${tab.dataset.tab}`).style.display = 'block';
+    });
+  });
+
+  // ── Data Loading ─────────────────────────────────────────────────────────────
+  async function loadAll() {
+    await Promise.all([loadPending(), loadApproved()]);
+  }
+
+  async function loadPending() {
+    try {
+      const res = await fetch(`${MAIN_API}/api/blogs/pending`, {
+        headers: { 'X-Admin-Key': adminKey }
+      });
+      if (!res.ok) throw new Error('Unauthorized');
+      const data = await res.json();
+      blogsCache.pending = data.pending || [];
+      document.getElementById('statPending').textContent = blogsCache.pending.length;
+      renderList('pendingList', 'pendingEmpty', blogsCache.pending, true);
+    } catch(e) {
+      document.getElementById('pendingList').innerHTML = `<p class="err-msg">Failed to load: ${e.message}</p>`;
+    }
+  }
+
+  async function loadApproved() {
+    try {
+      const res = await fetch(`${MAIN_API}/api/blogs`);
+      const data = await res.json();
+      blogsCache.approved = data.blogs || [];
+      document.getElementById('statApproved').textContent = blogsCache.approved.length;
+      renderList('approvedList', 'approvedEmpty', blogsCache.approved, false);
+    } catch(e) {
+      document.getElementById('approvedList').innerHTML = `<p class="err-msg">Failed to load.</p>`;
+    }
+  }
+
+  function renderList(listId, emptyId, blogs, isPending) {
+    const container = document.getElementById(listId);
+    const empty = document.getElementById(emptyId);
+    if (!blogs.length) {
+      container.innerHTML = '';
+      empty.style.display = 'flex';
+      return;
+    }
+    empty.style.display = 'none';
+    container.innerHTML = blogs.map(b => `
+      <div class="blog-row" data-id="${b.id}">
+        <div class="row-info">
+          <div class="row-cat">${escHtml(b.category)}</div>
+          <div class="row-title">${escHtml(b.title)}</div>
+          <div class="row-meta">
+            <span>By <strong>${escHtml(b.author_name)}</strong></span>
+            <span>${formatDate(b.submitted_at)}</span>
+            ${b.author_email ? `<span>${escHtml(b.author_email)}</span>` : ''}
+          </div>
+        </div>
+        <div class="row-actions">
+          <button class="action-sm preview" data-id="${b.id}">Preview</button>
+          ${isPending ? `
+            <button class="action-sm approve" data-id="${b.id}">✓ Approve</button>
+            <button class="action-sm reject" data-id="${b.id}">✗ Reject</button>
+          ` : `<span class="published-tag">Published</span>`}
+        </div>
+      </div>
+    `).join('');
+
+    // Bind events
+    container.querySelectorAll('.preview').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const blog = [...blogsCache.pending, ...blogsCache.approved].find(b => b.id === btn.dataset.id);
+        if (blog) openPreview(blog, isPending);
+      });
+    });
+    if (isPending) {
+      container.querySelectorAll('.approve').forEach(btn => btn.addEventListener('click', () => approveBlog(btn.dataset.id)));
+      container.querySelectorAll('.reject').forEach(btn => btn.addEventListener('click', () => rejectBlog(btn.dataset.id)));
+    }
+  }
+
+  // ── Preview drawer ───────────────────────────────────────────────────────────
+  const drawerOverlay = document.getElementById('drawerOverlay');
+  const drawerClose = document.getElementById('drawerClose');
+
+  function openPreview(blog, isPending) {
+    document.getElementById('drawerTitle').textContent = blog.title;
+    // Sanitize Quill HTML before rendering — prevents stored XSS from blog submissions
+    const safeHtml = (typeof DOMPurify !== 'undefined')
+      ? DOMPurify.sanitize(blog.content_html || '', {
+          ALLOWED_TAGS: ['p','br','strong','em','u','s','h1','h2','h3','ul','ol','li','blockquote','a','code','pre'],
+          ALLOWED_ATTR: ['href','target','rel']
+        })
+      : escHtml(blog.content_text || '');
+    document.getElementById('drawerContent').innerHTML = safeHtml;
+    document.getElementById('drawerActions').innerHTML = isPending ? `
+      <button class="action-drawer approve" data-id="${blog.id}">✓ Approve</button>
+      <button class="action-drawer reject" data-id="${blog.id}">✗ Reject</button>
+    ` : `<span class="published-tag lg">Published</span>`;
+
+    if (isPending) {
+      document.querySelector('.action-drawer.approve')?.addEventListener('click', () => { closeDrawer(); approveBlog(blog.id); });
+      document.querySelector('.action-drawer.reject')?.addEventListener('click', () => { closeDrawer(); rejectBlog(blog.id); });
+    }
+    drawerOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    drawerOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  drawerClose.addEventListener('click', closeDrawer);
+  drawerOverlay.addEventListener('click', e => { if (e.target === drawerOverlay) closeDrawer(); });
+
+  // ── Actions ──────────────────────────────────────────────────────────────────
+  async function approveBlog(blogId) {
+    const notes = prompt('Optional admin notes (press OK to skip):') || '';
+    try {
+      const res = await fetch(`${MAIN_API}/api/blogs/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey },
+        body: JSON.stringify({ blog_id: blogId, admin_notes: notes }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Failed');
+      showToast('✓ Blog approved and published!', 'success');
+      loadAll();
+    } catch(e) { showToast(`Error: ${e.message}`, 'error'); }
+  }
+
+  async function rejectBlog(blogId) {
+    const reason = prompt('Rejection reason (optional):') || '';
+    try {
+      const res = await fetch(`${MAIN_API}/api/blogs/reject`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey },
+        body: JSON.stringify({ blog_id: blogId, reason }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Failed');
+      showToast('✗ Blog rejected.', 'error');
+      loadAll();
+    } catch(e) { showToast(`Error: ${e.message}`, 'error'); }
+  }
+
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+  function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function formatDate(iso) {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+  }
+
+  let toastTimer;
+  function showToast(msg, type='success') {
+    let toast = document.getElementById('adminToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'adminToast';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.className = `admin-toast ${type} visible`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('visible'), 3000);
+  }
+</script>
+
+<style>
+.admin-main { padding-top: var(--nav-height, 64px); min-height: 100vh; background: var(--canvas-soft, #fafafa); }
+
+/* Gate overlay */
+.gate-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 24px;
+}
+.gate-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+.gate-logo { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--cyan, #50e3c2); margin-bottom: 24px; font-weight: 700; font-size: 1.1rem; }
+.gate-card h1 { font-size: 1.5rem; font-weight: 800; color: #fff; margin: 0 0 8px; }
+.gate-card p { font-size: 0.875rem; color: rgba(255,255,255,0.5); margin: 0 0 28px; line-height: 1.6; }
+.gate-field { display: flex; gap: 0; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); }
+.gate-field input {
+  flex: 1;
+  padding: 13px 16px;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+}
+.gate-field input::placeholder { color: rgba(255,255,255,0.3); }
+.gate-field input:focus { outline: none; background: rgba(255,255,255,0.12); }
+.gate-field button {
+  padding: 13px 20px;
+  background: var(--cyan, #50e3c2);
+  border: none;
+  color: #0a0a0a;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.gate-field button:hover { background: #2dcfad; }
+.gate-error { color: #ff6b6b; font-size: 13px; margin-top: 10px; animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.gate-hint { font-size: 11px; color: rgba(255,255,255,0.25); margin: 16px 0 0; }
+
+/* Admin dashboard */
+.admin-header {
+  background: var(--canvas, #fff);
+  border-bottom: 1px solid var(--hairline, #ebebeb);
+  position: sticky;
+  top: var(--nav-height, 64px);
+  z-index: 100;
+}
+.admin-header-inner { max-width: 1100px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+.admin-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1rem; color: var(--ink); }
+.admin-meta { display: flex; align-items: center; gap: 12px; }
+.admin-badge { font-size: 11px; font-weight: 600; background: rgba(80,227,194,0.15); color: #29bc9b; padding: 3px 10px; border-radius: 100px; }
+.logout-btn { font-size: 13px; color: var(--mute); background: none; border: 1px solid var(--hairline); border-radius: 8px; padding: 6px 14px; cursor: pointer; transition: all 0.2s; }
+.logout-btn:hover { color: var(--error); border-color: var(--error); }
+
+.admin-body { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+
+.stats-bar { display: flex; gap: 16px; margin-bottom: 28px; }
+.stat-box { background: var(--canvas, #fff); border: 1px solid var(--hairline); border-radius: 14px; padding: 20px 28px; flex: 1; }
+.stat-num { display: block; font-size: 2rem; font-weight: 800; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 13px; color: var(--mute); }
+
+.tab-bar { display: flex; gap: 4px; border-bottom: 1px solid var(--hairline); margin-bottom: 24px; }
+.tab { padding: 10px 20px; background: none; border: none; font-size: 14px; font-weight: 600; color: var(--mute); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; margin-bottom: -1px; }
+.tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+
+/* Blog rows */
+.blog-list { display: flex; flex-direction: column; gap: 12px; }
+.blog-row {
+  background: var(--canvas, #fff);
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  transition: box-shadow 0.2s;
+}
+.blog-row:hover { box-shadow: var(--shadow-level-3); }
+.row-info { flex: 1; min-width: 0; }
+.row-cat { font-size: 11px; font-weight: 700; color: var(--mute); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.row-title { font-size: 0.95rem; font-weight: 700; color: var(--ink); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row-meta { display: flex; gap: 12px; font-size: 12px; color: var(--mute); }
+.row-actions { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
+
+.action-sm {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--hairline);
+  background: var(--canvas-soft);
+  color: var(--ink);
+  transition: all 0.15s;
+}
+.action-sm.approve { background: rgba(0,112,243,0.08); border-color: rgba(0,112,243,0.25); color: #0070f3; }
+.action-sm.approve:hover { background: #0070f3; color: #fff; border-color: #0070f3; }
+.action-sm.reject { background: rgba(238,0,0,0.06); border-color: rgba(238,0,0,0.2); color: #ee0000; }
+.action-sm.reject:hover { background: #ee0000; color: #fff; border-color: #ee0000; }
+.action-sm.preview:hover { background: var(--canvas-soft-2); }
+.published-tag { font-size: 11px; font-weight: 700; color: #29bc9b; background: rgba(41,188,155,0.1); padding: 4px 10px; border-radius: 100px; white-space: nowrap; }
+.published-tag.lg { font-size: 14px; padding: 8px 20px; }
+
+/* Drawer */
+.drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s; }
+.drawer-overlay.active { opacity: 1; visibility: visible; }
+.drawer {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: min(640px, 100vw);
+  background: var(--canvas, #fff);
+  box-shadow: -8px 0 32px rgba(0,0,0,0.1);
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.drawer-overlay.active .drawer { transform: translateX(0); }
+.drawer-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--hairline); flex-shrink: 0; }
+.drawer-header h3 { font-size: 1rem; font-weight: 700; color: var(--ink); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 480px; }
+.drawer-close { background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: 8px; padding: 6px; cursor: pointer; display: flex; transition: all 0.2s; }
+.drawer-close:hover { background: var(--canvas-soft-2); }
+.drawer-content { flex: 1; overflow-y: auto; padding: 24px; font-size: 15px; line-height: 1.8; color: var(--body); }
+.drawer-content h1,.drawer-content h2,.drawer-content h3 { color: var(--ink); }
+.drawer-content blockquote { border-left: 3px solid var(--cyan); padding: 8px 16px; background: var(--canvas-soft); border-radius: 0 8px 8px 0; margin: 12px 0; }
+.drawer-actions { padding: 16px 24px; border-top: 1px solid var(--hairline); display: flex; gap: 10px; flex-shrink: 0; }
+.action-drawer {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+.action-drawer.approve { background: #0070f3; color: #fff; }
+.action-drawer.approve:hover { background: #005fd4; }
+.action-drawer.reject { background: rgba(238,0,0,0.08); color: #ee0000; border: 1px solid rgba(238,0,0,0.2); }
+.action-drawer.reject:hover { background: #ee0000; color: #fff; }
+
+/* Loading pulse */
+.loading-pulse {
+  height: 80px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--canvas-soft) 25%, var(--canvas-soft-2) 50%, var(--canvas-soft) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  margin-bottom: 12px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* Empty & error */
+.empty-msg { flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 48px; color: var(--mute); gap: 12px; }
+.err-msg { color: var(--error); font-size: 13px; text-align: center; padding: 24px; }
+
+/* Toast */
+:global(.admin-toast) {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--ink);
+  color: #fff;
+  z-index: 9999;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+:global(.admin-toast.visible) { transform: translateY(0); opacity: 1; }
+:global(.admin-toast.success) { background: var(--ink, #171717); }
+:global(.admin-toast.error) { background: var(--error, #ee0000); }
+</style>

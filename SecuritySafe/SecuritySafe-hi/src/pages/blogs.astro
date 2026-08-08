@@ -1,0 +1,472 @@
+---
+import Layout from '../layouts/Layout.astro';
+const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL ?? 'http://localhost:8000';
+---
+<!-- DOMPurify for XSS-safe innerHTML rendering of Quill HTML -->
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" integrity="sha384-Y43z85H4b36Y7LKLNJknV/lLPGmO7dWV4o6gOHC5I11qdXXVc2MYTl+gCXQWPhsm" crossorigin="anonymous"></script>
+
+<Layout title="Blogs — SAFE Platform" currentPage="blogs">
+  <main class="blogs-main">
+    <section class="blogs-hero">
+      <div class="hero-inner">
+        <span class="hero-eyebrow">Community Knowledge</span>
+        <h1>Scam Awareness Blogs</h1>
+        <p class="hero-sub">Real stories, legal insights, and safety tips written by our community — reviewed and published by the SAFE team.</p>
+        <a href="/submit-blog" class="write-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Write a Blog
+        </a>
+      </div>
+    </section>
+
+    <!-- Category filter pills -->
+    <section class="filter-bar">
+      <div class="filter-inner">
+        <button class="pill active" data-cat="all">All</button>
+        <button class="pill" data-cat="Banking Scam">Banking</button>
+        <button class="pill" data-cat="UPI Fraud">UPI Fraud</button>
+        <button class="pill" data-cat="Digital Arrest">Digital Arrest</button>
+        <button class="pill" data-cat="Job Scam">Job Scam</button>
+        <button class="pill" data-cat="Romance Scam">Romance</button>
+        <button class="pill" data-cat="Investment Scam">Investment</button>
+        <button class="pill" data-cat="Legal & Acts">Legal & Acts</button>
+      </div>
+    </section>
+
+    <!-- Blog grid -->
+    <section class="blogs-grid-section">
+      <div class="blogs-grid" id="blogsGrid">
+        <!-- Skeleton loaders -->
+        <div class="blog-skeleton"></div>
+        <div class="blog-skeleton"></div>
+        <div class="blog-skeleton"></div>
+      </div>
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--mute)" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <h3>No blogs yet</h3>
+        <p>Be the first to share your knowledge.</p>
+        <a href="/submit-blog" class="write-btn sm">Write the first blog</a>
+      </div>
+    </section>
+
+    <!-- Blog detail modal -->
+    <div class="modal-overlay" id="blogModal">
+      <div class="modal-card">
+        <button class="modal-close" id="modalClose" aria-label="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script define:vars={{ MAIN_API }}>
+  const grid = document.getElementById('blogsGrid');
+  const emptyState = document.getElementById('emptyState');
+  const modal = document.getElementById('blogModal');
+  const modalBody = document.getElementById('modalBody');
+  const modalClose = document.getElementById('modalClose');
+
+  let allBlogs = [];
+  let activeCategory = 'all';
+
+  const CATEGORY_COLORS = {
+    'Banking Scam': '#0070f3',
+    'UPI Fraud': '#7928ca',
+    'Digital Arrest': '#ee0000',
+    'Job Scam': '#f5a623',
+    'Romance Scam': '#ff0080',
+    'Investment Scam': '#29bc9b',
+    'Legal & Acts': '#171717',
+  };
+
+  function getCategoryColor(cat) {
+    return CATEGORY_COLORS[cat] || '#525252';
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function renderCards(blogs) {
+    if (!blogs.length) {
+      grid.innerHTML = '';
+      emptyState.style.display = 'flex';
+      return;
+    }
+    emptyState.style.display = 'none';
+    grid.innerHTML = blogs.map(b => `
+      <article class="blog-card" data-id="${b.id}">
+        <div class="card-tag" style="--tag-color:${getCategoryColor(b.category)}">${b.category}</div>
+        <h2 class="card-title">${escHtml(b.title)}</h2>
+        <p class="card-excerpt">${escHtml(b.content_text?.slice(0, 140) || '')}...</p>
+        <footer class="card-footer">
+          <span class="card-author">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            ${escHtml(b.author_name)}
+          </span>
+          <span class="card-date">${formatDate(b.approved_at || b.submitted_at)}</span>
+        </footer>
+      </article>
+    `).join('');
+
+    grid.querySelectorAll('.blog-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const blog = allBlogs.find(b => b.id === card.dataset.id);
+        if (blog) openModal(blog);
+      });
+    });
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function openModal(blog) {
+    // Sanitize HTML from Quill editor before rendering to prevent XSS
+    const safeHtml = (typeof DOMPurify !== 'undefined')
+      ? DOMPurify.sanitize(blog.content_html || '', { ALLOWED_TAGS: ['p','br','strong','em','u','s','h1','h2','h3','ul','ol','li','blockquote','a','code','pre'], ALLOWED_ATTR: ['href','target','rel'] })
+      : escHtml(blog.content_text || '');
+    modalBody.innerHTML = `
+      <div class="modal-tag" style="--tag-color:${getCategoryColor(blog.category)}">${escHtml(blog.category)}</div>
+      <h1 class="modal-title">${escHtml(blog.title)}</h1>
+      <div class="modal-meta">
+        <span>By <strong>${escHtml(blog.author_name)}</strong></span>
+        <span>${formatDate(blog.approved_at || blog.submitted_at)}</span>
+      </div>
+      <div class="modal-content ql-editor">${safeHtml}</div>
+    `;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // Category filter
+  document.querySelectorAll('.pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      activeCategory = pill.dataset.cat;
+      const filtered = activeCategory === 'all' ? allBlogs : allBlogs.filter(b => b.category === activeCategory);
+      renderCards(filtered);
+    });
+  });
+
+  // Fetch blogs
+  async function fetchBlogs() {
+    const timeout = setTimeout(() => {
+      grid.innerHTML = `<div class="fetch-error">Request timed out. Please refresh the page.</div>`;
+    }, 10000);
+    try {
+      const res = await fetch(`${MAIN_API}/api/blogs`, { signal: AbortSignal.timeout(9000) });
+      clearTimeout(timeout);
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      const data = await res.json();
+      allBlogs = data.blogs || [];
+      renderCards(allBlogs);
+    } catch(e) {
+      clearTimeout(timeout);
+      grid.innerHTML = `<div class="fetch-error">Could not load blogs — ${escHtml(e.message)}. Try refreshing.</div>`;
+    }
+  }
+
+  fetchBlogs();
+</script>
+
+<style>
+.blogs-main {
+  padding-top: var(--nav-height, 64px);
+  min-height: 100vh;
+  background: var(--canvas, #fff);
+}
+
+/* Hero */
+.blogs-hero {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 60%, #16213e 100%);
+  padding: 72px 24px 56px;
+  text-align: center;
+}
+.hero-inner { max-width: 720px; margin: 0 auto; }
+.hero-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cyan, #50e3c2);
+  margin-bottom: 16px;
+  padding: 4px 12px;
+  background: rgba(80,227,194,0.12);
+  border-radius: 100px;
+}
+.blogs-hero h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 16px;
+  letter-spacing: -0.03em;
+}
+.hero-sub { font-size: 1.05rem; color: rgba(255,255,255,0.6); margin: 0 0 32px; line-height: 1.6; }
+.write-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--cyan, #50e3c2);
+  color: #0a0a0a;
+  border: none;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.write-btn:hover { background: #2dcfad; transform: translateY(-1px); }
+.write-btn.sm { margin-top: 16px; font-size: 13px; padding: 10px 20px; }
+
+/* Filter bar */
+.filter-bar {
+  border-bottom: 1px solid var(--hairline, #ebebeb);
+  background: var(--canvas, #fff);
+  position: sticky;
+  top: var(--nav-height, 64px);
+  z-index: 10;
+}
+.filter-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filter-inner::-webkit-scrollbar { display: none; }
+.pill {
+  flex-shrink: 0;
+  padding: 6px 16px;
+  border: 1px solid var(--hairline, #ebebeb);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--body, #525252);
+  background: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.pill:hover { border-color: var(--ink); color: var(--ink); }
+.pill.active { background: var(--ink, #171717); color: #fff; border-color: var(--ink); }
+
+/* Grid */
+.blogs-grid-section { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; }
+.blogs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* Card */
+.blog-card {
+  background: var(--canvas, #fff);
+  border: 1px solid var(--hairline, #ebebeb);
+  border-radius: 16px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.blog-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+  border-color: transparent;
+}
+.card-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tag-color, #525252);
+  padding: 3px 10px;
+  background: color-mix(in srgb, var(--tag-color, #525252) 12%, transparent);
+  border-radius: 100px;
+  width: fit-content;
+}
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink, #171717);
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.card-excerpt {
+  font-size: 0.88rem;
+  color: var(--body, #525252);
+  line-height: 1.6;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--mute, #888);
+  margin-top: auto;
+  border-top: 1px solid var(--hairline, #ebebeb);
+  padding-top: 12px;
+}
+.card-author { display: flex; align-items: center; gap: 5px; }
+
+/* Skeleton */
+.blog-skeleton {
+  height: 220px;
+  background: linear-gradient(90deg, var(--canvas-soft,#fafafa) 25%, var(--canvas-soft-2,#f5f5f5) 50%, var(--canvas-soft,#fafafa) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 16px;
+  border: 1px solid var(--hairline, #ebebeb);
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* Empty state */
+.empty-state {
+  grid-column: 1/-1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 64px 24px;
+  gap: 12px;
+}
+.empty-state h3 { font-size: 1.25rem; color: var(--ink); margin: 0; }
+.empty-state p { color: var(--mute); margin: 0; font-size: 0.9rem; }
+
+/* Error */
+.fetch-error {
+  grid-column: 1/-1;
+  text-align: center;
+  color: var(--error, #ee0000);
+  padding: 40px;
+  font-size: 0.9rem;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,10,10,0.6);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.modal-overlay.active { opacity: 1; visibility: visible; }
+.modal-card {
+  background: var(--canvas, #fff);
+  border-radius: 20px;
+  max-width: 760px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 40px;
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+  scrollbar-width: thin;
+}
+.modal-overlay.active .modal-card { transform: translateY(0); }
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--canvas-soft, #fafafa);
+  border: 1px solid var(--hairline, #ebebeb);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.modal-close:hover { background: var(--canvas-soft-2, #f5f5f5); }
+.modal-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tag-color);
+  padding: 3px 10px;
+  background: color-mix(in srgb, var(--tag-color) 12%, transparent);
+  border-radius: 100px;
+  margin-bottom: 16px;
+}
+.modal-title {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0 0 16px;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.modal-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--mute);
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--hairline);
+}
+.modal-content {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--body, #4d4d4d);
+}
+/* Quill content reset inside modal */
+.modal-content h1,.modal-content h2,.modal-content h3 { color: var(--ink); margin: 1.5em 0 0.5em; }
+.modal-content p { margin: 0 0 1em; }
+.modal-content ul,.modal-content ol { padding-left: 1.5em; margin-bottom: 1em; }
+.modal-content blockquote {
+  border-left: 3px solid var(--cyan,#50e3c2);
+  margin: 1em 0;
+  padding: 8px 16px;
+  background: var(--canvas-soft,#fafafa);
+  color: var(--body);
+  border-radius: 0 8px 8px 0;
+}
+.modal-content code { background: var(--canvas-soft-2); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.88em; }
+.modal-content strong { color: var(--ink); }
+</style>

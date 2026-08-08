@@ -1,0 +1,621 @@
+---
+// SafeSaathiChat.astro
+const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL ?? 'http://localhost:8000';
+---
+
+<div class="ss-chat-container">
+  <!-- Floating Action Button -->
+  <button id="ss-fab" class="ss-fab" aria-label="Open Safe Saathi AI">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      <path d="M9 12l2 2 4-4"/>
+    </svg>
+    <span class="ss-fab-badge">AI</span>
+  </button>
+
+  <!-- Chat Drawer -->
+  <div id="ss-drawer" class="ss-drawer hidden">
+    <!-- Header -->
+    <div class="ss-header">
+      <div class="ss-header-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+        Safe Saathi AI
+      </div>
+      <button id="ss-close-btn" class="ss-close-btn" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="ss-messages" id="ss-messages">
+      <div class="ss-message system">
+        <div class="ss-bubble">
+          🛡️ <strong>Namaste! I'm SAFE Saathi</strong> — your digital safety assistant.<br/>
+          Share a suspicious message, link, or screenshot and I'll check it instantly.
+          <div class="ss-quick-hints">
+            <span>💬 Paste a suspicious message</span>
+            <span>🔗 Share a link to verify</span>
+            <span>📸 Upload a screenshot</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Typing Indicator -->
+    <div class="ss-typing hidden" id="ss-typing">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+
+    <!-- Image Preview -->
+    <div class="ss-image-preview hidden" id="ss-image-preview">
+      <img id="ss-preview-img" src="" alt="Preview" />
+      <button type="button" id="ss-remove-img" class="ss-remove-img" aria-label="Remove image">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Input Area -->
+    <form class="ss-input-area" id="ss-form">
+      <input type="file" id="ss-file-input" accept="image/*" class="hidden" />
+      <button type="button" id="ss-attach-btn" class="ss-icon-btn" aria-label="Attach image">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+        </svg>
+      </button>
+      <input type="text" id="ss-input" class="ss-input-field" placeholder="Type a message..." autocomplete="off" />
+      <button type="submit" class="ss-send-btn" aria-label="Send">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+
+  <!-- Image Modal Viewer -->
+  <div id="ss-img-modal" class="ss-img-modal">
+    <span class="ss-img-modal-close">&times;</span>
+    <img id="ss-modal-img" src="" alt="Full Image" />
+  </div>
+</div>
+
+<script define:vars={{ MAIN_API }}>
+  // ── Persistent session ID (survives page refresh, not browser close) ────────
+  let sessionId = sessionStorage.getItem('ss_session_id');
+  if (!sessionId) {
+    sessionId = 'ss_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+    sessionStorage.setItem('ss_session_id', sessionId);
+  }
+
+  // ── Daily usage counter (client-side mirror of 50/day server limit) ──────────
+  const TODAY = new Date().toDateString();
+  let usageKey = 'ss_usage_' + TODAY;
+  let usageCount = parseInt(localStorage.getItem(usageKey) || '0', 10);
+  const DAILY_LIMIT = 50;
+
+  function _bumpUsage() {
+    usageCount++;
+    localStorage.setItem(usageKey, String(usageCount));
+  }
+  function _isLimitReached() { return usageCount >= DAILY_LIMIT; }
+
+  // DOM Elements
+  const chatFab = document.getElementById('ss-fab');
+  const chatDrawer = document.getElementById('ss-drawer');
+  const closeBtn = document.getElementById('ss-close-btn');
+  const chatMessages = document.getElementById('ss-messages');
+  const chatForm = document.getElementById('ss-form');
+  const chatInput = document.getElementById('ss-input');
+  const typingIndicator = document.getElementById('ss-typing');
+  const fileInput = document.getElementById('ss-file-input');
+  const attachBtn = document.getElementById('ss-attach-btn');
+  const imagePreview = document.getElementById('ss-image-preview');
+  const previewImg = document.getElementById('ss-preview-img');
+  const removeImgBtn = document.getElementById('ss-remove-img');
+  const imgModal = document.getElementById('ss-img-modal');
+  const modalImg = document.getElementById('ss-modal-img');
+  const modalClose = document.querySelector('.ss-img-modal-close');
+
+  // ── Escape HTML helper (XSS prevention) ─────────────────────────────────────
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // ── Check limit on open ──────────────────────────────────────────────────────
+  chatFab.addEventListener('click', () => {
+    chatDrawer.classList.toggle('hidden');
+    if (!chatDrawer.classList.contains('hidden')) {
+      chatInput.focus();
+      scrollToBottom();
+      if (_isLimitReached()) _showLimitWarning();
+    }
+  });
+  closeBtn.addEventListener('click', () => chatDrawer.classList.add('hidden'));
+
+  function _showLimitWarning() {
+    chatInput.disabled = true;
+    chatInput.placeholder = 'Daily limit reached (50 messages). Try again tomorrow.';
+    document.querySelector('.ss-send-btn').disabled = true;
+    document.getElementById('ss-attach-btn').disabled = true;
+    // Show a single warning message if not already shown
+    if (!document.getElementById('ss-limit-msg')) {
+      const w = document.createElement('div');
+      w.id = 'ss-limit-msg';
+      w.className = 'ss-message system';
+      w.innerHTML = `<div class="ss-bubble ss-limit-bubble">⏳ You've reached today's limit of ${DAILY_LIMIT} messages. Your limit resets at midnight. For urgent help, call <strong>1930</strong> (Cyber Crime Helpline).</div>`;
+      chatMessages.appendChild(w);
+      scrollToBottom();
+    }
+  }
+
+  function _reEnableInput() {
+    chatInput.disabled = false;
+    chatInput.placeholder = 'Type a message...';
+    document.querySelector('.ss-send-btn').disabled = false;
+    document.getElementById('ss-attach-btn').disabled = false;
+  }
+
+  // State
+  let selectedImageBase64 = null;
+  let selectedFile = null;
+
+  // --- Image Handling ---
+  attachBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    const file = (e.target).files?.[0];
+    if (!file) return;
+    selectedFile = file; 
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      selectedImageBase64 = event.target?.result;
+      previewImg.src = selectedImageBase64;
+      imagePreview.classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  removeImgBtn.addEventListener('click', () => {
+    selectedImageBase64 = null;
+    selectedFile = null;
+    fileInput.value = '';
+    imagePreview.classList.add('hidden');
+  });
+
+  // --- Image Modal ---
+  function openImageModal(src) {
+    modalImg.src = src;
+    imgModal.classList.add('show');
+  }
+  modalClose?.addEventListener('click', () => imgModal.classList.remove('show'));
+  imgModal.addEventListener('click', (e) => { if (e.target === imgModal) imgModal.classList.remove('show'); });
+
+  // --- Message Sending ---
+  chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const query      = chatInput.value.trim();
+    const fileToSend = selectedFile;
+
+    if (!query && !fileToSend) return;
+    if (_isLimitReached()) { _showLimitWarning(); return; }
+
+    appendUserMessage(query, selectedImageBase64);
+    chatInput.value  = '';
+    selectedImageBase64 = null;
+    selectedFile        = null;
+    fileInput.value  = '';
+    imagePreview.classList.add('hidden');
+    scrollToBottom();
+
+    typingIndicator.classList.remove('hidden');
+    scrollToBottom();
+
+    const formData = new FormData();
+    formData.append('message',    query || 'Is this screenshot safe?');
+    formData.append('session_id', sessionId);
+    if (fileToSend) formData.append('image', fileToSend);
+
+    _bumpUsage();
+
+    try {
+      const response = await fetch(MAIN_API + '/api/v1/chat', {
+        method: 'POST',
+        body:   formData,
+        signal: AbortSignal.timeout(30000),
+      });
+
+      typingIndicator.classList.add('hidden');
+
+      if (response.status === 429) { _showLimitWarning(); return; }
+      if (!response.ok) throw new Error(`Server error ${response.status}`);
+
+      const data = await response.json();
+      handleApiResponse(data);
+
+      if (_isLimitReached()) _showLimitWarning();
+      else if (usageCount >= DAILY_LIMIT - 5) {
+        appendBotMessage(`⚠️ You have ${DAILY_LIMIT - usageCount} messages remaining today.`);
+      }
+
+    } catch (err) {
+      typingIndicator.classList.add('hidden');
+      if (err.name === 'TimeoutError' || err.name === 'AbortError') {
+        appendBotMessage('⏱️ Request timed out. Please try again.');
+      } else {
+        appendBotMessage('⚠️ Could not reach the server. Check your connection.');
+      }
+    }
+  });
+
+  // --- API Response Handling ---
+  function handleApiResponse(data) {
+    if (!data) {
+      appendBotMessage("Received an empty response from the server.");
+      return;
+    }
+
+    // Global Hallucination Check (Optional safety net)
+    if (data.intent_detected === 'hallucination' || data.is_hallucination === true) {
+      appendBotMessage(`⚠️ Hallucination detected. Redirecting to home...`);
+      setTimeout(() => { window.location.href = '/'; }, 1500);
+      return;
+    }
+
+    // 2. STRICT CHECK: Only produce scanner result if custom_payload is NOT empty/null/blank
+    let payload = data.custom_payload;
+    
+    // Handle case where backend might return a JSON string instead of an object
+    if (typeof payload === 'string') {
+      try {
+        payload = JSON.parse(payload);
+      } catch (e) {
+        payload = null; // Invalid JSON string
+      }
+    }
+
+    // Check if payload is a non-empty object or array
+    const isPayloadNotEmpty = payload && 
+                              typeof payload === 'object' && 
+                              (Array.isArray(payload) ? payload.length > 0 : Object.keys(payload).length > 0);
+
+    if (isPayloadNotEmpty) {
+      if (data.bot_message) appendBotMessage(data.bot_message);
+      appendScanResultBox(payload);
+      return;
+    }
+
+    // 3. REDIRECT CHECK: If custom_payload is empty, check if redirect_url has a certain value
+    if (data.redirect_url && typeof data.redirect_url === 'string' && data.redirect_url.trim() !== '') {
+      appendBotMessage(`Redirecting you to the secure page...`);
+      let targetUrl = data.redirect_url;
+      if (data.intent_detected === 'learn') targetUrl = '/learn';
+      else if (data.intent_detected === 'emergency') targetUrl = '/emergency';
+      setTimeout(() => { window.location.href = targetUrl; }, 1500);
+      return;
+    }
+
+    // 4. FALLBACK: Move forward with the actual bot message
+    if (data.bot_message) {
+      appendBotMessage(data.bot_message);
+    } else {
+      appendBotMessage("I processed your request, but I don't have a specific response.");
+    }
+  }
+
+  // --- Helper Functions ---
+  function appendUserMessage(text, imageSrc) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'ss-message user';
+    let bubbleContent = '';
+    if (imageSrc) bubbleContent += `<div class="ss-img-thumb" data-src="${imageSrc}"><img src="${imageSrc}" alt="Image" /></div>`;
+    if (text) bubbleContent += `<div class="ss-text">${escapeHtml(text)}</div>`;
+    msgDiv.innerHTML = `<div class="ss-bubble">${bubbleContent}</div>`;
+    chatMessages.appendChild(msgDiv);
+    
+    const thumb = msgDiv.querySelector('.ss-img-thumb');
+    if (thumb) thumb.addEventListener('click', () => openImageModal(thumb.getAttribute('data-src') || ''));
+    scrollToBottom();
+  }
+
+  function appendBotMessage(text) {
+    const msg = document.createElement('div');
+    msg.className = 'ss-message assistant';
+    msg.innerHTML = `<div class="ss-bubble"><div class="ss-text">${escapeHtml(text)}</div></div>`;
+    chatMessages.appendChild(msg);
+    scrollToBottom();
+  }
+
+  // Creates the Box with "Security Scan Complete" header AND the Scanner Result UI inside it
+  function appendScanResultBox(payload) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'ss-message assistant';
+    
+    const score = Math.round((payload.score || 0) * 100);
+    const statusColor = score > 70 ? '#10B981' : (score > 40 ? '#F59E0B' : '#EF4444');
+    const statusText = score > 70 ? 'Safe' : (score > 40 ? 'Caution' : 'Danger');
+
+    // 1. Create the Box Structure
+    msgDiv.innerHTML = `
+      <div class="ss-bubble ss-scan-bubble">
+        <div class="ss-scan-header">
+          <div class="ss-scan-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${statusColor}" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Security Scan Complete</span>
+          </div>
+          <span class="ss-scan-badge" style="background: ${statusColor}">${statusText} (${score}%)</span>
+        </div>
+        <div class="ss-scan-body">
+          <!-- Scanner Result UI will be injected here -->
+        </div>
+      </div>
+    `;
+    chatMessages.appendChild(msgDiv);
+    
+    // 2. Inject the actual Scanner Result UI into the body
+    const scanBody = msgDiv.querySelector('.ss-scan-body');
+    if (scanBody) {
+      scanBody.innerHTML = generateScannerHTML();
+      renderScannerData(scanBody, payload);
+    }
+    
+    scrollToBottom();
+  }
+
+  // Generates the raw HTML for the Scanner Result UI
+  function generateScannerHTML() {
+    return `
+      <div class="sr-container">
+        <div class="sr-status-header" data-status="safe">
+          <div class="sr-status-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <div class="sr-status-content"><h3 class="sr-status-label">✅ Likely Safe</h3><p class="sr-status-confidence">Trust: 86%</p></div>
+        </div>
+        <div class="sr-summary-box">
+          <p class="sr-summary-text">Our analysis found no significant red flags in this content.</p>
+        </div>
+        <div class="sr-checks-section">
+          <h4 class="sr-section-title">What We Analyzed</h4>
+          <div class="sr-checks-grid">
+            <div class="sr-check-item"><div class="sr-check-icon">✓</div><div class="sr-check-content"><span class="sr-check-label">Links & URLs</span><span class="sr-check-desc sr-dynamic">Checking...</span></div></div>
+            <div class="sr-check-item"><div class="sr-check-icon">✓</div><div class="sr-check-content"><span class="sr-check-label">Language Patterns</span><span class="sr-check-desc sr-dynamic">Analyzing...</span></div></div>
+            <div class="sr-check-item"><div class="sr-check-icon">✓</div><div class="sr-check-content"><span class="sr-check-label">Urgency Tactics</span><span class="sr-check-desc sr-dynamic">Detecting...</span></div></div>
+            <div class="sr-check-item"><div class="sr-check-icon">✓</div><div class="sr-check-content"><span class="sr-check-label">Personal Info</span><span class="sr-check-desc sr-dynamic">Scanning...</span></div></div>
+          </div>
+        </div>
+        <div class="sr-advice-section">
+          <h4 class="sr-section-title">💡 Stay Smart</h4>
+          <div class="sr-advice-card">
+            <p class="sr-advice-text">Loading advice...</p>
+            <div class="sr-advice-tips"></div>
+          </div>
+        </div>
+        <details class="sr-how-it-works">
+          <summary class="sr-how-summary">How did we analyze this?</summary>
+          <div class="sr-steps-list"></div>
+        </details>
+      </div>
+    `;
+  }
+
+  // Populates the injected Scanner Result UI with actual data from custom_payload
+  function renderScannerData(container: HTMLElement, data: any) {
+    const score = Math.round((data.score || 0) * 100);
+    const isSafe = score > 70;
+    
+    // Status Header
+    const statusHeader = container.querySelector('.sr-status-header');
+    const statusLabel = container.querySelector('.sr-status-label');
+    const statusConfidence = container.querySelector('.sr-status-confidence');
+    
+    statusHeader?.setAttribute('data-status', isSafe ? 'safe' : (score > 40 ? 'warning' : 'danger'));
+    if(statusLabel) statusLabel.textContent = data.label || (isSafe ? '✅ Likely Safe' : '⚠️ Potential Risk');
+    if(statusConfidence) statusConfidence.textContent = `Trust: ${score}%`;
+
+    // Summary
+    const summaryText = container.querySelector('.sr-summary-text');
+    if(summaryText) summaryText.textContent = data.explanation || data.rag?.explanation || 'Analysis complete.';
+
+    // Checks
+    const checkDescs = container.querySelectorAll('.sr-dynamic');
+    if (data.keywords && data.keywords.length > 0) {
+      if(checkDescs[0]) checkDescs[0].textContent = `${data.keywords.filter((k: string) => k.includes('http') || k.includes('www')).length || 0} link(s) analyzed`;
+      if(checkDescs[1]) checkDescs[1].textContent = 'Language patterns reviewed';
+      if(checkDescs[2]) checkDescs[2].textContent = data.keywords.some((k: string) => k.match(/urgent|immediately|act now/i)) ? 'Urgency detected' : 'No urgency found';
+      if(checkDescs[3]) checkDescs[3].textContent = data.keywords.some((k: string) => k.match(/password|ssn|account|bank/i)) ? 'Sensitive terms detected' : 'No data requests';
+    } else {
+      if(checkDescs[0]) checkDescs[0].textContent = 'No suspicious links detected';
+      if(checkDescs[1]) checkDescs[1].textContent = 'Normal communication style';
+      if(checkDescs[2]) checkDescs[2].textContent = 'No pressure tactics found';
+      if(checkDescs[3]) checkDescs[3].textContent = 'No sensitive data requests';
+    }
+
+    // Advice
+    const adviceText = container.querySelector('.sr-advice-text');
+    const adviceTips = container.querySelector('.sr-advice-tips');
+    let adviceList = data.rag?.advice || data.actionSteps || [];
+    
+    if (adviceList.length > 0 && adviceText) {
+      adviceText.textContent = adviceList[0];
+      if(adviceTips) {
+        adviceTips.innerHTML = '';
+        adviceList.slice(1).forEach((tip: string) => {
+          adviceTips.innerHTML += `<div class="sr-tip-item">• ${tip}</div>`;
+        });
+      }
+    }
+
+    // Cascade Steps (How it works)
+    const stepsContainer = container.querySelector('.sr-steps-list');
+    if (data.cascade_steps && data.cascade_steps.length > 0 && stepsContainer) {
+      stepsContainer.innerHTML = '';
+      data.cascade_steps.forEach((step: string, index: number) => {
+        let stepTitle = step;
+        let stepDesc = 'Analysis step completed';
+        if (step.includes('Layer 0')) { stepTitle = 'Content Preparation'; stepDesc = 'Cleaned and organized message'; } 
+        else if (step.includes('Layer 1')) { stepTitle = 'Pattern Matching'; stepDesc = 'Checked against known scam patterns'; } 
+        else if (step.includes('Layer 2')) { stepTitle = 'Smart Classification'; stepDesc = 'Assessed overall risk level'; }
+        else if (step.includes('Layer 3')) { stepTitle = 'Similarity Search'; stepDesc = 'Compared with known database'; }
+        else if (step.includes('Layer 4')) { stepTitle = 'AI Reasoning'; stepDesc = 'Final AI agentic check'; }
+        
+        stepsContainer.innerHTML += `
+          <div class="sr-step-item">
+            <div class="sr-step-num">${index + 1}</div>
+            <div class="sr-step-info"><strong>${stepTitle}</strong><span>${stepDesc}</span></div>
+          </div>
+        `;
+      });
+    }
+  }
+
+  function scrollToBottom() { chatMessages.scrollTop = chatMessages.scrollHeight; }
+  function escapeHtml(text: string) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+</script>
+
+<style is:global>
+  /* Container & Reset */
+  .ss-chat-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  .hidden { display: none !important; }
+
+  /* Floating Action Button */
+  .ss-fab { position: fixed; bottom: 24px; right: 24px; width: 60px; height: 60px; background: #075E54; color: white; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; z-index: 1000; transition: transform 0.2s; }
+  .ss-fab:hover { transform: scale(1.05); }
+  .ss-fab-badge { position: absolute; top: -4px; right: -4px; background: #25D366; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; }
+
+  /* Chat Drawer */
+  .ss-drawer { position: fixed; bottom: 24px; right: 24px; width: 380px; height: 600px; background: #ffffff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; z-index: 1001; overflow: hidden; border: 1px solid #e0e0e0; }
+  .ss-header { background: #075E54; color: white; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .ss-header-title { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; }
+  .ss-close-btn { background: none; border: none; color: white; cursor: pointer; padding: 4px; }
+
+  /* Messages */
+  .ss-messages { flex: 1; overflow-y: auto; padding: 16px; background: #F0F2F5; display: flex; flex-direction: column; gap: 10px; }
+  .ss-message { display: flex; width: 100%; }
+  .ss-message.user { justify-content: flex-end; }
+  .ss-message.assistant { justify-content: flex-start; }
+  .ss-message.system { justify-content: center; }
+
+  .ss-bubble { max-width: 85%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.4; box-shadow: 0 1px 1px rgba(0,0,0,0.1); word-wrap: break-word; }
+  .ss-message.user .ss-bubble { background: #D9FDD3; color: #111; border-bottom-right-radius: 2px; }
+  .ss-message.assistant .ss-bubble { background: #ffffff; color: #333; border-bottom-left-radius: 2px; border: 1px solid #e0e0e0; }
+  .ss-message.system .ss-bubble { background: #EFF6FF; color: #1e40af; border: 1px solid #bfdbfe; text-align: left; font-size: 13px; max-width: 95%; }
+
+  /* Quick-hint chips in welcome message */
+  .ss-quick-hints {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .ss-quick-hints span {
+    background: rgba(30, 64, 175, 0.08);
+    color: #1e40af;
+    border: 1px solid rgba(30, 64, 175, 0.2);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 11.5px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* Rate-limit warning bubble (amber) */
+  .ss-limit-bubble {
+    background: #FEF3C7 !important;
+    color: #92400E !important;
+    border-color: #FDE68A !important;
+    font-size: 13px;
+  }
+
+  .ss-img-thumb { width: 100px; height: 100px; border-radius: 6px; overflow: hidden; cursor: pointer; margin-bottom: 6px; border: 1px solid rgba(0,0,0,0.1); }
+  .ss-img-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+
+  /* ========================================= */
+  /* SCAN BOX & SCANNER RESULT UI STYLES       */
+  /* ========================================= */
+  .ss-scan-bubble { padding: 0 !important; overflow: hidden; width: 100%; max-width: 100%; }
+  
+  .ss-scan-header {
+    display: flex; justify-content: space-between; align-items: center; padding: 12px 16px;
+    background: #F9FAFB; border-bottom: 1px solid #e0e0e0;
+  }
+  .ss-scan-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #111; }
+  .ss-scan-badge { color: white; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 12px; }
+
+  .ss-scan-body { padding: 16px; background: #ffffff; }
+
+  /* Scanner Result Internal Styles (Prefixed with sr- to avoid conflicts) */
+  .sr-container { font-size: 13px; color: #333; }
+  
+  .sr-status-header { display: flex; align-items: center; gap: 12px; padding: 16px; background: linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%); border-radius: 8px; border: 1px solid #F3F4F6; margin-bottom: 16px; }
+  .sr-status-header[data-status="warning"] { background: linear-gradient(135deg, #FEF3C7 0%, #FFFFFF 100%); }
+  .sr-status-header[data-status="danger"] { background: linear-gradient(135deg, #FEE2E2 0%, #FFFFFF 100%); }
+  .sr-status-icon { width: 40px; height: 40px; border-radius: 10px; background: #10B981; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
+  .sr-status-header[data-status="warning"] .sr-status-icon { background: #F59E0B; }
+  .sr-status-header[data-status="danger"] .sr-status-icon { background: #EF4444; }
+  .sr-status-label { margin: 0; font-size: 16px; font-weight: 700; color: #000; }
+  .sr-status-confidence { margin: 0; font-size: 12px; color: #6B7280; }
+
+  .sr-summary-box { padding: 12px; background: #F9FAFB; border-radius: 8px; border-left: 3px solid #000; margin-bottom: 16px; }
+  .sr-summary-text { margin: 0; font-size: 13px; line-height: 1.5; color: #374151; }
+
+  .sr-section-title { font-size: 14px; font-weight: 700; color: #000; margin: 0 0 10px 0; }
+  .sr-checks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .sr-check-item { display: flex; align-items: flex-start; gap: 8px; padding: 10px; background: #F9FAFB; border-radius: 8px; border: 1px solid #F3F4F6; }
+  .sr-check-icon { width: 18px; height: 18px; border-radius: 50%; background: #10B981; color: white; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+  .sr-check-label { font-size: 12px; font-weight: 600; color: #000; display: block; }
+  .sr-check-desc { font-size: 11px; color: #6B7280; display: block; }
+
+  .sr-advice-card { padding: 12px; background: linear-gradient(135deg, #EFF6FF 0%, #F9FAFB 100%); border-radius: 8px; border: 1px solid #DBEAFE; }
+  .sr-advice-text { font-size: 13px; font-weight: 600; color: #1E40AF; margin: 0 0 8px 0; line-height: 1.4; }
+  .sr-advice-tips { display: flex; flex-direction: column; gap: 4px; }
+  .sr-tip-item { font-size: 12px; color: #374151; line-height: 1.4; }
+
+  /* How it works section */
+  .sr-how-it-works { margin-top: 16px; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+  .sr-how-summary { padding: 10px 12px; background: #F9FAFB; cursor: pointer; font-size: 13px; font-weight: 600; color: #000; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+  .sr-how-summary::-webkit-details-marker { display: none; }
+  .sr-steps-list { padding: 12px; display: flex; flex-direction: column; gap: 10px; background: #fff; }
+  .sr-step-item { display: flex; align-items: flex-start; gap: 10px; }
+  .sr-step-num { width: 24px; height: 24px; border-radius: 50%; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .sr-step-info { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: #374151; }
+  .sr-step-info strong { font-size: 13px; color: #000; }
+
+  /* Input & Misc */
+  .ss-input-area { padding: 10px; background: #f0f2f5; border-top: 1px solid #e0e0e0; display: flex; gap: 8px; align-items: center; }
+  .ss-icon-btn { width: 36px; height: 36px; border-radius: 50%; background: white; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; }
+  .ss-input-field { flex: 1; padding: 8px 12px; border-radius: 20px; border: 1px solid #ddd; background: white; font-size: 14px; outline: none; }
+  .ss-input-field:focus { border-color: #075E54; }
+  .ss-send-btn { width: 36px; height: 36px; border-radius: 50%; background: #075E54; color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+  .ss-image-preview { padding: 8px 10px; background: #e0e0e0; display: flex; align-items: center; gap: 8px; }
+  .ss-image-preview img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
+  .ss-remove-img { background: #ff4444; color: white; border: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  .ss-typing { display: flex; gap: 4px; padding: 8px 16px; }
+  .ss-typing .dot { width: 6px; height: 6px; background: #999; border-radius: 50%; animation: ss-bounce 1.4s infinite ease-in-out both; }
+  .ss-typing .dot:nth-child(1) { animation-delay: -0.32s; }
+  .ss-typing .dot:nth-child(2) { animation-delay: -0.16s; }
+  @keyframes ss-bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+
+  .ss-img-modal { display: none; position: fixed; z-index: 1002; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
+  .ss-img-modal.show { display: flex; }
+  .ss-img-modal img { max-width: 90%; max-height: 90%; border-radius: 8px; }
+  .ss-img-modal-close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
+
+  @media (max-width: 480px) {
+    .ss-drawer { bottom: 0; right: 0; width: 100%; height: 100vh; border-radius: 0; border: none; }
+    .ss-fab { bottom: 16px; right: 16px; }
+    .sr-checks-grid { grid-template-columns: 1fr; }
+  }
+</style>

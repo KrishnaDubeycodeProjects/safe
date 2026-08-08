@@ -1,0 +1,517 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL ?? 'http://localhost:8000';
+const CATEGORIES = [
+  'Banking Scam', 'UPI Fraud', 'Digital Arrest', 'Job Scam',
+  'Romance Scam', 'Investment Scam', 'Cyber Crime', 'Legal & Acts', 'Other',
+];
+---
+
+<Layout title="Submit a Blog — SAFE Platform" currentPage="blogs">
+  <main class="submit-main">
+
+    <!-- Page header / guidelines -->
+    <section class="guide-header">
+      <div class="guide-inner">
+        <div class="guide-badge">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <h1>Write a Blog</h1>
+        <p>Share your scam experience, legal knowledge, or safety tips. All submissions are reviewed by the SAFE team before publishing.</p>
+      </div>
+    </section>
+
+    <!-- Guidelines -->
+    <section class="guidelines-section">
+      <div class="content-wrap">
+        <div class="guidelines-grid">
+          <div class="guideline-card accepted">
+            <h3>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Accepted Content
+            </h3>
+            <ul>
+              <li>Personal scam experiences (with no identifiable victim info)</li>
+              <li>How a specific scam works — awareness articles</li>
+              <li>Legal acts relevant to cyber fraud (IT Act, IPC sections)</li>
+              <li>Step-by-step guides on what to do after being scammed</li>
+              <li>Platform-specific safety tips (WhatsApp, Instagram, etc.)</li>
+            </ul>
+          </div>
+          <div class="guideline-card rejected">
+            <h3>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Not Accepted
+            </h3>
+            <ul>
+              <li>Promotional content or affiliate links</li>
+              <li>Personal attacks or unverified accusations by name</li>
+              <li>Misinformation or unverified claims</li>
+              <li>Politically motivated content</li>
+              <li>Content promoting illegal activity</li>
+            </ul>
+          </div>
+          <div class="guideline-card legal">
+            <h3>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Legal Disclaimer
+            </h3>
+            <ul>
+              <li>You retain ownership of your content</li>
+              <li>SAFE may edit for clarity while preserving meaning</li>
+              <li>You are solely responsible for factual accuracy</li>
+              <li>We reserve the right to reject any submission</li>
+              <li>Accepted content is published under CC BY-NC 4.0</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Blog Submission Form -->
+    <section class="form-section">
+      <div class="content-wrap">
+        <div class="form-card" id="formCard">
+          <h2>Submit Your Blog</h2>
+
+          <form id="blogForm" novalidate>
+
+            <!-- Title -->
+            <div class="field-group">
+              <label for="blogTitle">Blog Title <span class="req">*</span></label>
+              <input type="text" id="blogTitle" name="title" placeholder="e.g. How I Almost Fell for a Digital Arrest Scam" required maxlength="120" />
+              <div class="char-count"><span id="titleCount">0</span>/120</div>
+            </div>
+
+            <!-- Author & Email row -->
+            <div class="field-row">
+              <div class="field-group">
+                <label for="authorName">Your Name <span class="req">*</span></label>
+                <input type="text" id="authorName" name="author_name" placeholder="Full name or pseudonym" required />
+              </div>
+              <div class="field-group">
+                <label for="authorEmail">Email <span class="opt">(optional)</span></label>
+                <input type="email" id="authorEmail" name="author_email" placeholder="For follow-up queries only" />
+              </div>
+            </div>
+
+            <!-- Category -->
+            <div class="field-group">
+              <label for="blogCategory">Category <span class="req">*</span></label>
+              <div class="select-wrapper">
+                <select id="blogCategory" name="category" required>
+                  <option value="">Select a category...</option>
+                  {CATEGORIES.map(c => <option value={c}>{c}</option>)}
+                </select>
+                <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
+
+            <!-- Blog Content -->
+            <div class="field-group editor-group">
+              <label for="blogContentFallback">Content <span class="req">*</span></label>
+              <textarea id="blogContentFallback" name="content_fallback" placeholder="Write your blog content here. Describe the scam, explain how it works, share what you learned, or explain relevant laws..." rows="12" class="standard-textarea" required></textarea>
+              <div class="editor-meta">
+                <span id="wordCount">0 words</span>
+                <span class="editor-hint">Min. 150 words recommended</span>
+              </div>
+            </div>
+
+            <!-- Legal disclaimer -->
+            <div class="disclaimer-box">
+              <label class="checkbox-label">
+                <input type="checkbox" id="legalCheck" required />
+                <span class="checkbox-custom"></span>
+                <span>I confirm this content is original, factually accurate to the best of my knowledge, and I accept the <a href="#guidelines">content guidelines</a> and legal disclaimer above.</span>
+              </label>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" id="submitBtn" class="submit-btn" disabled>
+              <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <span class="btn-text">Submit for Review</span>
+              <span class="btn-loader" style="display:none;">Submitting...</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Success state -->
+        <div class="success-card" id="successCard" style="display:none;">
+          <div class="success-icon">
+            <svg viewBox="0 0 52 52" class="checkmark">
+              <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+              <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+          </div>
+          <h2>Blog Submitted!</h2>
+          <p>Your blog is under review by the SAFE team. We'll email you once it's published — usually within 24–48 hours.</p>
+          <div class="success-actions">
+            <a href="/blogs" class="action-btn primary">View Published Blogs</a>
+            <button class="action-btn secondary" onclick="resetForm()">Submit Another</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script define:vars={{ MAIN_API }}>
+  const fallbackTextarea = document.getElementById('blogContentFallback');
+  const wordCountEl = document.getElementById('wordCount');
+
+  function updateWordCount(text) {
+    if (!wordCountEl) return;
+    const words = text ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+    wordCountEl.textContent = `${words} word${words !== 1 ? 's' : ''}`;
+    wordCountEl.style.color = words < 150 ? 'var(--warning, #f5a623)' : 'var(--success, #0070f3)';
+  }
+
+  if (fallbackTextarea) {
+    fallbackTextarea.addEventListener('input', () => {
+      updateWordCount(fallbackTextarea.value);
+    });
+  }
+
+  // Title char counter
+  const titleInput = document.getElementById('blogTitle');
+  const titleCount = document.getElementById('titleCount');
+  if (titleInput && titleCount) {
+    titleInput.addEventListener('input', () => {
+      titleCount.textContent = titleInput.value.length;
+    });
+  }
+
+  // Enable submit only when disclaimer is checked
+  const legalCheck = document.getElementById('legalCheck');
+  const submitBtn = document.getElementById('submitBtn');
+  if (legalCheck && submitBtn) {
+    legalCheck.addEventListener('change', () => {
+      submitBtn.disabled = !legalCheck.checked;
+    });
+  }
+
+  // Form submit
+  const blogForm = document.getElementById('blogForm');
+  if (blogForm) {
+    blogForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('blogTitle')?.value.trim() || '';
+      const author_name = document.getElementById('authorName')?.value.trim() || '';
+      const author_email = document.getElementById('authorEmail')?.value.trim() || '';
+      const category = document.getElementById('blogCategory')?.value || '';
+      
+      const textarea = document.getElementById('blogContentFallback');
+      const content_html = textarea ? textarea.value.replace(/\n/g, '<br>') : '';
+      const content_text = textarea ? textarea.value.trim() : '';
+
+      if (!title || !author_name || !category) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+      if (!content_text) {
+        alert('Please write your blog content before submitting.');
+        return;
+      }
+      if (content_text.split(/\s+/).filter(Boolean).length < 5) {
+        alert('Please write at least 5 words in your blog content.');
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        const btnText = submitBtn.querySelector('.btn-text');
+        const btnLoader = submitBtn.querySelector('.btn-loader');
+        const btnIcon = submitBtn.querySelector('.btn-icon');
+        if (btnText) btnText.style.display = 'none';
+        if (btnLoader) btnLoader.style.display = 'inline';
+        if (btnIcon) btnIcon.style.display = 'none';
+      }
+
+      try {
+        const res = await fetch(`${MAIN_API}/api/blogs/submit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title, author_name, author_email: author_email || null,
+            category, content_html, content_text,
+            legal_disclaimer_accepted: true,
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Submission failed');
+
+        document.getElementById('formCard').style.display = 'none';
+        document.getElementById('successCard').style.display = 'flex';
+
+      } catch (err) {
+        alert(err.message || 'Something went wrong. Please try again.');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          const btnText = submitBtn.querySelector('.btn-text');
+          const btnLoader = submitBtn.querySelector('.btn-loader');
+          const btnIcon = submitBtn.querySelector('.btn-icon');
+          if (btnText) btnText.style.display = 'inline';
+          if (btnLoader) btnLoader.style.display = 'none';
+          if (btnIcon) btnIcon.style.display = 'inline';
+        }
+      }
+    });
+  }
+
+  window.resetForm = function() {
+    if (blogForm) blogForm.reset();
+    if (fallbackTextarea) fallbackTextarea.value = '';
+    document.getElementById('formCard').style.display = 'block';
+    document.getElementById('successCard').style.display = 'none';
+    if (submitBtn) submitBtn.disabled = true;
+  };
+</script>
+
+<style>
+.submit-main {
+  padding-top: var(--nav-height, 64px);
+  min-height: 100vh;
+  background: var(--canvas-soft, #fafafa);
+}
+
+/* Guide Header */
+.guide-header {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  padding: 56px 24px 48px;
+  text-align: center;
+}
+.guide-inner { max-width: 600px; margin: 0 auto; }
+.guide-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  background: rgba(80,227,194,0.15);
+  border: 1px solid rgba(80,227,194,0.3);
+  border-radius: 14px;
+  color: var(--cyan, #50e3c2);
+  margin-bottom: 20px;
+}
+.guide-header h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800; color: #fff; margin: 0 0 12px; letter-spacing: -0.03em; }
+.guide-header p { font-size: 1rem; color: rgba(255,255,255,0.6); margin: 0; line-height: 1.6; }
+
+/* Guidelines Section */
+.guidelines-section { padding: 40px 24px; }
+.content-wrap { max-width: 900px; margin: 0 auto; }
+.guidelines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 0; }
+.guideline-card {
+  background: var(--canvas, #fff);
+  border: 1px solid var(--hairline, #ebebeb);
+  border-radius: 16px;
+  padding: 24px;
+}
+.guideline-card.accepted { border-top: 3px solid #0070f3; }
+.guideline-card.rejected { border-top: 3px solid #ee0000; }
+.guideline-card.legal { border-top: 3px solid #f5a623; }
+.guideline-card h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.guideline-card.accepted h3 { color: #0070f3; }
+.guideline-card.rejected h3 { color: #ee0000; }
+.guideline-card.legal h3 { color: #f5a623; }
+.guideline-card ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.guideline-card li { font-size: 0.85rem; color: var(--body); line-height: 1.5; padding-left: 12px; position: relative; }
+.guideline-card li::before { content: '–'; position: absolute; left: 0; color: var(--mute); }
+
+/* Form Section */
+.form-section { padding: 0 24px 80px; }
+.form-card {
+  background: var(--canvas, #fff);
+  border: 1px solid var(--hairline, #ebebeb);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: var(--shadow-level-3);
+}
+.form-card h2 { font-size: 1.4rem; font-weight: 800; color: var(--ink); margin: 0 0 32px; }
+
+.field-group { margin-bottom: 24px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 640px) { .field-row { grid-template-columns: 1fr; } }
+
+label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.req { color: var(--error, #ee0000); }
+.opt { color: var(--mute); font-weight: 400; font-size: 12px; }
+
+input[type="text"], input[type="email"], select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--hairline, #ebebeb);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--canvas-soft, #fafafa);
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--ink);
+  background: var(--canvas, #fff);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+}
+
+.char-count { font-size: 11px; color: var(--mute); text-align: right; margin-top: 4px; }
+
+.select-wrapper { position: relative; }
+.select-wrapper select { padding-right: 40px; appearance: none; cursor: pointer; }
+.select-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--mute); }
+
+/* Textarea */
+.editor-group label { margin-bottom: 8px; }
+.standard-textarea {
+  width: 100%;
+  padding: 16px 20px;
+  border: 1px solid var(--hairline, #ebebeb);
+  border-radius: 10px;
+  background: var(--canvas, #fff);
+  min-height: 280px;
+  font-size: 15px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  line-height: 1.8;
+  resize: vertical;
+  color: var(--ink, #171717);
+  box-sizing: border-box;
+}
+.standard-textarea:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+}
+
+.editor-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--mute); margin-top: 8px; }
+.editor-hint { font-style: italic; }
+
+/* Disclaimer */
+.disclaimer-box {
+  background: var(--canvas-soft, #fafafa);
+  border: 1px solid var(--hairline, #ebebeb);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.checkbox-label { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; font-size: 13px; color: var(--body); line-height: 1.6; }
+.checkbox-label input[type="checkbox"] { display: none; }
+.checkbox-custom {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--hairline-strong, #a1a1a1);
+  border-radius: 4px;
+  margin-top: 2px;
+  transition: all 0.2s;
+  position: relative;
+}
+.checkbox-label input:checked + .checkbox-custom {
+  background: var(--ink, #171717);
+  border-color: var(--ink, #171717);
+}
+.checkbox-label input:checked + .checkbox-custom::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 6px;
+  height: 10px;
+  border: 2px solid #fff;
+  border-left: none;
+  border-top: none;
+  transform: rotate(45deg);
+}
+.checkbox-label a { color: var(--link, #0070f3); text-decoration: none; }
+.checkbox-label a:hover { text-decoration: underline; }
+
+/* Submit button */
+.submit-btn {
+  width: 100%;
+  padding: 14px 24px;
+  background: var(--ink, #171717);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+.submit-btn:hover:not(:disabled) { background: #333; transform: translateY(-1px); }
+.submit-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+/* Success */
+.success-card {
+  background: var(--canvas, #fff);
+  border: 1px solid var(--hairline, #ebebeb);
+  border-radius: 20px;
+  padding: 64px 40px;
+  box-shadow: var(--shadow-level-3);
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+.success-icon { margin-bottom: 8px; }
+.checkmark {
+  width: 64px;
+  height: 64px;
+  stroke-width: 2;
+  stroke: var(--ink, #171717);
+  stroke-miterlimit: 10;
+  display: block;
+  animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+}
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: var(--ink, #171717);
+  fill: none;
+  animation: stroke .6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+.checkmark__check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke .3s cubic-bezier(0.65, 0, 0.45, 1) .8s forwards;
+}
+@keyframes stroke { 100% { stroke-dashoffset: 0; } }
+@keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
+@keyframes fill { 100% { box-shadow: inset 0px 0px 0px 30px transparent; } }
+
+.success-card h2 { font-size: 1.75rem; font-weight: 800; color: var(--ink); margin: 0; }
+.success-card p { color: var(--body); max-width: 400px; line-height: 1.6; margin: 0; }
+.success-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.action-btn {
+  padding: 11px 24px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+.action-btn.primary { background: var(--ink); color: #fff; }
+.action-btn.primary:hover { background: #333; }
+.action-btn.secondary { background: none; border: 1px solid var(--hairline); color: var(--body); }
+.action-btn.secondary:hover { border-color: var(--ink); color: var(--ink); }
+</style>

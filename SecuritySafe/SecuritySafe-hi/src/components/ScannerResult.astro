@@ -1,0 +1,1150 @@
+---
+// src/components/ScanResult.astro
+// Add this interface and destructuring to prevent SSR errors
+const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL ?? 'http://localhost:8000';
+---
+
+<section class="result-section hidden" id="scan-result">
+  <div class="result-container">
+    
+    <!-- Main Result Card -->
+    <div class="result-card">
+      
+      <!-- Status Header -->
+      <div class="status-header" data-status="safe">
+        <div class="status-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="status-content">
+          <h2 class="status-label">✅ Likely Safe</h2>
+          <p class="status-confidence">Trust: 86%</p>
+        </div>
+      </div>
+
+      <!-- Quick Summary -->
+      <div class="summary-box">
+        <div class="summary-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+        </div>
+        <p class="summary-text">Our analysis found no significant red flags in this content.</p>
+      </div>
+
+      <!-- What We Checked -->
+      <div class="checks-section">
+        <h3 class="section-title">What We Analyzed</h3>
+        <div class="checks-grid">
+          <div class="check-item checked">
+            <div class="check-icon">✓</div>
+            <div class="check-content">
+              <span class="check-label">Links & URLs</span>
+              <span class="check-desc check-dynamic"></span>
+            </div>
+          </div>
+          <div class="check-item checked">
+            <div class="check-icon">✓</div>
+            <div class="check-content">
+              <span class="check-label">Language Patterns</span>
+              <span class="check-desc check-dynamic"></span>
+            </div>
+          </div>
+          <div class="check-item checked">
+            <div class="check-icon">✓</div>
+            <div class="check-content">
+              <span class="check-label">Urgency Tactics</span>
+              <span class="check-desc check-dynamic"></span>
+            </div>
+          </div>
+          <div class="check-item checked">
+            <div class="check-icon">✓</div>
+            <div class="check-content">
+              <span class="check-label">Personal Info Requests</span>
+              <span class="check-desc check-dynamic"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smart Advice -->
+      <div class="advice-section">
+        <h3 class="section-title">💡 Stay Smart</h3>
+        <div class="advice-card">
+          <p class="advice-text advice-dynamic"></p>
+          <div class="advice-tips advice-tips-dynamic">
+            <!-- Tips will be populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- How It Works (Collapsible) -->
+      <details class="how-it-works">
+        <summary class="how-summary">
+          <span>How did we analyze this?</span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </summary>
+        <div class="how-content">
+          <div class="analysis-steps analysis-steps-dynamic">
+            <!-- Steps will be populated dynamically -->
+          </div>
+        </div>
+      </details>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn-secondary" onclick="resetScanner()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          Scan Another
+        </button>
+        <button class="btn-primary" onclick="shareResult()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="18" cy="5" r="3"/>
+            <circle cx="6" cy="12" r="3"/>
+            <circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+          Share Result
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Safety Reminder -->
+    <p class="safety-reminder">
+      🔒 Remember: No tool is 100% perfect. Always use your judgment and stay cautious online.
+    </p>
+
+  </div>
+</section>
+
+<script define:vars={{ MAIN_API }}>
+  // Define renderDetailedResult globally FIRST to guarantee availability
+  window.renderDetailedResult = function(data) {
+    const section = document.getElementById('scan-result');
+    if (!section) {
+      console.error('Scan result section (#scan-result) not found in DOM.');
+      return;
+    }
+
+    const rawScore = (typeof data.score === 'number') ? data.score : 0;
+    // Normalized score (0-100)
+    const scorePct = rawScore <= 1.0 ? Math.round(rawScore * 100) : Math.round(rawScore);
+    const isScam = data.is_scam === true || (data.combined_prob && data.combined_prob >= 0.5) || (rawScore <= 0.4 && data.is_scam !== false);
+    const isSafe = !isScam && scorePct >= 60;
+    const status = isSafe ? 'safe' : (scorePct > 35 ? 'warning' : 'danger');
+
+    // Status Header
+    const statusHeader = section.querySelector('.status-header');
+    if (statusHeader) {
+      statusHeader.setAttribute('data-status', status);
+      const iconBg = isSafe ? '#10B981' : (scorePct > 35 ? '#F59E0B' : '#EF4444');
+      const statusIcon = statusHeader.querySelector('.status-icon');
+      if (statusIcon) {
+        statusIcon.style.background = iconBg;
+        statusIcon.style.boxShadow = `0 4px 12px ${iconBg}40`;
+      }
+      const statusLabel = statusHeader.querySelector('.status-label');
+      if (statusLabel) {
+        statusLabel.textContent = data.label || (isSafe ? '✅ Likely Safe' : '🚨 Likely Scam');
+      }
+      const statusConfidence = statusHeader.querySelector('.status-confidence');
+      if (statusConfidence) {
+        statusConfidence.textContent = isSafe ? `Trust Level: ${scorePct}%` : `Scam Probability: ${Math.round((data.combined_prob || (1 - rawScore)) * 100)}%`;
+      }
+    }
+
+    // Summary
+    const summaryText = section.querySelector('.summary-text');
+    if (summaryText) {
+      summaryText.textContent = data.explanation || data.rag?.explanation || 'Analysis complete.';
+    }
+
+    // Checks Grid
+    const checkDescs = section.querySelectorAll('.check-dynamic');
+    const expText = (data.explanation || data.rag?.explanation || '').toLowerCase();
+    if (checkDescs[0]) checkDescs[0].textContent = (expText.includes('link') || expText.includes('http') || expText.includes('www')) ? 'Links / URLs analyzed' : 'No malicious links detected';
+    if (checkDescs[1]) checkDescs[1].textContent = isScam ? 'Scam patterns identified' : 'Normal communication patterns';
+    if (checkDescs[2]) checkDescs[2].textContent = (expText.includes('urgent') || expText.includes('blocked') || expText.includes('immediate')) ? 'Urgency / pressure tactics detected' : 'No pressure tactics found';
+    if (checkDescs[3]) checkDescs[3].textContent = (expText.includes('otp') || expText.includes('kyc') || expText.includes('password') || expText.includes('bank')) ? 'Sensitive credential requests' : 'No sensitive data requests';
+
+    // Advice
+    const adviceText = section.querySelector('.advice-text');
+    const adviceTips = section.querySelector('.advice-tips-dynamic');
+    let adviceList = data.rag?.advice || data.actionSteps || [];
+
+    if (adviceList.length > 0 && adviceText) {
+      adviceText.textContent = adviceList[0];
+      if (adviceTips) {
+        adviceTips.innerHTML = '';
+        adviceList.slice(1).forEach((tip) => {
+          adviceTips.innerHTML += `<div class="tip-item"><span class="tip-bullet">•</span><span>${escapeHtml(tip)}</span></div>`;
+        });
+      }
+    } else if (adviceText) {
+      adviceText.textContent = 'Stay vigilant and verify unexpected requests.';
+      if (adviceTips) adviceTips.innerHTML = '';
+    }
+
+    // Cascade Steps (How it works)
+    const stepsContainer = section.querySelector('.analysis-steps-dynamic');
+    if (data.cascade_steps && data.cascade_steps.length > 0 && stepsContainer) {
+      stepsContainer.innerHTML = '';
+      data.cascade_steps.forEach((step, index) => {
+        let stepTitle = step;
+        let stepDesc = 'Analysis step completed';
+        if (step.includes('Layer 0')) { stepTitle = 'Content Normalization'; stepDesc = 'Cleaned and structured input text'; }
+        else if (step.includes('Layer 1')) { stepTitle = 'Heuristic Rules'; stepDesc = 'Evaluated against high-confidence fraud patterns'; }
+        else if (step.includes('Layer 2')) { stepTitle = 'Google Gemma AI'; stepDesc = 'Bedrock Mantle AI classification'; }
+        else if (step.includes('Fallback')) { stepTitle = 'Aggregator Fallback'; stepDesc = 'Scored via local pattern cascade'; }
+
+        stepsContainer.innerHTML += `
+          <div class="analysis-step">
+            <div class="step-number">${index + 1}</div>
+            <div class="step-info"><strong>${stepTitle}</strong><span>${stepDesc}</span></div>
+          </div>
+        `;
+      });
+    }
+
+    // Show the section safely
+    section.classList.remove('hidden');
+    section.style.display = 'block';
+    section.style.opacity = '1';
+    section.style.transform = 'translateY(0)';
+    
+    setTimeout(() => {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+  };
+
+  // DOM Elements (Safely guarded)
+  const chatFab = document.getElementById('ss-fab');
+  const chatDrawer = document.getElementById('ss-drawer');
+  const closeBtn = document.getElementById('ss-close-btn');
+  const chatMessages = document.getElementById('ss-messages');
+  const chatForm = document.getElementById('ss-form');
+  const chatInput = document.getElementById('ss-input');
+  const typingIndicator = document.getElementById('ss-typing');
+  const fileInput = document.getElementById('ss-file-input');
+  const attachBtn = document.getElementById('ss-attach-btn');
+  const imagePreview = document.getElementById('ss-image-preview');
+  const previewImg = document.getElementById('ss-preview-img');
+  const removeImgBtn = document.getElementById('ss-remove-img');
+  const imgModal = document.getElementById('ss-img-modal');
+  const modalImg = document.getElementById('ss-modal-img');
+  const modalClose = document.querySelector('.ss-img-modal-close');
+
+  let selectedImageBase64 = null;
+  let selectedFile = null;
+
+  if (chatFab) chatFab.addEventListener('click', () => {
+    chatDrawer?.classList.remove('hidden');
+    chatFab.classList.add('hidden');
+    chatInput?.focus();
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', () => {
+    chatDrawer?.classList.add('hidden');
+    chatFab?.classList.remove('hidden');
+  });
+
+  if (attachBtn) attachBtn.addEventListener('click', () => fileInput?.click());
+  if (fileInput) fileInput.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    selectedFile = file; 
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      selectedImageBase64 = event.target?.result;
+      if (previewImg) previewImg.src = selectedImageBase64;
+      imagePreview?.classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  if (removeImgBtn) removeImgBtn.addEventListener('click', () => {
+    selectedImageBase64 = null;
+    selectedFile = null;
+    if (fileInput) fileInput.value = '';
+    imagePreview?.classList.add('hidden');
+  });
+
+  function openImageModal(src) {
+    if (modalImg) modalImg.src = src;
+    imgModal?.classList.add('show');
+  }
+  modalClose?.addEventListener('click', () => imgModal?.classList.remove('show'));
+  imgModal?.addEventListener('click', (e) => { if (e.target === imgModal) imgModal.classList.remove('show'); });
+
+  if (chatForm) chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const query = chatInput ? chatInput.value.trim() : '';
+    const fileToSend = selectedFile; 
+    if (!query && !fileToSend) return;
+
+    appendUserMessage(query, selectedImageBase64);
+
+    if (chatInput) chatInput.value = '';
+    selectedImageBase64 = null;
+    selectedFile = null;
+    if (fileInput) fileInput.value = '';
+    imagePreview?.classList.add('hidden');
+    scrollToBottom();
+
+    typingIndicator?.classList.remove('hidden');
+    scrollToBottom();
+
+    const formData = new FormData();
+    formData.append('message', query || "Is this screenshot safe?");
+    formData.append('session_id', 'user_session_12345'); 
+    if (fileToSend) formData.append('image', fileToSend); 
+
+    try {
+      const response = await fetch(MAIN_API + '/api/v1/chat', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) throw new Error('API failed');
+      const data = await response.json();
+      
+      typingIndicator?.classList.add('hidden');
+      handleApiResponse(data);
+
+    } catch (err) {
+      typingIndicator?.classList.add('hidden');
+      appendBotMessage("I am having trouble connecting to the server right now. Please stay safe online!");
+    }
+  });
+
+  // --- API Response Handling ---
+  function handleApiResponse(data) {
+    // 1. Global Hallucination Check
+    if (data.intent_detected === 'hallucination' || data.is_hallucination === true) {
+      appendBotMessage(`⚠️ Hallucination detected. Redirecting to home...`);
+      setTimeout(() => { window.location.href = '/'; }, 1500);
+      return;
+    }
+
+    // 2. STRICT CHECK: If custom_payload is not null/empty -> Show Bot Message + Scan Box
+    let payload = data.custom_payload;
+    
+    // Handle case where backend might return a JSON string instead of an object
+    if (typeof payload === 'string') {
+      try {
+        payload = JSON.parse(payload);
+      } catch (e) {
+        payload = null; // Invalid JSON string
+      }
+    }
+
+    // Check if payload is a non-empty object or array
+    const isPayloadNotEmpty = payload && 
+                              typeof payload === 'object' && 
+                              (Array.isArray(payload) ? payload.length > 0 : Object.keys(payload).length > 0);
+
+    if (isPayloadNotEmpty) {
+      if (data.bot_message) appendBotMessage(data.bot_message);
+      appendScanResultBox(payload);
+      return;
+    }
+
+    // 3. If redirect_url is present and intent is not 'general' -> Redirect
+    if (data.redirect_url && data.intent_detected && data.intent_detected !== 'general') {
+      appendBotMessage(`Redirecting you to the secure page...`);
+      let targetUrl = data.redirect_url;
+      if (data.intent_detected === 'learn') targetUrl = '/learn';
+      else if (data.intent_detected === 'emergency') targetUrl = '/emergency';
+      setTimeout(() => { window.location.href = targetUrl; }, 1500);
+      return;
+    }
+
+    // 4. Fallback: Just show the bot message
+    if (data.bot_message) {
+      appendBotMessage(data.bot_message);
+    }
+  }
+
+  // --- Helper Functions ---
+  function appendUserMessage(text, imageSrc) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'ss-message user';
+    let bubbleContent = '';
+    if (imageSrc) bubbleContent += `<div class="ss-img-thumb" data-src="${imageSrc}"><img src="${imageSrc}" alt="Image" /></div>`;
+    if (text) bubbleContent += `<div class="ss-text">${escapeHtml(text)}</div>`;
+    msgDiv.innerHTML = `<div class="ss-bubble">${bubbleContent}</div>`;
+    chatMessages.appendChild(msgDiv);
+    
+    const thumb = msgDiv.querySelector('.ss-img-thumb');
+    if (thumb) thumb.addEventListener('click', () => openImageModal(thumb.getAttribute('data-src') || ''));
+    scrollToBottom();
+  }
+
+  function appendBotMessage(text) {
+    const msg = document.createElement('div');
+    msg.className = 'ss-message assistant';
+    msg.innerHTML = `<div class="ss-bubble"><div class="ss-text">${escapeHtml(text)}</div></div>`;
+    chatMessages.appendChild(msg);
+    scrollToBottom();
+  }
+
+  // Creates the Box with "Security Scan Complete" header AND the Scanner Result UI inside it
+  function appendScanResultBox(payload) {
+    // 🛡️ SAFETY GUARD: Do not render the scanner UI if the payload is somehow empty
+    if (!payload || (typeof payload === 'object' && Object.keys(payload).length === 0)) {
+      return;
+    }
+
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'ss-message assistant';
+    
+    const score = Math.round((payload.score || 0) * 100);
+    const statusColor = score > 70 ? '#10B981' : (score > 40 ? '#F59E0B' : '#EF4444');
+    const statusText = score > 70 ? 'Safe' : (score > 40 ? 'Caution' : 'Danger');
+
+    // 1. Create the Box Structure
+    msgDiv.innerHTML = `
+      <div class="ss-bubble ss-scan-bubble">
+        <div class="ss-scan-header">
+          <div class="ss-scan-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${statusColor}" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Security Scan Complete</span>
+          </div>
+          <span class="ss-scan-badge" style="background: ${statusColor}">${statusText} (${score}%)</span>
+        </div>
+        <div class="ss-scan-body">
+          <!-- Scanner Result UI will be injected here -->
+        </div>
+      </div>
+    `;
+    chatMessages.appendChild(msgDiv);
+    
+    // 2. Inject the actual Scanner Result UI into the body
+    const scanBody = msgDiv.querySelector('.ss-scan-body');
+    if (scanBody) {
+      scanBody.innerHTML = generateScannerHTML();
+      renderScannerData(scanBody, payload);
+    }
+    
+    scrollToBottom();
+  }
+
+  // Generates the raw HTML for the Scanner Result UI
+  function generateScannerHTML() {
+    return `
+      <div class="sr-container">
+        <div class="sr-status-header" data-status="safe">
+          <div class="sr-status-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <div class="sr-status-content"><h3 class="sr-status-label">✅ Likely Safe</h3><p class="sr-status-confidence">Trust: 86%</p></div>
+        </div>
+        <div class="sr-summary-box">
+          <p class="sr-summary-text">Our analysis found no significant red flags in this content.</p>
+        </div>
+        <div class="sr-checks-section">
+          <h4 class="sr-section-title">What We Analyzed</h4>
+          <div class="sr-checks-grid">
+            <div class="sr-check-item"><div class="sr-check-icon">✓</div><div class="sr-check-content"><span class="sr-check-label">Links & URLs</span><span class="sr-check-desc sr-dynamic">Checking...</span></div></div>
+            <div class="sr-check-item"><div class="sr-check-icon">✓</div><div class="sr-check-content"><span class="sr-check-label">Language Patterns</span><span class="sr-check-desc sr-dynamic">Analyzing...</span></div></div>
+            <div class="sr-check-item"><div class="sr-check-icon">✓</div><div class="sr-check-content"><span class="sr-check-label">Urgency Tactics</span><span class="sr-check-desc sr-dynamic">Detecting...</span></div></div>
+            <div class="sr-check-item"><div class="sr-check-icon">✓</div><div class="sr-check-content"><span class="sr-check-label">Personal Info</span><span class="sr-check-desc sr-dynamic">Scanning...</span></div></div>
+          </div>
+        </div>
+        <div class="sr-advice-section">
+          <h4 class="sr-section-title">💡 Stay Smart</h4>
+          <div class="sr-advice-card">
+            <p class="sr-advice-text">Loading advice...</p>
+            <div class="sr-advice-tips"></div>
+          </div>
+        </div>
+        <details class="sr-how-it-works">
+          <summary class="sr-how-summary">How did we analyze this?</summary>
+          <div class="sr-steps-list"></div>
+        </details>
+      </div>
+    `;
+  }
+
+  // Populates the injected Scanner Result UI with actual data from custom_payload
+  function renderScannerData(container, data) {
+    const score = Math.round((data.score || 0) * 100);
+    const isSafe = score > 70;
+    
+    // Status Header
+    const statusHeader = container.querySelector('.sr-status-header');
+    const statusLabel = container.querySelector('.sr-status-label');
+    const statusConfidence = container.querySelector('.sr-status-confidence');
+    
+    statusHeader?.setAttribute('data-status', isSafe ? 'safe' : (score > 40 ? 'warning' : 'danger'));
+    if(statusLabel) statusLabel.textContent = data.label || (isSafe ? '✅ Likely Safe' : '⚠️ Potential Risk');
+    if(statusConfidence) statusConfidence.textContent = `Trust: ${score}%`;
+
+    // Summary
+    const summaryText = container.querySelector('.sr-summary-text');
+    if(summaryText) summaryText.textContent = data.explanation || data.rag?.explanation || 'Analysis complete.';
+
+    // Checks
+    const checkDescs = container.querySelectorAll('.sr-dynamic');
+    if (data.keywords && data.keywords.length > 0) {
+      if(checkDescs[0]) checkDescs[0].textContent = `${data.keywords.filter((k) => k.includes('http') || k.includes('www')).length || 0} link(s) analyzed`;
+      if(checkDescs[1]) checkDescs[1].textContent = 'Language patterns reviewed';
+      if(checkDescs[2]) checkDescs[2].textContent = data.keywords.some((k) => k.match(/urgent|immediately|act now/i)) ? 'Urgency detected' : 'No urgency found';
+      if(checkDescs[3]) checkDescs[3].textContent = data.keywords.some((k) => k.match(/password|ssn|account|bank/i)) ? 'Sensitive terms detected' : 'No data requests';
+    } else {
+      if(checkDescs[0]) checkDescs[0].textContent = 'No suspicious links detected';
+      if(checkDescs[1]) checkDescs[1].textContent = 'Normal communication style';
+      if(checkDescs[2]) checkDescs[2].textContent = 'No pressure tactics found';
+      if(checkDescs[3]) checkDescs[3].textContent = 'No sensitive data requests';
+    }
+
+    // Advice
+    const adviceText = container.querySelector('.sr-advice-text');
+    const adviceTips = container.querySelector('.sr-advice-tips');
+    let adviceList = data.rag?.advice || data.actionSteps || [];
+    
+    if (adviceList.length > 0 && adviceText) {
+      adviceText.textContent = adviceList[0];
+      if(adviceTips) {
+        adviceTips.innerHTML = '';
+        adviceList.slice(1).forEach((tip) => {
+          adviceTips.innerHTML += `<div class="sr-tip-item">• ${tip}</div>`;
+        });
+      }
+    }
+
+    // Cascade Steps (How it works)
+    const stepsContainer = container.querySelector('.sr-steps-list');
+    if (data.cascade_steps && data.cascade_steps.length > 0 && stepsContainer) {
+      stepsContainer.innerHTML = '';
+      data.cascade_steps.forEach((step, index) => {
+        let stepTitle = step;
+        let stepDesc = 'Analysis step completed';
+        if (step.includes('Layer 0')) { stepTitle = 'Content Preparation'; stepDesc = 'Cleaned and organized message'; } 
+        else if (step.includes('Layer 1')) { stepTitle = 'Pattern Matching'; stepDesc = 'Checked against known scam patterns'; } 
+        else if (step.includes('Layer 2')) { stepTitle = 'Smart Classification'; stepDesc = 'Assessed overall risk level'; }
+        else if (step.includes('Layer 3')) { stepTitle = 'Similarity Search'; stepDesc = 'Compared with known database'; }
+        else if (step.includes('Layer 4')) { stepTitle = 'AI Reasoning'; stepDesc = 'Final AI agentic check'; }
+        
+        stepsContainer.innerHTML += `
+          <div class="sr-step-item">
+            <div class="sr-step-num">${index + 1}</div>
+            <div class="sr-step-info"><strong>${stepTitle}</strong><span>${stepDesc}</span></div>
+          </div>
+        `;
+      });
+    }
+  }
+
+  // --- NEW: Full Page Result Renderer ---
+  window.renderDetailedResult = function(data) {
+    const section = document.getElementById('scan-result');
+    if (!section) return;
+
+    const score = Math.round((data.score || 0) * 100);
+    const isSafe = score > 70;
+    const status = isSafe ? 'safe' : (score > 40 ? 'warning' : 'danger');
+    
+    // Status Header
+    const statusHeader = section.querySelector('.status-header');
+    if (statusHeader) {
+      statusHeader.setAttribute('data-status', status);
+      const iconBg = isSafe ? '#10B981' : (score > 40 ? '#F59E0B' : '#EF4444');
+      const statusIcon = statusHeader.querySelector('.status-icon');
+      if (statusIcon) {
+        statusIcon.style.background = iconBg;
+        statusIcon.style.boxShadow = `0 4px 12px ${iconBg}40`;
+      }
+      const statusLabel = statusHeader.querySelector('.status-label');
+      if (statusLabel) statusLabel.textContent = data.label || (isSafe ? '✅ Likely Safe' : '⚠️ Potential Risk');
+      
+      const statusConfidence = statusHeader.querySelector('.status-confidence');
+      if (statusConfidence) statusConfidence.textContent = `Trust: ${score}%`;
+    }
+
+    // Summary
+    const summaryText = section.querySelector('.summary-text');
+    if (summaryText) {
+      summaryText.textContent = data.explanation || data.rag?.explanation || 'Analysis complete. No significant red flags found.';
+    }
+
+    // Checks
+    const checkDescs = section.querySelectorAll('.check-dynamic');
+    if (data.keywords && data.keywords.length > 0) {
+      if(checkDescs[0]) checkDescs[0].textContent = `${data.keywords.filter((k) => k.includes('http') || k.includes('www')).length || 0} link(s) analyzed`;
+      if(checkDescs[1]) checkDescs[1].textContent = 'Language patterns reviewed';
+      if(checkDescs[2]) checkDescs[2].textContent = data.keywords.some((k) => k.match(/urgent|immediately|act now/i)) ? 'Urgency detected' : 'No urgency found';
+      if(checkDescs[3]) checkDescs[3].textContent = data.keywords.some((k) => k.match(/password|ssn|account|bank/i)) ? 'Sensitive terms detected' : 'No data requests';
+    } else {
+      if(checkDescs[0]) checkDescs[0].textContent = 'No suspicious links detected';
+      if(checkDescs[1]) checkDescs[1].textContent = 'Normal communication style';
+      if(checkDescs[2]) checkDescs[2].textContent = 'No pressure tactics found';
+      if(checkDescs[3]) checkDescs[3].textContent = 'No sensitive data requests';
+    }
+
+    // Advice
+    const adviceText = section.querySelector('.advice-text');
+    const adviceTips = section.querySelector('.advice-tips-dynamic');
+    let adviceList = data.rag?.advice || data.actionSteps || [];
+    
+    if (adviceList.length > 0 && adviceText) {
+      adviceText.textContent = adviceList[0];
+      if(adviceTips) {
+        adviceTips.innerHTML = '';
+        adviceList.slice(1).forEach((tip) => {
+          adviceTips.innerHTML += `<div class="tip-item"><span class="tip-bullet">•</span><span>${escapeHtml(tip)}</span></div>`;
+        });
+      }
+    } else if (adviceText) {
+      adviceText.textContent = 'Stay vigilant and verify unexpected requests.';
+      if(adviceTips) adviceTips.innerHTML = '';
+    }
+
+    // How it works
+    const stepsContainer = section.querySelector('.analysis-steps-dynamic');
+    if (data.cascade_steps && data.cascade_steps.length > 0 && stepsContainer) {
+      stepsContainer.innerHTML = '';
+      data.cascade_steps.forEach((step, index) => {
+        let stepTitle = step;
+        let stepDesc = 'Analysis step completed';
+        if (step.includes('Layer 0')) { stepTitle = 'Content Preparation'; stepDesc = 'Cleaned and organized message'; } 
+        else if (step.includes('Layer 1')) { stepTitle = 'Pattern Matching'; stepDesc = 'Checked against known scam patterns'; } 
+        else if (step.includes('Layer 2')) { stepTitle = 'Smart Classification'; stepDesc = 'Assessed overall risk level'; }
+        else if (step.includes('Layer 3')) { stepTitle = 'Similarity Search'; stepDesc = 'Compared with known database'; }
+        else if (step.includes('Layer 4')) { stepTitle = 'AI Reasoning'; stepDesc = 'Final AI agentic check'; }
+        
+        stepsContainer.innerHTML += `
+          <div class="analysis-step">
+            <div class="step-number">${index + 1}</div>
+            <div class="step-info"><strong>${stepTitle}</strong><span>${stepDesc}</span></div>
+          </div>
+        `;
+      });
+    }
+
+    // Show the section
+    section.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        section.style.opacity = '1';
+        section.style.transform = 'translateY(0)';
+    });
+    
+    // Scroll to it
+    setTimeout(() => {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+  };
+
+  // --- Smooth In-Page Scanner Reset ---
+  window.resetScanner = function() {
+    const resultSection = document.getElementById('scan-result');
+    const inputSection = document.getElementById('scanner');
+    const formsPanel = document.querySelector('.forms-panel');
+    const tabs = document.querySelector('.scanner-tabs');
+    const loader = document.getElementById('scanner-loader');
+    const textInput = document.getElementById('scan-text-input');
+    const fileInput = document.getElementById('image-file');
+    const filenameLabel = document.getElementById('image-filename');
+
+    if (resultSection) {
+      resultSection.style.opacity = '0';
+      resultSection.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        resultSection.classList.add('hidden');
+      }, 350);
+    }
+
+    if (textInput) textInput.value = '';
+    if (fileInput) fileInput.value = '';
+    if (filenameLabel) {
+      filenameLabel.innerText = 'Drop your image here or click to browse';
+      filenameLabel.closest('.upload-box')?.classList.remove('has-file');
+    }
+
+    if (loader) loader.classList.add('hidden');
+    if (formsPanel) formsPanel.classList.remove('hidden');
+    if (tabs) tabs.classList.remove('hidden');
+
+    if (inputSection) {
+      inputSection.classList.remove('hidden', 'fade-out-up');
+      inputSection.style.opacity = '1';
+      inputSection.style.transform = 'translateY(0)';
+      setTimeout(() => {
+        inputSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+  };
+
+  // --- NEW: Share Result ---
+  window.shareResult = function() {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Security Scan Result',
+        text: 'I just scanned a message for security risks!',
+        url: window.location.href
+      }).catch(console.error);
+    } else {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('Link copied to clipboard!');
+      }).catch(console.error);
+    }
+  };
+
+  function scrollToBottom() { chatMessages.scrollTop = chatMessages.scrollHeight; }
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+</script>
+
+<style>
+  .result-section {
+    padding: 20px 24px 40px;
+    background: var(--canvas, #FFFFFF);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+  }
+  
+  .result-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .result-card {
+    background: var(--bg, #FFFFFF);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0,0,0,0.04);
+    border: 1px solid var(--border-light, #F3F4F6);
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  /* Status Header */
+  .status-header {
+    padding: 32px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%);
+    border-bottom: 1px solid var(--border-light, #F3F4F6);
+  }
+  
+  .status-header[data-status="warning"] {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FFFFFF 100%);
+  }
+  
+  .status-header[data-status="danger"] {
+    background: linear-gradient(135deg, #FEE2E2 0%, #FFFFFF 100%);
+  }
+
+  .status-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: #10B981;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+  
+  .status-header[data-status="warning"] .status-icon {
+    background: #F59E0B;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  }
+  
+  .status-header[data-status="danger"] .status-icon {
+    background: #EF4444;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  .status-content {
+    flex: 1;
+  }
+
+  .status-label {
+    font-size: 24px;
+    font-weight: 700;
+    color: #000000;
+    margin: 0 0 4px 0;
+  }
+
+  .status-confidence {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  /* Summary Box */
+  .summary-box {
+    margin: 24px;
+    padding: 20px;
+    background: #F9FAFB;
+    border-radius: 12px;
+    border-left: 4px solid #000000;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .summary-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    flex-shrink: 0;
+  }
+
+  .summary-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #374151;
+    margin: 0;
+    flex: 1;
+  }
+
+  /* Checks Section */
+  .checks-section {
+    padding: 0 24px 24px;
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #000000;
+    margin: 0 0 16px 0;
+  }
+
+  .checks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: #F9FAFB;
+    border-radius: 12px;
+    border: 1px solid var(--border-light, #F3F4F6);
+    transition: all 0.2s ease;
+  }
+
+  .check-item:hover {
+    background: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .check-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #10B981;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .check-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .check-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+  }
+
+  .check-desc {
+    font-size: 13px;
+    color: #6B7280;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+
+  /* Advice Section - Fixed Alignment */
+  .advice-section {
+    padding: 0 24px 24px;
+  }
+
+  .advice-card {
+    padding: 20px;
+    background: linear-gradient(135deg, #EFF6FF 0%, #F9FAFB 100%);
+    border-radius: 12px;
+    border: 1px solid #DBEAFE;
+  }
+
+  .advice-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1E40AF;
+    margin: 0 0 16px 0;
+    line-height: 1.5;
+  }
+
+  .advice-tips {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.5;
+  }
+
+  .tip-bullet {
+    color: #1E40AF;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .tip-item span:last-child {
+    flex: 1;
+  }
+
+  /* How It Works */
+  .how-it-works {
+    margin: 0 24px 24px;
+    border: 1px solid var(--border-light, #F3F4F6);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .how-summary {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: #000000;
+    background: #F9FAFB;
+    list-style: none;
+    transition: all 0.2s ease;
+  }
+
+  .how-summary:hover {
+    background: #F3F4F6;
+  }
+
+  .how-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .chevron {
+    transition: transform 0.3s ease;
+    color: #6B7280;
+  }
+
+  .how-it-works[open] .chevron {
+    transform: rotate(180deg);
+  }
+
+  .how-content {
+    padding: 20px;
+    background: #FFFFFF;
+  }
+
+  .analysis-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .analysis-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .step-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #000000;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .step-info strong {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+  }
+
+  .step-info span {
+    font-size: 13px;
+    color: #6B7280;
+    line-height: 1.4;
+  }
+
+  /* Action Buttons */
+  .action-buttons {
+    padding: 0 24px 24px;
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    background: #000000;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn-primary:hover {
+    background: #111827;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  }
+
+  .btn-secondary {
+    background: #FFFFFF;
+    color: #000000;
+    border: 1.5px solid var(--border, #E5E7EB);
+  }
+
+  .btn-secondary:hover {
+    background: #F9FAFB;
+    border-color: #000000;
+  }
+
+  /* Safety Reminder */
+  .safety-reminder {
+    text-align: center;
+    font-size: 13px;
+    color: var(--mute, #9CA3AF);
+    margin: 16px 0 0;
+    padding: 0 24px;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .result-section {
+      padding: 16px 16px 32px;
+    }
+    
+    .status-header {
+      padding: 24px 16px;
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .status-icon {
+      width: 56px;
+      height: 56px;
+    }
+    
+    .status-label {
+      font-size: 20px;
+    }
+    
+    .summary-box,
+    .checks-section,
+    .advice-section,
+    .how-it-works,
+    .action-buttons {
+      margin-left: 16px;
+      margin-right: 16px;
+    }
+    
+    .checks-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .result-section {
+      padding: 32px 24px 48px;
+    }
+    
+    .status-header {
+      padding: 40px 32px;
+    }
+    
+    .checks-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

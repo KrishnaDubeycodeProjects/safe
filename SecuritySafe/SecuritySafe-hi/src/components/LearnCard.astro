@@ -1,0 +1,51 @@
+---
+import type { LearnFraudType } from '../utils/types';
+
+export interface Props {
+  fraud: LearnFraudType;
+}
+
+const { fraud } = Astro.props;
+const searchString = [fraud.title, ...fraud.tags].join(' ').toLowerCase();
+---
+
+<a href={`/learn/${fraud.id}`} class="fraud-card" data-search={searchString}>
+  <div class="card-icon">{fraud.icon}</div>
+  <div class="card-content">
+    <h3 class="card-title">{fraud.title}</h3>
+    <p class="card-meta">{fraud.tags.slice(0, 3).map(t => `#${t}`).join(' ')}</p>
+  </div>
+  <svg class="card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+  </svg>
+</a>
+
+<style>
+  .fraud-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+  }
+
+  .fraud-card:hover {
+    border-color: var(--green);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 255, 136, 0.05);
+  }
+
+  .card-icon { font-size: 32px; flex-shrink: 0; }
+  .card-content { flex: 1; }
+  
+  .card-title { font-size: 16px; font-weight: 600; color: var(--text); margin: 0 0 4px 0; }
+  .card-meta { font-size: 12px; color: var(--text-dim); margin: 0; opacity: 0.8; }
+  
+  .card-arrow { color: var(--text-dim); transition: transform 0.2s; }
+  .fraud-card:hover .card-arrow { transform: translateX(4px); color: var(--green); }
+</style>

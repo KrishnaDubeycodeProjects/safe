@@ -1,0 +1,42 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import AIChatBubble from '../components/AIChatBubble.astro';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  currentPage?: string;
+}
+
+const { title = 'SAFE - India\'s Personal Cyber Safety Platform', description = 'Paste any message, link, number or email and know instantly if it\'s safe.', currentPage = 'home' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#fafafa" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4VN0EGP3YR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4VN0EGP3YR');
+</script>
+  </head>
+  <body>
+    <Navbar currentPage={currentPage} />
+    <slot />
+    <AIChatBubble />
+  </body>
+</html>

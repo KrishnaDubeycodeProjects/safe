@@ -1,0 +1,699 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const AI_API = import.meta.env.PUBLIC_AI_API_URL ?? 'http://localhost:8001';
+const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL ?? 'http://localhost:8000';
+
+// Platform slugs match PlatformEnum in community_schemas.py
+const PLATFORMS = [
+  { label: 'Instagram',   value: 'instagram' },
+  { label: 'LinkedIn',    value: 'linkedin' },
+  { label: 'WhatsApp',    value: 'whatsapp' },
+  { label: 'Telegram',    value: 'telegram' },
+  { label: 'Facebook',    value: 'facebook' },
+  { label: 'Twitter / X', value: 'x_twitter' },
+  { label: 'YouTube',     value: 'youtube' },
+  { label: 'Truecaller',  value: 'other' },
+  { label: 'Naukri',      value: 'naukri' },
+  { label: 'Internshala', value: 'internshala' },
+  { label: 'Other',       value: 'other' },
+];
+// Scam type labels shown to user (mapped to report_category below)
+const SCAM_TYPES = [
+  'Job Scam','Investment Scam','Romance Scam',
+  'Banking Fraud','UPI Fraud','Digital Arrest',
+  'Phishing','Other',
+];
+
+// Categories for search filter dropdown
+const CATEGORIES = [
+  'Job Scam','Investment Scam','Romance Scam',
+  'Banking Fraud','UPI Fraud','Digital Arrest',
+  'Phishing','Other',
+];
+---
+
+<Layout title="Community Registry — SAFE Platform" currentPage="community">
+  <main class="community-main">
+
+    <section class="community-hero">
+      <div class="hero-inner">
+        <div class="hero-eyebrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Community Scam Registry
+        </div>
+        <h1>Search. Report. Protect.</h1>
+        <p>India's crowd-sourced scammer database — search suspected handles or report a scammer to protect others.</p>
+        <div class="hero-stats" id="heroStats">
+          <div class="hero-stat"><span id="statTotal">—</span><span>Reports Filed</span></div>
+          <div class="hero-stat-divider"></div>
+          <div class="hero-stat"><span id="statHandles">—</span><span>Handles Indexed</span></div>
+          <div class="hero-stat-divider"></div>
+          <div class="hero-stat"><span id="statConfirmed">—</span><span>Confirmed Scammers</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <div class="tab-inner">
+        <button class="tab active" data-tab="search">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search Registry
+        </button>
+        <button class="tab" data-tab="report">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Report a Scammer
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Tab -->
+    <div class="tab-content" id="tab-search">
+      <div class="search-container">
+        <div class="search-box-wrap">
+          <form id="searchForm" class="search-form">
+            <div class="search-input-wrap">
+              <svg class="search-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input
+                type="text"
+                id="searchQuery"
+                placeholder="Search handle, phone, email, company name, or scam message..."
+                autocomplete="off"
+                list="searchAutocomplete"
+              />
+              <datalist id="searchAutocomplete"></datalist>
+              <button type="submit" class="search-submit">Search</button>
+            </div>
+            <div class="search-filters">
+              <select id="platformFilter">
+                <option value="">All Platforms</option>
+                {PLATFORMS.map(p => <option value={p.value}>{p.label}</option>)}
+              </select>
+              <select id="categoryFilter">
+                <option value="">All Categories</option>
+                {CATEGORIES.map(c => <option value={c}>{c}</option>)}
+              </select>
+              <label class="filter-check">
+                <input type="checkbox" id="includeUnconfirmed" />
+                <span>Include unconfirmed</span>
+              </label>
+            </div>
+          </form>
+        </div>
+
+        <div id="searchResults" class="results-area"></div>
+      </div>
+    </div>
+
+    <!-- Report Tab -->
+    <div class="tab-content" id="tab-report" style="display:none;">
+      <div class="report-container">
+        <div class="report-header-box">
+          <div class="rh-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+          </div>
+          <div>
+            <h2>Report a Scammer</h2>
+            <p>Your report helps protect thousands of others. All reports are reviewed and indexed for search.</p>
+          </div>
+        </div>
+
+        <form id="reportForm" novalidate>
+          <div class="field-row">
+            <div class="field-group">
+              <label for="reportHandle">Handle / Profile URL / Phone <span class="req">*</span></label>
+              <input type="text" id="reportHandle" placeholder="@username, profile URL, or phone number" required />
+            </div>
+            <div class="field-group">
+              <label for="reportPlatform">Platform <span class="req">*</span></label>
+              <div class="select-wrap">
+                <select id="reportPlatform" required>
+                  <option value="">Select platform...</option>
+                  {PLATFORMS.map(p => <option value={p.value}>{p.label}</option>)}
+                </select>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label for="reportCategory">Scam Category <span class="req">*</span></label>
+              <div class="select-wrap">
+                <select id="reportCategory" required>
+                  <option value="">Select category...</option>
+                  {SCAM_TYPES.map(c => <option value={c}>{c}</option>)}
+                </select>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="reportName">Scammer Display Name <span class="opt">(if known)</span></label>
+              <input type="text" id="reportName" placeholder="Name shown on their profile" />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="reportMessage">Scam Message / Description <span class="req">*</span></label>
+            <textarea id="reportMessage" rows="4" placeholder="Paste the scam message or describe what happened. Do NOT include your personal details." required></textarea>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label for="reportEvidence">Evidence Type</label>
+              <div class="select-wrap">
+                <select id="reportEvidence">
+                  <option value="message_screenshot">Message Screenshot</option>
+                  <option value="profile_screenshot">Profile Screenshot</option>
+                  <option value="call_recording">Call Recording</option>
+                  <option value="other">Other</option>
+                </select>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="reporterContact">Your Contact <span class="opt">(anonymous if blank)</span></label>
+              <input type="text" id="reporterContact" placeholder="Email or phone (optional)" />
+            </div>
+          </div>
+
+          <div class="report-disclaimer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Reports are reviewed before being made searchable. False reports may be subject to legal action.
+          </div>
+
+          <button type="submit" id="reportBtn" class="report-submit-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span class="rbtn-text">Submit Report</span>
+            <span class="rbtn-loader" style="display:none;">Submitting...</span>
+          </button>
+        </form>
+
+        <!-- Report success -->
+        <div class="report-success" id="reportSuccess" style="display:none;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--cyan,#50e3c2)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <h3>Report Submitted</h3>
+          <p>Thank you! Your report has been received and will be reviewed shortly. Once verified, it will be searchable in the registry.</p>
+          <button class="reset-report-btn" onclick="resetReportForm()">Submit Another Report</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script define:vars={{ AI_API, MAIN_API }}>
+  // ── Tab switching ──────────────────────────────────────────────────────────
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      tab.classList.add('active');
+      document.getElementById(`tab-${tab.dataset.tab}`).style.display = 'block';
+    });
+  });
+
+  // ── Load stats ────────────────────────────────────────────────────────────
+  async function loadStats() {
+    try {
+      const res = await fetch(`${AI_API}/api/community/stats`);
+      if (!res.ok) return;
+      const d = await res.json();
+      document.getElementById('statTotal').textContent = (d.total_reports ?? '—').toLocaleString();
+      document.getElementById('statHandles').textContent = (d.unique_handles ?? '—').toLocaleString();
+      document.getElementById('statConfirmed').textContent = (d.confirmed_count ?? '—').toLocaleString();
+    } catch {}
+  }
+  loadStats();
+
+  // ── Autocomplete ──────────────────────────────────────────────────────────
+  const queryInput = document.getElementById('searchQuery');
+  const acList = document.getElementById('searchAutocomplete');
+  let acTimer;
+
+  queryInput.addEventListener('input', () => {
+    clearTimeout(acTimer);
+    const val = queryInput.value.trim();
+    if (val.length < 2) { acList.innerHTML = ''; return; }
+    acTimer = setTimeout(async () => {
+      try {
+        const ac = await fetch(`${AI_API}/api/community/search/autocomplete?prefix=${encodeURIComponent(val)}&limit=8`, { signal: AbortSignal.timeout(5000) });
+        if (!ac.ok) return;
+        const data = await ac.json();
+        const suggestions = data.suggestions || [];
+        acList.innerHTML = suggestions.map(s => `<option value="${escAttr(s)}"></option>`).join('');
+      } catch {}
+    }, 300);
+  });
+
+  // ── Search ────────────────────────────────────────────────────────────────
+  const resultsArea = document.getElementById('searchResults');
+
+  document.getElementById('searchForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const q = queryInput.value.trim();
+    if (!q) return;
+
+    const platform = document.getElementById('platformFilter').value;
+    const category = document.getElementById('categoryFilter').value;
+    const includeUnconfirmed = document.getElementById('includeUnconfirmed').checked;
+
+    resultsArea.innerHTML = `<div class="results-loading">
+      <div class="spinner"></div>
+      <span>Searching registry...</span>
+    </div>`;
+
+    try {
+      let url = `${AI_API}/api/community/search/advanced?q=${encodeURIComponent(q)}&page=1&page_size=20`;
+      if (platform) url += `&platform=${encodeURIComponent(platform)}`;
+      if (category) url += `&scam_type=${encodeURIComponent(category)}`;
+      if (includeUnconfirmed) url += `&include_unconfirmed=true`;
+
+      const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+      if (!res.ok) throw new Error(`Search failed (${res.status})`);
+      const data = await res.json();
+      renderResults(data, q);
+    } catch(err) {
+      resultsArea.innerHTML = `<div class="results-error">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>
+        <p>Could not connect to the community registry.<br><small>${escHtml(err.message)}</small></p>
+      </div>`;
+    }
+  });
+
+  const TIER_COLORS = {
+    confirmed:    '#ee0000',
+    corroborated: '#f5a623',
+    disputed:     '#7928ca',
+    unconfirmed:  '#888888',
+    rejected:     '#525252',
+  };
+  const TIER_LABELS = {
+    confirmed:    '🚨 Confirmed Scam',
+    corroborated: '⚠️ Corroborated',
+    disputed:     '🔍 Disputed',
+    unconfirmed:  '📋 Reported',
+    rejected:     '✗ Rejected',
+  };
+
+  function renderResults(data, q) {
+    // SearchResponse shape: { query, total_matches, results: SearchResultCard[] }
+    const results = data.results || [];
+    if (!results.length) {
+      resultsArea.innerHTML = `<div class="no-results">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--mute)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <h3>No results found</h3>
+        <p>No scam reports match "<strong>${escHtml(q)}</strong>". This handle may be safe, or not yet reported.</p>
+        <button class="report-link-btn" onclick="switchToReport()">Report this handle →</button>
+      </div>`;
+      return;
+    }
+
+    const total = data.total_matches ?? results.length;
+    resultsArea.innerHTML = `
+      <div class="results-meta">
+        <span>${total.toLocaleString()} result${total !== 1 ? 's' : ''} for "<strong>${escHtml(q)}</strong>"</span>
+      </div>
+      <div class="results-list">
+        ${results.map(r => renderResultCard(r)).join('')}
+      </div>
+    `;
+
+    // Corroborate — pass handle_raw + platform as required by CorroborateRequest
+    resultsArea.querySelectorAll('.corroborate-btn').forEach(btn => {
+      btn.addEventListener('click', () => corroborate(
+        btn.dataset.handle,
+        btn.dataset.platform,
+        btn.dataset.snippet || 'corroboration'
+      ));
+    });
+  }
+
+  function renderResultCard(r) {
+    // SearchResultCard fields: cluster_key, platform, handle_raw, display_name_seen,
+    // company_name_seen, status, report_count, matched_categories, sample_messages_redacted,
+    // known_aliases, match_type, match_score
+    const status = (r.status || 'unconfirmed').toLowerCase();
+    const color  = TIER_COLORS[status] || '#888';
+    const label  = TIER_LABELS[status] || status;
+    const handle = r.handle_raw || r.handle || '—';
+    const msgs   = r.sample_messages_redacted || [];
+    const snippet = msgs[0] ? msgs[0].slice(0, 200) : null;
+    return `
+      <div class="result-card">
+        <div class="result-header">
+          <div class="result-handle-wrap">
+            <span class="result-handle">${escHtml(handle)}</span>
+            <span class="result-platform">${escHtml(r.platform || '')}</span>
+          </div>
+          <span class="result-tier" style="color:${color}; background:${color}18;">${label}</span>
+        </div>
+        <div class="result-body">
+          ${r.display_name_seen ? `<div class="result-meta-row"><span class="result-label">Name:</span> ${escHtml(r.display_name_seen)}</div>` : ''}
+          ${r.company_name_seen ? `<div class="result-meta-row"><span class="result-label">Company:</span> ${escHtml(r.company_name_seen)}</div>` : ''}
+          ${r.matched_categories?.length ? `<div class="result-meta-row"><span class="result-label">Category:</span> ${r.matched_categories.map(c=>escHtml(c)).join(', ')}</div>` : ''}
+          ${r.report_count ? `<div class="result-meta-row"><span class="result-label">Reports:</span> ${r.report_count}</div>` : ''}
+          ${snippet ? `<blockquote class="result-snippet">"${escHtml(snippet)}..."</blockquote>` : ''}
+          ${r.known_aliases?.length ? `<div class="result-meta-row"><span class="result-label">Known aliases:</span> ${r.known_aliases.map(a=>escHtml(a)).join(', ')}</div>` : ''}
+        </div>
+        <div class="result-footer">
+          <button class="corroborate-btn"
+            data-handle="${escAttr(handle)}"
+            data-platform="${escAttr(r.platform || 'other')}"
+            data-snippet="${escAttr(msgs[0] || 'corroboration')}">
+            + I saw this too
+          </button>
+          <span class="match-score">Match: ${Math.round((r.match_score || 0) * 100)}%</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // CorroborateRequest: platform (PlatformEnum), handle_raw, message_text (min 3), evidence_urls, reporter_id
+  async function corroborate(handle, platform, snippet) {
+    if (!handle) return;
+    try {
+      const res = await fetch(`${AI_API}/api/community/corroborate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(8000),
+        body: JSON.stringify({
+          handle_raw: handle,
+          platform: platform || 'other',
+          message_text: snippet || 'corroboration',
+          evidence_urls: [],
+        }),
+      });
+      if (res.ok) showToast('✓ Thanks! Corroboration added.', 'success');
+      else showToast('Could not corroborate. Try again.', 'error');
+    } catch { showToast('Network error.', 'error'); }
+  }
+
+  function switchToReport() {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+    document.querySelector('.tab[data-tab="report"]').classList.add('active');
+    document.getElementById('tab-report').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ReportCreateRequest schema fields:
+  // report_category (enum: social_media_profile|job_posting|recruiter_message|informal_group_post)
+  // platform (PlatformEnum slug), handle_raw, display_name_seen, company_name_seen,
+  // message_text (min 3), evidence_urls [], reporter_id
+  document.getElementById('reportForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const handle  = document.getElementById('reportHandle').value.trim();
+    const platform = document.getElementById('reportPlatform').value;
+    const scamType = document.getElementById('reportCategory').value;
+    const message  = document.getElementById('reportMessage').value.trim();
+
+    if (!handle || !platform || !scamType || !message) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+    if (message.length < 3) {
+      alert('Scam message must be at least 3 characters.');
+      return;
+    }
+
+    // Map scam type → report_category enum
+    const reportCategoryMap = {
+      'Job Scam': 'job_posting',
+      'Investment Scam': 'social_media_profile',
+      'Romance Scam': 'social_media_profile',
+      'Banking Fraud': 'social_media_profile',
+      'UPI Fraud': 'social_media_profile',
+      'Digital Arrest': 'social_media_profile',
+      'Phishing': 'social_media_profile',
+      'Other': 'social_media_profile',
+    };
+    const report_category = reportCategoryMap[scamType] || 'social_media_profile';
+
+    const btn = document.getElementById('reportBtn');
+    btn.disabled = true;
+    btn.querySelector('.rbtn-text').style.display = 'none';
+    btn.querySelector('.rbtn-loader').style.display = 'inline';
+
+    try {
+      const res = await fetch(`${AI_API}/api/community/report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(12000),
+        body: JSON.stringify({
+          report_category,
+          platform,
+          handle_raw: handle,
+          display_name_seen: document.getElementById('reportName').value.trim() || null,
+          message_text: message,
+          evidence_urls: [],
+          reporter_id: document.getElementById('reporterContact').value.trim() || null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Submission failed');
+
+      document.getElementById('reportForm').style.display = 'none';
+      document.getElementById('reportSuccess').style.display = 'flex';
+    } catch(err) {
+      alert(err.message || 'Something went wrong. Please try again.');
+      btn.disabled = false;
+      btn.querySelector('.rbtn-text').style.display = 'inline';
+      btn.querySelector('.rbtn-loader').style.display = 'none';
+    }
+  });
+
+  window.resetReportForm = function() {
+    document.getElementById('reportForm').reset();
+    document.getElementById('reportForm').style.display = 'block';
+    document.getElementById('reportSuccess').style.display = 'none';
+    document.getElementById('reportBtn').disabled = false;
+  };
+
+  function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function escAttr(s) { return String(s||'').replace(/"/g,'&quot;'); }
+
+  let toastTimer;
+  function showToast(msg, type='success') {
+    let t = document.getElementById('cToast');
+    if (!t) { t = document.createElement('div'); t.id = 'cToast'; document.body.appendChild(t); }
+    t.textContent = msg;
+    t.className = `c-toast ${type} visible`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('visible'), 3000);
+  }
+</script>
+
+<style>
+.community-main { padding-top: var(--nav-height, 64px); min-height: 100vh; background: var(--canvas-soft, #fafafa); }
+
+/* Hero */
+.community-hero { background: linear-gradient(135deg, #0a0a0a 0%, #16213e 60%, #0f3460 100%); padding: 64px 24px 56px; text-align: center; }
+.hero-inner { max-width: 760px; margin: 0 auto; }
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cyan, #50e3c2);
+  margin-bottom: 16px;
+  padding: 5px 14px;
+  background: rgba(80,227,194,0.12);
+  border-radius: 100px;
+}
+.community-hero h1 { font-size: clamp(2rem,5vw,3rem); font-weight: 800; color: #fff; margin: 0 0 12px; letter-spacing: -0.03em; }
+.community-hero p { font-size: 1rem; color: rgba(255,255,255,0.6); margin: 0 0 32px; line-height: 1.6; }
+.hero-stats { display: flex; align-items: center; justify-content: center; gap: 0; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px 32px; width: fit-content; margin: 0 auto; }
+.hero-stat { text-align: center; padding: 0 24px; }
+.hero-stat span:first-child { display: block; font-size: 1.75rem; font-weight: 800; color: #fff; }
+.hero-stat span:last-child { display: block; font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+.hero-stat-divider { width: 1px; height: 40px; background: rgba(255,255,255,0.1); }
+
+/* Tabs */
+.tab-bar { background: var(--canvas, #fff); border-bottom: 1px solid var(--hairline); position: sticky; top: var(--nav-height, 64px); z-index: 10; }
+.tab-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; gap: 4px; }
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mute);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+}
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+
+/* Search Tab */
+.search-container { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+.search-form { background: var(--canvas, #fff); border: 1px solid var(--hairline); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-level-3); }
+.search-input-wrap { display: flex; align-items: center; gap: 0; border: 1px solid var(--hairline); border-radius: 12px; overflow: hidden; background: var(--canvas-soft); margin-bottom: 16px; }
+.search-ico { flex-shrink: 0; padding: 0 14px; color: var(--mute); }
+.search-input-wrap input {
+  flex: 1;
+  padding: 14px 8px;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--ink);
+}
+.search-input-wrap input:focus { outline: none; }
+.search-input-wrap input::placeholder { color: var(--mute); }
+.search-submit {
+  padding: 14px 24px;
+  background: var(--ink, #171717);
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.search-submit:hover { background: #333; }
+.search-filters { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.search-filters select {
+  padding: 8px 32px 8px 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--body);
+  background: var(--canvas-soft);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+.filter-check { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--body); cursor: pointer; }
+.filter-check input { cursor: pointer; }
+
+/* Results */
+.results-area { margin-top: 24px; }
+.results-loading { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 48px; color: var(--mute); }
+.spinner { width: 20px; height: 20px; border: 2px solid var(--hairline); border-top-color: var(--ink); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.results-meta { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--mute); margin-bottom: 16px; padding: 0 4px; }
+.results-meta strong { color: var(--ink); }
+.results-list { display: flex; flex-direction: column; gap: 12px; }
+.results-error { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 48px; text-align: center; color: var(--mute); }
+.results-error p { margin: 0; }
+.no-results { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; padding: 48px; }
+.no-results h3 { font-size: 1.1rem; color: var(--ink); margin: 0; }
+.no-results p { font-size: 0.9rem; color: var(--mute); margin: 0; }
+.report-link-btn { padding: 8px 20px; border: 1px solid var(--hairline); border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; background: var(--canvas); color: var(--ink); transition: all 0.2s; }
+.report-link-btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* Result Card */
+.result-card { background: var(--canvas, #fff); border: 1px solid var(--hairline); border-radius: 16px; padding: 20px 24px; transition: box-shadow 0.2s; }
+.result-card:hover { box-shadow: var(--shadow-level-3); }
+.result-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.result-handle-wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.result-handle { font-size: 1rem; font-weight: 700; color: var(--ink); }
+.result-platform { font-size: 11px; font-weight: 600; background: var(--canvas-soft-2); color: var(--mute); padding: 2px 8px; border-radius: 100px; text-transform: capitalize; }
+.result-tier { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px; white-space: nowrap; }
+.result-body { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.result-meta-row { font-size: 13px; color: var(--body); }
+.result-label { font-weight: 600; color: var(--ink); }
+.result-snippet { border-left: 3px solid var(--hairline-strong); margin: 4px 0 0; padding: 6px 12px; font-size: 13px; color: var(--mute); font-style: italic; border-radius: 0 4px 4px 0; }
+.result-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--hairline); padding-top: 12px; }
+.corroborate-btn { padding: 6px 14px; border: 1px solid var(--hairline); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; background: none; color: var(--body); transition: all 0.15s; }
+.corroborate-btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+.match-score { font-size: 11px; color: var(--mute); }
+
+/* Report Tab */
+.report-container { max-width: 800px; margin: 0 auto; padding: 40px 24px 80px; }
+.report-header-box { display: flex; align-items: flex-start; gap: 16px; background: var(--canvas, #fff); border: 1px solid var(--hairline); border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+.rh-icon { flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px; background: rgba(238,0,0,0.08); color: var(--error, #ee0000); display: flex; align-items: center; justify-content: center; }
+.report-header-box h2 { font-size: 1.15rem; font-weight: 700; color: var(--ink); margin: 0 0 4px; }
+.report-header-box p { font-size: 0.875rem; color: var(--body); margin: 0; line-height: 1.5; }
+
+#reportForm { background: var(--canvas, #fff); border: 1px solid var(--hairline); border-radius: 20px; padding: 32px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media(max-width:640px) { .field-row { grid-template-columns: 1fr; } }
+.field-group { margin-bottom: 20px; }
+label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.req { color: var(--error); }
+.opt { color: var(--mute); font-size: 11px; font-weight: 400; }
+input[type="text"], input[type="email"], textarea, select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--canvas-soft);
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--ink); background: var(--canvas); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+textarea { resize: vertical; min-height: 100px; }
+.select-wrap { position: relative; }
+.select-wrap select { padding-right: 36px; appearance: none; cursor: pointer; }
+.select-wrap svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--mute); }
+.report-disclaimer { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--mute); background: var(--canvas-soft); border-radius: 10px; padding: 12px 16px; margin-bottom: 24px; line-height: 1.5; }
+.report-submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+.report-submit-btn:hover:not(:disabled) { background: #333; transform: translateY(-1px); }
+.report-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.report-success {
+  background: var(--canvas, #fff);
+  border: 1px solid var(--hairline);
+  border-radius: 20px;
+  padding: 64px 40px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+.report-success h3 { font-size: 1.5rem; font-weight: 800; color: var(--ink); margin: 0; }
+.report-success p { color: var(--body); line-height: 1.6; max-width: 480px; margin: 0; }
+.reset-report-btn { padding: 10px 24px; border: 1px solid var(--hairline); border-radius: 100px; background: none; color: var(--ink); font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 14px; }
+.reset-report-btn:hover { background: var(--ink); color: #fff; }
+
+/* Toast */
+:global(.c-toast) {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--ink);
+  color: #fff;
+  z-index: 9999;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+:global(.c-toast.visible) { transform: translateY(0); opacity: 1; }
+:global(.c-toast.error) { background: var(--error, #ee0000); }
+</style>

@@ -1,0 +1,137 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { fraudCategories, fraudTypes } from '../utils/learnData'; // Assuming you export both
+
+// Create a map for quick lookup of fraud details by ID
+const fraudMap = new Map(fraudTypes.map(f => [f.id, f]));
+---
+
+<Layout title="SAFE - Learn About Scams" currentPage="learn">
+  <main class="learn-page">
+    <header class="learn-header">
+      <h1>Learn About Frauds</h1>
+      <p>Select a category to understand how different scams work and how to protect yourself.</p>
+      
+      <div class="search-container">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="fraud-search" placeholder="Search scams, e.g., 'OTP', 'UPI', 'Banking'..." />
+      </div>
+    </header>
+<!-- Google tag (gtag.js) -->
+
+    <div class="categories-wrapper" id="categories-wrapper">
+      {fraudCategories.map(category => {
+        // Filter frauds that belong to this category
+        const categoryFrauds = category.fraudTypeIds
+          .map(id => fraudMap.get(id))
+          .filter(Boolean) as typeof fraudTypes;
+
+        if (categoryFrauds.length === 0) return null;
+
+        return (
+          <section class="category-section" data-category-id={category.id}>
+            <div class="category-header">
+              <div class="cat-icon">{category.icon}</div>
+              <div>
+                <h2>{category.title}</h2>
+                <p>{category.description}</p>
+              </div>
+            </div>
+            
+            <div class="scam-grid">
+              {categoryFrauds.map(fraud => (
+                <a href={`/learn/${fraud.id}`} class="scam-card" data-search={[fraud.title, ...fraud.tags].join(' ').toLowerCase()}>
+                  <div class="card-top">
+                    <span class="scam-icon">{fraud.icon}</span>
+                    <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  </div>
+                  <h3>{fraud.title}</h3>
+                  <p class="tags-preview">{fraud.tags.slice(0, 3).map(t => `#${t}`).join(' ')}</p>
+                </a>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+
+    <div class="empty-state" id="empty-state">
+      <p>No scams found matching your search.</p>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('fraud-search');
+    const wrapper = document.getElementById('categories-wrapper');
+    const emptyState = document.getElementById('empty-state');
+    const cards = document.querySelectorAll('.scam-card');
+    const sections = document.querySelectorAll('.category-section');
+
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      let totalVisible = 0;
+
+      sections.forEach(section => {
+        const sectionCards = section.querySelectorAll('.scam-card');
+        let sectionVisible = 0;
+
+        sectionCards.forEach(card => {
+          const text = card.getAttribute('data-search') || '';
+          const isVisible = query === '' || text.includes(query);
+          
+          card.style.display = isVisible ? '' : 'none';
+          if (isVisible) sectionVisible++;
+        });
+
+        // Hide entire category section if no cards match inside it
+        section.style.display = sectionVisible > 0 ? '' : 'none';
+        totalVisible += sectionVisible;
+      });
+
+      if (wrapper) wrapper.style.display = totalVisible === 0 ? 'none' : '';
+      if (emptyState) emptyState.style.display = totalVisible === 0 ? 'block' : 'none';
+    });
+  });
+</script>
+
+<style is:global>
+  .learn-page { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+  .learn-header { text-align: center; margin-bottom: 48px; }
+  .learn-header h1 { font-size: 32px; color: var(--ink); margin-bottom: 8px; }
+  
+  .search-container { position: relative; max-width: 500px; margin: 24px auto 0; }
+  .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--body); opacity: 0.6; pointer-events: none; }
+  #fraud-search { width: 100%; padding: 14px 16px 14px 46px; border: 1px solid var(--border); border-radius: 99px; font-size: 15px; background: var(--bg-card); color: var(--ink); }
+  #fraud-search:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1); }
+
+  .category-section { margin-bottom: 48px; }
+  .category-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .cat-icon { font-size: 32px; background: var(--bg-muted); padding: 12px; border-radius: 12px; }
+  .category-header h2 { font-size: 24px; margin: 0 0 4px 0; color: var(--ink); }
+  .category-header p { font-size: 15px; color: var(--body); margin: 0; line-height: 1.5; }
+
+  .scam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  
+  .scam-card {
+    display: block; padding: 20px; background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: 12px;
+    text-decoration: none; color: inherit; transition: all 0.2s ease;
+  }
+  .scam-card:hover { border-color: var(--green); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+  
+  .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .scam-icon { font-size: 28px; }
+  .arrow { color: var(--text-dim); transition: transform 0.2s; }
+  .scam-card:hover .arrow { transform: translateX(4px); color: var(--green); }
+  
+  .scam-card h3 { font-size: 16px; font-weight: 600; margin: 0 0 8px 0; color: var(--ink); }
+  .tags-preview { font-size: 12px; color: var(--text-dim); margin: 0; }
+
+  .empty-state { text-align: center; padding: 40px; color: var(--body); display: none; }
+</style>

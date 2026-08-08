@@ -1,0 +1,252 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="SAFE - About" currentPage="more" description="SAFE is India's personal cyber safety platform. Our mission is to protect every individual from cyber threats.">
+
+  <main class="about-page">
+    <div class="container">
+      <div class="about-hero">
+        <div class="about-shield">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4" stroke-width="2.5"/>
+          </svg>
+        </div>
+        <h1 class="about-title">SAFE</h1>
+        <p class="about-tagline">India's Personal Cyber Safety Platform</p>
+      </div>
+
+       <div class="about-quote">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
+          <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
+        </svg>
+        <p>"Cybersecurity should not be a privilege. It should be a basic right."</p>
+      </div>
+
+      <div class="about-section mission">
+        <h2>Our Mission</h2>
+        <p>SAFE exists because Cyber criminals attack ordinary people every day.</p>
+        
+
+        <p>Banks have cybersecurity. Companies have cybersecurity. Governments have cybersecurity. But normal people have nobody.</p>
+        <p>A student can lose savings. An uncle can lose retirement money. A grandmother can lose bank access. A shopkeeper can lose business funds.</p>
+        <p>SAFE is built to become the personal cyber protection layer for every individual.</p>
+      </div>
+
+      <div class="about-section why">
+        <h2>Why SAFE Exists</h2>
+        <p>Cyber attacks are no longer limited to big companies. Every day, thousands of Indians lose money to simple scams — fake KYC messages, OTP frauds, lottery scams, and more.</p>
+        <p>These scams work because they use fear and urgency. They ask you to "act now." And most people don't have a way to verify.</p>
+        <p>SAFE is that verification layer. One paste. Instant clarity. No technical knowledge needed.</p>
+      </div>
+
+     
+      <div class="about-section vision">
+        <h2>Our Vision</h2>
+        <p>SAFE should feel like "ChatGPT for Cyber Safety." A person receives an SMS, WhatsApp message, email, phone call, QR code, or link — instead of asking friends "Ye genuine hai kya?" — they open SAFE, paste it, and get instant clarity in simple language.</p>
+      </div>
+
+      <div class="about-section story">
+        <h2>What thought born this product</h2>
+        <p>Every day, millions of Indians face cyber threats without any protection. SAFE was born from a simple observation: the people who need cybersecurity the most — ordinary individuals — have the least access to it.</p>
+        <p>We experienced this gap firsthand when a family member almost fell victim to a KYC scam. That day, the idea of SAFE was born — a platform that makes cyber safety accessible to everyone, regardless of technical knowledge.</p>
+      </div>
+
+      <div class="about-section roadmap">
+        <h2>Future Roadmap</h2>
+        <div class="roadmap-grid">
+          <div class="roadmap-item current">
+            <div class="roadmap-dot"></div>
+            <div class="roadmap-content">
+              <h4>MVP Launch</h4>
+              <p>Universal scanner for messages, links, and numbers</p>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-dot"></div>
+            <div class="roadmap-content">
+              <p>Keep it private and soon disclose this</p>
+            </div>
+         
+          </div>
+        </div>
+      </div>
+
+      <div class="about-footer">
+        <p>SAFE is not just a name. It is a promise.</p>
+        <p>Every individual deserves to be safe and secured.</p>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style is:global>
+  .about-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-xl) 0;
+  }
+
+  .about-hero {
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+    margin-bottom: var(--space-xs);
+  }
+
+  .about-shield {
+    margin-bottom: var(--space-md);
+  }
+
+  .about-shield svg {
+    filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.5));
+  }
+
+  .about-title {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: var(--green);
+    text-shadow: 0 0 40px rgba(0, 255, 136, 0.3);
+    margin-bottom: var(--space-xs);
+  }
+
+  .about-tagline {
+    font-size: 13px;
+    color: var(--green);
+    opacity: 0.8;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .about-section {
+    padding: var(--space-lg) var(--space-md);
+    margin-bottom: var(--space-xs);
+  }
+
+  .about-section h2 {
+    font-size: 18px;
+    color: var(--green);
+    margin-bottom: var(--space-sm);
+  }
+
+  .about-section p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--ink);
+    margin-bottom: var(--space-sm);
+  }
+
+  .about-section p:last-child {
+    margin-bottom: 0;
+  }
+
+  .mission {
+    background: rgba(0, 255, 136, 0.03);
+    border: 1px solid rgba(0, 255, 136, 0.08);
+    border-radius: var(--radius-xl);
+    margin: 0 var(--space-md) var(--space-md);
+  }
+
+  .why {
+    margin: 0 var(--space-md) var(--space-md);
+  }
+
+  .about-quote {
+    margin: var(--space-md);
+    padding: var(--space-lg);
+    text-align: center;
+    background: rgba(0, 255, 136, 0.04);
+    border: 1px solid rgba(0, 255, 136, 0.1);
+    border-radius: var(--radius-xl);
+  }
+
+  .about-quote svg {
+    margin-bottom: var(--space-sm);
+  }
+
+  .about-quote p {
+    font-size: 16px;
+    font-style: italic;
+    color: var(--green);
+    line-height: 1.6;
+    font-weight: 500;
+  }
+
+  .vision, .story {
+    margin: 0 var(--space-md) var(--space-md);
+  }
+
+  .roadmap {
+    margin: 0 var(--space-md) var(--space-lg);
+  }
+
+  .roadmap-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    padding-left: var(--space-lg);
+  }
+
+  .roadmap-grid::before {
+    content: '';
+    position: absolute;
+    left: var(--space-xs);
+    top: var(--space-xs);
+    bottom: var(--space-xs);
+    width: 2px;
+    background: var(--hairline);
+  }
+
+  .roadmap-item {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-md) 0;
+    position: relative;
+  }
+
+  .roadmap-dot {
+    position: absolute;
+    left: -20px;
+    top: 20px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--canvas);
+    border: 2px solid var(--hairline);
+  }
+
+  .roadmap-item.current .roadmap-dot {
+    background: var(--green);
+    border-color: var(--green);
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+  }
+
+  .roadmap-content h4 {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .roadmap-content p {
+    font-size: 12px;
+    color: var(--body);
+    line-height: 1.5;
+  }
+
+  .about-footer {
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+    border-top: 1px solid var(--hairline);
+    margin: 0 var(--space-md);
+  }
+
+  .about-footer p {
+    font-size: 14px;
+    color: var(--body);
+    line-height: 1.8;
+  }
+</style>

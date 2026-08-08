@@ -1,0 +1,29 @@
+---
+// src/pages/emergency/[slug].astro
+import Layout from '../../layouts/Layout.astro';
+import EmergencyWrapper from '../../components/emergency/EmergencyWrapper.svelte';
+import { emergencyPages } from '../../utils/emergency-data';
+
+// Generate static paths for all emergency categories
+export async function getStaticPaths() {
+  return Object.keys(emergencyPages).map((slug) => ({
+    params: { slug },
+    props: { slug }
+  }));
+}
+
+// Get the slug from URL parameters
+const { slug } = Astro.props;
+
+// Look up the page data
+const currentPage = emergencyPages[slug];
+
+// Redirect if data is missing
+if (!currentPage) {
+  return Astro.redirect('/emergency');
+}
+---
+
+<Layout title={currentPage.title}>
+  <EmergencyWrapper client:load page={currentPage} />
+</Layout>

@@ -1,0 +1,273 @@
+---
+// src/components/FeedbackForm.astro
+const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL ?? 'http://localhost:8000';
+---
+
+<div class="form-container">
+  <h1>We value your feedback</h1>
+  <p>Help us improve by sharing your thoughts with us.</p>
+
+  <form id="feedback-form" class="feedback-form">
+    <!-- Optional Contact Details -->
+    
+
+    <!-- Simplified Message -->
+    <div class="form-group">
+      <label for="message">Your Message</label>
+      <textarea id="message" name="message" rows="4" placeholder="Share your feedback..." required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Contact Details (Optional)</label>
+      <input type="text" id="email" name="email" placeholder="Email or Phone Number" />
+    </div>
+
+    <!-- Black Submit Button -->
+    <button type="submit" id="submit-btn" class="submit-btn">
+      <span class="btn-text">Submit Feedback</span>
+      <span class="btn-loader" style="display: none;">Submitting...</span>
+    </button>
+  </form>
+
+  <!-- Success State with Tickmark Animation -->
+  <div id="success-state" class="success-state" style="display: none;">
+    <div class="tick-animation">
+      <svg viewBox="0 0 52 52" class="checkmark">
+        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+      </svg>
+    </div>
+    <h3>Thank You!</h3>
+    <p>Your feedback has been received.</p>
+    <button class="reset-btn" onclick="resetForm()">Send Another</button>
+  </div>
+</div>
+<script define:vars={{ MAIN_API }}>
+  const form = document.getElementById('feedback-form');
+  const submitBtn = document.getElementById('submit-btn');
+  const btnText = submitBtn.querySelector('.btn-text');
+  const btnLoader = submitBtn.querySelector('.btn-loader');
+  const successState = document.getElementById('success-state');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // 1. Gather form data
+    const formData = new FormData(form);
+    const payload = {
+      // 👇 FIX: Changed from 'contact' to 'email' to match the HTML name attribute and Pydantic model
+      email: formData.get('email'), 
+      message: formData.get('message')
+    };
+
+    // 2. Update UI to loading state
+    submitBtn.disabled = true;
+    btnText.style.display = 'none';
+    btnLoader.style.display = 'inline';
+
+    try {
+      // 3. Make the API call
+      const response = await fetch(MAIN_API + '/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        // Optional: Parse backend error details for better debugging
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.detail || `Server responded with status: ${response.status}`);
+      }
+
+      // 4. Handle Success - Show Animation
+      form.style.display = 'none';
+      successState.style.display = 'flex';
+      
+    } catch (error) {
+      // 5. Handle Error
+      console.error('Feedback submission error:', error);
+      alert(error.message || 'Something went wrong. Please try again later.');
+      
+      // Reset button state
+      submitBtn.disabled = false;
+      btnText.style.display = 'inline';
+      btnLoader.style.display = 'none';
+    }
+  });
+
+  window.resetForm = function() {
+    form.reset();
+    successState.style.display = 'none';
+    form.style.display = 'block';
+    submitBtn.disabled = false;
+    btnText.style.display = 'inline';
+    btnLoader.style.display = 'none';
+  };
+</script>
+
+<style>
+  .form-container {
+    max-width: 500px;
+    margin: 3rem auto;
+    padding: 2.5rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    font-family: inherit;
+  }
+
+  h1 {
+    margin-top: 0;
+    font-size: 1.75rem;
+    color: #111;
+    text-align: center;
+  }
+
+  p {
+    color: #666;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 0.95rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #333;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 0.85rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    background: #f9fafb;
+  }
+
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: #000;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Black Submit Button */
+  .submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.2s;
+    margin-top: 1rem;
+  }
+
+  .submit-btn:hover:not(:disabled) {
+    background-color: #222;
+    transform: translateY(-1px);
+  }
+
+  .submit-btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .submit-btn:disabled {
+    background-color: #444;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  /* Success State & Animation */
+  .success-state {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 0;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .success-state h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #111;
+    font-size: 1.5rem;
+  }
+
+  .success-state p {
+    margin-bottom: 1.5rem;
+  }
+
+  .reset-btn {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    color: #666;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover {
+    border-color: #000;
+    color: #000;
+  }
+
+  /* Tickmark Animation CSS */
+  .checkmark {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: #000;
+    stroke-miterlimit: 10;
+    box-shadow: inset 0px 0px 0px #000;
+    animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+  }
+
+  .checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: #000;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+  }
+
+  .checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+  }
+
+  @keyframes stroke {
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
