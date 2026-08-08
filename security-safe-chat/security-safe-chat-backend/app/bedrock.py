@@ -1,12 +1,18 @@
 """
-bedrock.py — Amazon Bedrock client (Claude 3 Haiku via Messages API).
+bedrock.py — Amazon Bedrock / Bedrock Mantle LLM client.
 
-Wraps boto3 to call the Bedrock Runtime invoke_model endpoint using
-the Anthropic Messages format.  Returns the model's raw text reply.
+Supports two backends:
+  1. boto3 invoke_model (classic Bedrock Runtime)  — for Anthropic, Amazon Nova, Meta, Mistral
+  2. OpenAI-compatible bedrock-mantle endpoint       — for Google Gemma 4, etc.
+
+The backend is selected automatically:
+  • If BEDROCK_MANTLE_API_KEY is set → uses the Mantle OpenAI Chat Completions API
+  • Otherwise → uses the classic boto3 InvokeModel path
 """
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from functools import lru_cache
@@ -17,6 +23,48 @@ from botocore.exceptions import BotoCoreError, ClientError
 from app.config import settings
 
 logger = logging.getLogger(__name__)
+
+
+# ── Mantle (OpenAI-compatible) helpers ─────────────────────────────────────────
+
+def _use_mantle() -> bool:
+    """Return True if we should use the Bedrock Mantle OpenAI-compatible endpoint."""
+    return bool(settings.bedrock_mantle_api_key)
+
+
+@lru_cache(maxsize=1)
+def _get_mantle_client():
+    """Return a cached OpenAI client pointed at the Bedrock Mantle endpoint."""
+    from openai import OpenAI
+    base_url = f"https://bedrock-mantle.{settings.aws_region}.api.aws/v1"
+    logger.info("Initializing Mantle OpenAI client → %s", base_url)
+    return OpenAI(
+        api_key=settings.bedrock_mantle_api_key,
+        base_url=base_url,
+    )
+
+
+async def _mantle_chat(system_prompt: str, user_message: str, max_tokens: int = 128, temperature: float = 0.0) -> str:
+    """Call the Bedrock Mantle endpoint using OpenAI Chat Completions format."""
+    client = _get_mantle_client()
+
+    def _call():
+        try:
+            resp = client.chat.completions.create(
+                model=settings.bedrock_model_id,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_message[:2000]},
+                ],
+                max_tokens=max_tokens,
+                temperature=temperature,
+            )
+            return resp.choices[0].message.content.strip()
+        except Exception as exc:
+            logger.error("Mantle API error: %s", exc)
+            raise RuntimeError(f"Mantle API error: {exc}") from exc
+
+    return await asyncio.to_thread(_call)
 
 # ── System prompt (injected once per client init) ─────────────────────────────
 SYSTEM_PROMPT = """You are a scam-classification engine. You will receive a raw message (SMS, email, or chat text). Your only job is to output ONE line in a strict compact format. Never explain, never add prose, never use markdown, never repeat the input.
@@ -208,8 +256,16 @@ def _get_client():
 
 
 def _detect_provider(model_id: str) -> str:
-    """Detect the model provider from the Bedrock model ID prefix."""
+    """Detect the model provider from the Bedrock model ID prefix.
+
+    Handles region-prefixed inference profile IDs like 'eu.amazon.nova-micro-v1:0'
+    by stripping the region prefix first.
+    """
     model_lower = model_id.lower()
+    # Strip region prefix (e.g. "eu.", "us.", "ap.") if present
+    import re as _re
+    model_lower = _re.sub(r"^(eu|us|ap|me|af|sa|ca)\.", "", model_lower)
+
     if model_lower.startswith("anthropic."):
         return "anthropic"
     elif model_lower.startswith("google.") or model_lower.startswith("gemma"):
@@ -317,9 +373,20 @@ async def classify_text(message: str) -> str:
     Send a message to the configured Bedrock model and return the raw
     single-line classification output.
 
-    Supports: Anthropic Claude, Amazon Nova, Google Gemma, Meta Llama, Mistral.
-    Raises RuntimeError on Bedrock / network failures.
+    Supports:
+      • Mantle OpenAI endpoint (preferred when BEDROCK_MANTLE_API_KEY is set)
+      • boto3 invoke_model fallback (Anthropic, Amazon Nova, Meta, Mistral)
+
+    Raises RuntimeError on network / API failures.
     """
+    # ── Mantle path (OpenAI-compatible) ────────────────────────────────────
+    if _use_mantle():
+        logger.info("Classifying via Mantle endpoint (model=%s)", settings.bedrock_model_id)
+        text = await _mantle_chat(SYSTEM_PROMPT, message, max_tokens=128, temperature=0.0)
+        logger.info("Mantle classify output: %r", text)
+        return text
+
+    # ── Classic boto3 invoke_model path ────────────────────────────────────
     client = _get_client()
     provider = _detect_provider(settings.bedrock_model_id)
     logger.info("Using provider '%s' for model '%s'", provider, settings.bedrock_model_id)
@@ -408,14 +475,21 @@ def _build_chat_body(provider: str, user_message: str) -> str:
 
 async def chat_with_llm(user_message: str) -> str:
     """
-    Send a conversational message to the Bedrock LLM using the strict
+    Send a conversational message to the LLM using the strict
     SAFE Saathi chat system prompt. Returns a plain-text reply capped at
-    ~100 tokens. Runs the blocking boto3 call in a thread pool.
+    ~100 tokens.
 
-    Raises RuntimeError on Bedrock / network failures.
+    Uses Mantle (OpenAI-compatible) when configured, else classic boto3.
+    Raises RuntimeError on failures.
     """
-    import asyncio
+    # ── Mantle path ───────────────────────────────────────────────────────
+    if _use_mantle():
+        logger.info("Chat via Mantle endpoint (model=%s)", settings.bedrock_model_id)
+        text = await _mantle_chat(CHAT_SYSTEM_PROMPT, user_message, max_tokens=100, temperature=0.1)
+        logger.info("Mantle chat reply (%d chars): %r", len(text), text[:80])
+        return text
 
+    # ── Classic boto3 path ────────────────────────────────────────────────
     client = _get_client()
     provider = _detect_provider(settings.bedrock_model_id)
     body = _build_chat_body(provider, user_message)

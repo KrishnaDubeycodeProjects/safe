@@ -22,6 +22,7 @@ Endpoints
 """
 import asyncio
 import base64 as b64lib
+import json
 import logging
 import os
 import re
@@ -30,9 +31,10 @@ from pathlib import Path
 from typing import Annotated, List, Optional
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -107,6 +109,31 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization", "X-Admin-Key", "X-Request-ID"],
 )
 app.add_middleware(APIKeyMiddleware)
+
+@app.middleware("http")
+async def sanitize_json_control_chars_middleware(request: Request, call_next):
+    if request.method in ("POST", "PUT", "PATCH") and "application/json" in request.headers.get("content-type", ""):
+        try:
+            body = await request.body()
+            if body:
+                try:
+                    json.loads(body)
+                except json.JSONDecodeError as exc:
+                    if "control character" in str(exc).lower() or "line break" in str(exc).lower():
+                        try:
+                            decoded = body.decode("utf-8", errors="replace")
+                            parsed = json.loads(decoded, strict=False)
+                            sanitized_body = json.dumps(parsed).encode("utf-8")
+
+                            request._body = sanitized_body
+                            async def receive():
+                                return {"type": "http.request", "body": sanitized_body, "more_body": False}
+                            request._receive = receive
+                        except Exception:
+                            pass
+        except Exception:
+            pass
+    return await call_next(request)
 
 
 # ── Pydantic request models ───────────────────────────────────────────────────
@@ -207,10 +234,45 @@ def _build_analyze_response(parsed: dict, extracted_text: str | None = None) -> 
 async def _classify_text(message: str) -> AnalyzeResponse:
     try:
         raw = await bedrock.classify_text(message)
+        return _build_analyze_response(parser.parse(raw))
     except RuntimeError as exc:
-        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY,
-                            detail=f"LLM service error: {exc}") from exc
-    return _build_analyze_response(parser.parse(raw))
+        logger.warning("Bedrock unavailable (%s) — falling back to heuristic cascade", exc)
+
+    # ── Heuristic fallback (no Bedrock) ─────────────────────────────────────
+    cascade = await text_cascade_engine.scan_async(message)
+    prob = cascade.get("combined_prob", 0.0)
+    is_scam = prob >= 0.5
+    case = 1 if is_scam else 5
+    score = int(prob * 100)
+    explanation = cascade.get("explanation") or ("Scam indicators detected." if is_scam else "Message appears safe.")
+    red_flags = cascade.get("actionSteps") or []
+
+    fallback_match = ScamMatch(
+        id="heuristic",
+        label="Heuristic Detection",
+        category="Local Rules",
+        subcategory="Keyword + Pattern",
+        verdict="Likely Scam" if is_scam else "Likely Safe",
+        score=score,
+        red_flags=red_flags,
+        detection_message=explanation,
+        entities={},
+    )
+    return AnalyzeResponse(
+        case=case,
+        is_scam=is_scam,
+        score=score,
+        matches=[fallback_match] if is_scam else [],
+        entities={},
+        detection_message=explanation,
+        ambiguous=None,
+        generic_scam=None,
+        raw_model_output="[bedrock_unavailable:heuristic_fallback]",
+        extracted_text=None,
+        parse_error="Bedrock unavailable — heuristic fallback used.",
+    )
+
+
 
 
 def _fire_log(*, input_type: str, input_text: str | None, extracted_ocr: str | None,
@@ -291,6 +353,33 @@ async def health():
 # ═════════════════════════════════════════════════════════════════════════════
 # ANALYZE ENDPOINTS — structured Bedrock taxonomy verdict
 # ═════════════════════════════════════════════════════════════════════════════
+
+@app.exception_handler(RequestValidationError)
+async def handle_request_validation_error(request: Request, exc: RequestValidationError):
+    errors = exc.errors()
+    is_json_invalid = any(err.get("type") == "json_invalid" for err in errors)
+    if is_json_invalid:
+        try:
+            raw_body = await request.body()
+            decoded_text = raw_body.decode("utf-8", errors="replace")
+            parsed_data = json.loads(decoded_text, strict=False)
+            path = request.url.path
+            if path == "/analyze/text":
+                req_obj = AnalyzeTextRequest(**parsed_data)
+                return await analyze_text(req_obj, request)
+            elif path == "/api/scan/text":
+                req_obj = TextScanRequest(**parsed_data)
+                return api_scan_text(request, req_obj)
+            elif path == "/api/scan/link":
+                req_obj = LinkScanRequest(**parsed_data)
+                return api_scan_link(req_obj)
+        except Exception as fallback_exc:
+            logger.error(f"Fallback parse failed: {fallback_exc}")
+
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": exc.errors()}
+    )
 
 @app.post("/analyze/text", response_model=AnalyzeResponse, tags=["Analyze"], summary="Classify plain-text (Bedrock)")
 async def analyze_text(body: AnalyzeTextRequest, request: Request):

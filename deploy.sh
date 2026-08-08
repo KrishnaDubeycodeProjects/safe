@@ -35,7 +35,7 @@ section(){ echo -e "\n${CYAN}━━━━━━━━━━━━━━━━━
 DEPLOY_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FRONTEND_DIR="$DEPLOY_DIR/SecuritySafe"
 MAIN_BACKEND_DIR="$DEPLOY_DIR/security-safe-chat/security-safe-chat-backend"
-AI_BACKEND_DIR="$DEPLOY_DIR/Digital-arrest-detector"
+AI_BACKEND_DIR="$DEPLOY_DIR/digital-arrest"
 
 # ─────────────────────────────────────────────────────────────────────────────
 section "Step 1 — Pre-flight checks"

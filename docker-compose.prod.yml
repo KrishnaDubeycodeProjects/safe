@@ -75,12 +75,12 @@ services:
   # ── AI FastAPI Backend (Digital Arrest Detector) ─────────────────────────────
   ai-backend:
     build:
-      context: ./Digital-arrest-detector
+      context: ./digital-arrest
       dockerfile: Dockerfile
     container_name: safe_ai_backend
     restart: unless-stopped
     env_file:
-      - ./Digital-arrest-detector/.env
+      - ./digital-arrest/.env
     environment:
       - HOST=0.0.0.0
       - PORT=8001

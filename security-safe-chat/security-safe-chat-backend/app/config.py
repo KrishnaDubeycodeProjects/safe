@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     aws_region: str = "us-east-1"
     bedrock_model_id: str = "anthropic.claude-3-haiku-20240307-v1:0"
     bedrock_anthropic_version: str = "bedrock-2023-05-31"
+    # Bedrock Mantle API key (OpenAI-compatible endpoint for Gemma 4, etc.)
+    bedrock_mantle_api_key: str = ""
+
 
     # ── OpenAI ─────────────────────────────────────────────────────────────────
     openai_api_key: str = ""
