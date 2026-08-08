@@ -44,12 +44,12 @@ flowchart TB
     subgraph Backend
         CH[Chat Backend (FastAPI)]
         DB[PostgreSQL + Supabase]
-        LLM[OpenAI / Anthropic]
+        LLM[LLM Provider (OpenAI/Anthropic)]
     end
 
-    subgraph DigitalArrest[Digital‑Arrest Service (FastAPI)]
+    subgraph DigitalArrest[Digital-Arrest Service (FastAPI)]
         DR[Arrest Engine]
-        Models[ML Models (Vosk, Keras, Scikit‑Learn)]
+        Models[ML Models (Vosk, Keras, Scikit-Learn)]
         Data[CSV/JSON Datasets]
     end
 
