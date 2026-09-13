@@ -1,2 +1,52 @@
-.vscode
+# Environments & secrets
+.env
+*.env
+!.env.example
+*.pem
+*.key
+credentials.json
+token.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*/venv/
+.venv/
+*/.venv/
+.pytest_cache/
+*/.pytest_cache/
+*.log
+
+# Node & Frontend
+node_modules/
+*/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.astro/
+*/.astro/
+dist/
+*/dist/
+
+# Operating System & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Large presentation files & local notes
+*.pptx
+*.pptx.bak
+*.bak
+notes.txt
 SecuritySafe-future-updates
+
+# Runtime data
+feedback_submissions.jsonl
+blogs_store.json

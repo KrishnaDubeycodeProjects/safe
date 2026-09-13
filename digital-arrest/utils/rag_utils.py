@@ -60,155 +60,60 @@ def query_ollama(prompt: str,
         raise
 
 
-def rag_verify_text(text: str,
-                    ml_prob: float,
-                    keywords: list,
-                    sentiment: dict,
-                    model: str = DEFAULT_MODEL) -> Dict:
+# ── Message scam verdict (single system prompt, one line + tag) ──────────────
+
+MESSAGE_SYSTEM_PROMPT = """You are a scam-detection assistant. You will receive a raw message (SMS, email, WhatsApp, or chat text). Decide whether it shows signs of being a scam.
+
+Respond with EXACTLY one line in this format, nothing else — no markdown, no extra text, never repeat the input:
+
+TAG|one-line perspective
+
+TAG must be exactly one of:
+- SAFE            the message shows no signs of being a scam
+- LIKELY_SCAM     the message has some suspicious signs but you are not fully certain
+- SCAM_CONFIRMED  the message clearly matches a known scam pattern (e.g. OTP/PIN/CVV requests, fake arrest or police threats, lottery/prize wins, urgent payment demands, impersonation of banks/government/customs, KYC-update pressure)
+
+The one-line perspective is a single plain-English sentence (max ~20 words) giving the reader's-eye-view reason for the verdict.
+
+Example: SAFE|This reads like a normal message between friends with no request for money or personal information.
+Example: LIKELY_SCAM|This message pressures you to act urgently and points to an unfamiliar link.
+Example: SCAM_CONFIRMED|This demands your OTP and threatens arrest, a classic digital-arrest scam pattern."""
+
+_VALID_TAGS = {"SAFE", "LIKELY_SCAM", "SCAM_CONFIRMED"}
+_TAG_DISPLAY = {"SAFE": "Safe", "LIKELY_SCAM": "Likely Scam", "SCAM_CONFIRMED": "Scam Confirmed"}
+
+
+def _parse_verdict(raw: str) -> Dict:
+    """Parse the strict 'TAG|one-line perspective' output into a display-ready dict."""
+    raw = (raw or "").strip()
+    tag_part, sep, message_part = raw.partition("|")
+    tag = tag_part.strip().upper()
+    message = message_part.strip() if sep else raw
+
+    if tag not in _VALID_TAGS:
+        logger.warning("Unrecognized verdict tag in model output: %r", raw)
+        return {"tag": "Likely Scam", "message": message or "Could not confidently classify this message — treat it with caution."}
+
+    return {"tag": _TAG_DISPLAY[tag], "message": message or "No further detail provided."}
+
+
+def classify_message(text: str, model: str = DEFAULT_MODEL) -> Dict:
     """
-    Send structured prompt to LLM to get a verification + explanation.
-    Returns dict with keys:
-        - llm_prob (0..1)
-        - verdict (Likely Scam / Likely Safe)
-        - explanation (str)
-        - raw (original response)
+    Sends a message to the local Ollama LLM with the scam-detection system
+    prompt and returns a display-ready verdict:
+
+        {"tag": "Safe" | "Likely Scam" | "Scam Confirmed", "message": "<one-line perspective>"}
+
+    Raises RuntimeError if Ollama is unavailable or the call fails.
     """
-    keywords_str = ", ".join(keywords) if keywords else "None"
-    prompt = f"""
-You are FraudShield Assistant. Given the following data, decide if the message is a scam and explain concisely.
+    if not is_ollama_available():
+        raise RuntimeError("Ollama is not available.")
 
-Message:
-\"\"\"{text}\"\"\"
-
-Metadata:
-- ML model probability (spam/phishing): {ml_prob:.3f}
-- Detected risky keywords: {keywords_str}
-- Sentiment scores: {json.dumps(sentiment)}
-
-Task:
-1) Provide a clear classification in one line: "Likely Scam" or "Likely Safe".
-2) Give a short numeric estimate of risk as a percent (0-100).
-3) Give a concise explanation (1-2 sentences) describing the main reasons (keywords, urgency, suspicious phrasing).
-4) Suggest 2 short actionable advice lines for a user.
-
-Output JSON exactly with keys: verdict, risk_percent, explanation, advice (list of strings).
-"""
-
+    prompt = f'{MESSAGE_SYSTEM_PROMPT}\n\nMessage:\n"""{text}"""\n\nYour one-line answer:'
     try:
-        resp = query_ollama(prompt, model=model, max_tokens=256, temperature=0.0)
-        text_out = ""
-        if isinstance(resp, dict):
-            if "text" in resp:
-                text_out = resp["text"]
-            else:
-                for k in ("result", "output", "choices"):
-                    if k in resp:
-                        text_out = json.dumps(resp[k])
-                        break
-                if not text_out:
-                    text_out = json.dumps(resp)
-        else:
-            text_out = str(resp)
-
-        start = text_out.find("{")
-        end = text_out.rfind("}")
-        if start != -1 and end != -1 and end > start:
-            candidate = text_out[start:end+1]
-            try:
-                parsed = json.loads(candidate)
-                verdict = parsed.get("verdict") or parsed.get("classification") or parsed.get("label")
-                risk = parsed.get("risk_percent") or parsed.get("risk") or parsed.get("prob_percent")
-                explanation = parsed.get("explanation") or parsed.get("reason") or parsed.get("explain")
-                advice = parsed.get("advice") or parsed.get("recommendations") or parsed.get("tips") or []
-                if isinstance(advice, str):
-                    advice = [advice]
-                llm_prob = None
-                try:
-                    if risk is not None:
-                        llm_prob = float(risk) / 100.0
-                except Exception:
-                    llm_prob = None
-                return {
-                    "llm_prob": llm_prob,
-                    "verdict": verdict,
-                    "risk_percent": risk,
-                    "explanation": explanation,
-                    "advice": advice,
-                    "raw": parsed
-                }
-            except json.JSONDecodeError:
-                pass
-
-        return {
-            "llm_prob": None,
-            "verdict": None,
-            "risk_percent": None,
-            "explanation": text_out.strip(),
-            "advice": [],
-            "raw": text_out
-        }
-
+        resp = query_ollama(prompt, model=model, max_tokens=80, temperature=0.0)
+        raw = resp.get("text", "") if isinstance(resp, dict) else str(resp)
+        return _parse_verdict(raw)
     except Exception as e:
-        logger.exception("RAG verification failed: %s", e)
-        return {
-            "llm_prob": None,
-            "verdict": None,
-            "risk_percent": None,
-            "explanation": f"Ollama error: {e}",
-            "advice": [],
-            "raw": None
-        }
-
-
-def rag_refine_transcription(raw_text: str,
-                             model: str = DEFAULT_MODEL) -> Dict:
-    """
-    Ask the model to 'clean' the raw transcript: fix punctuation, repeated tokens, incomplete words.
-    Returns dict with keys:
-      - cleaned_text
-      - notes (any warnings)
-      - raw (LLM output)
-    """
-    prompt = f"""
-You are a helpful assistant that refines automatic transcriptions.
-
-Input transcription (do not invent new facts; only improve readability):
-\"\"\"{raw_text}\"\"\"
-
-Tasks:
-1) Fix punctuation and capitalization.
-2) Correct obvious transcription artifacts (repeated words, common misrecognitions).
-3) Keep the original meaning; do not add or remove factual content.
-4) If you are unsure about a word, mark it with [unclear].
-
-Return a JSON object with keys: cleaned_text, notes.
-"""
-    try:
-        resp = query_ollama(prompt, model=model, max_tokens=512, temperature=0.0)
-        text_out = ""
-        if isinstance(resp, dict) and "text" in resp:
-            text_out = resp["text"]
-        elif isinstance(resp, str):
-            text_out = resp
-        else:
-            text_out = json.dumps(resp)
-
-        start = text_out.find("{")
-        end = text_out.rfind("}")
-        if start != -1 and end != -1 and end > start:
-            candidate = text_out[start:end+1]
-            try:
-                parsed = json.loads(candidate)
-                return {
-                    "cleaned_text": parsed.get("cleaned_text") or "",
-                    "notes": parsed.get("notes") or "",
-                    "raw": parsed
-                }
-            except json.JSONDecodeError:
-                pass
-
-        return {"cleaned_text": text_out.strip(), "notes": "", "raw": text_out}
-
-    except Exception as e:
-        logger.exception("RAG transcription refine failed: %s", e)
-        return {"cleaned_text": raw_text, "notes": f"ollama error: {e}", "raw": None}
+        logger.exception("Message classification failed: %s", e)
+        raise RuntimeError(f"Ollama classify failed: {e}") from e

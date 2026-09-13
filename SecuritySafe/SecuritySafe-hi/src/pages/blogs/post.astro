@@ -1,0 +1,256 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Static route (not [id].astro) — the post id comes from ?id=<uuid> and is
+// resolved client-side against the live backend. This means a post
+// published from /mgmt-x7k9p2 is reachable immediately, with no rebuild.
+const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || (import.meta.env.DEV ? 'http://localhost:8000' : '');
+---
+
+<Layout title="Blog — SAFE Platform" currentPage="blogs">
+  <main class="blog-article">
+    <a href="/blogs" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      Back to Blogs
+    </a>
+
+    <div id="loadingState" class="loading-state">
+      <div class="skel-line" style="width:40%;height:14px;"></div>
+      <div class="skel-line" style="width:80%;height:32px;margin-top:16px;"></div>
+      <div class="skel-line" style="width:100%;height:200px;margin-top:24px;border-radius:12px;"></div>
+    </div>
+
+    <div id="errorState" class="error-state" style="display:none;">
+      <h2>Couldn't load this post</h2>
+      <p id="errorMsg">It may have been removed, or the link is incorrect.</p>
+      <a href="/blogs" class="write-btn sm">Back to Blogs</a>
+    </div>
+
+    <article class="article-card" id="articleCard" style="display:none;">
+      <div class="article-tags" id="articleTags"></div>
+      <h1 class="article-title" id="articleTitle"></h1>
+      <div class="article-meta">
+        <span id="articleDate"></span>
+      </div>
+      <div class="article-content" id="articleContent"></div>
+    </article>
+
+    <section class="related-section" id="relatedSection" style="display:none;">
+      <h2>Related Reads</h2>
+      <div class="related-grid" id="relatedGrid"></div>
+    </section>
+  </main>
+</Layout>
+
+<script define:vars={{ MAIN_API }}>
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  // Plain-text body -> paragraphs, with [n] markers swapped for the matching
+  // image (1-indexed into post.images) plus its caption. Text is escaped
+  // before insertion, so nothing from the post body executes as markup.
+  function renderContent(text, images) {
+    const imgs = Array.isArray(images) ? images : [];
+    const paragraphs = String(text || '').split(/\n{2,}/);
+    return paragraphs.map(para => {
+      const escaped = escHtml(para).replace(/\n/g, '<br>');
+      const withImages = escaped.replace(/\[(\d+)\]/g, (_m, num) => {
+        const img = imgs[parseInt(num, 10) - 1];
+        if (!img || !img.url) return '';
+        return `<figure class="blog-inline-image">
+          <img src="${escHtml(img.url)}" alt="${escHtml(img.title || '')}" loading="lazy" />
+          ${img.title ? `<figcaption>${escHtml(img.title)}</figcaption>` : ''}
+        </figure>`;
+      });
+      return `<p>${withImages}</p>`;
+    }).join('');
+  }
+
+  async function main() {
+    const id = new URLSearchParams(location.search).get('id');
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const errorMsg = document.getElementById('errorMsg');
+    const articleCard = document.getElementById('articleCard');
+
+    if (!id) {
+      loadingState.style.display = 'none';
+      errorMsg.textContent = 'No post was specified.';
+      errorState.style.display = 'block';
+      return;
+    }
+
+    try {
+      const res = await fetch(`${MAIN_API}/api/blogs/${encodeURIComponent(id)}`, { signal: AbortSignal.timeout(9000) });
+      if (res.status === 404) throw new Error('This post does not exist.');
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      const post = await res.json();
+
+      document.title = `${post.title} — SAFE Blogs`;
+      document.getElementById('articleTags').innerHTML = (post.tags || []).map(t => `<span class="article-tag">${escHtml(t)}</span>`).join('');
+      document.getElementById('articleTitle').textContent = post.title;
+      document.getElementById('articleDate').textContent = formatDate(post.created_at);
+      document.getElementById('articleContent').innerHTML = renderContent(post.content_text, post.images);
+
+      loadingState.style.display = 'none';
+      articleCard.style.display = 'block';
+
+      // Related posts — best-effort, based on shared tags
+      if (post.tags && post.tags.length) {
+        try {
+          const listRes = await fetch(`${MAIN_API}/api/blogs`, { signal: AbortSignal.timeout(9000) });
+          if (listRes.ok) {
+            const data = await listRes.json();
+            const related = (data.blogs || [])
+              .filter(p => p.id !== post.id && (p.tags || []).some(t => post.tags.includes(t)))
+              .slice(0, 2);
+            if (related.length) {
+              document.getElementById('relatedGrid').innerHTML = related.map(r => `
+                <a href="/blogs/post?id=${encodeURIComponent(r.id)}" class="related-card">
+                  <h3>${escHtml(r.title)}</h3>
+                  <p>Read more →</p>
+                </a>
+              `).join('');
+              document.getElementById('relatedSection').style.display = 'block';
+            }
+          }
+        } catch { /* related posts are non-essential — fail silently */ }
+      }
+    } catch (e) {
+      loadingState.style.display = 'none';
+      errorMsg.textContent = e.message || 'Something went wrong.';
+      errorState.style.display = 'block';
+    }
+  }
+
+  main();
+</script>
+
+<style>
+.blog-article {
+  padding-top: var(--nav-height, 64px);
+  min-height: 100vh;
+  background: var(--canvas, #fff);
+  max-width: 760px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 80px;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--mute);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 32px 0;
+}
+.back-link:hover { color: var(--ink); }
+
+.loading-state { padding: 8px 0; }
+.skel-line {
+  background: linear-gradient(90deg, var(--canvas-soft,#fafafa) 25%, var(--canvas-soft-2,#f5f5f5) 50%, var(--canvas-soft,#fafafa) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+.error-state { text-align: center; padding: 60px 0; }
+.error-state h2 { color: var(--ink); margin: 0 0 8px; }
+.error-state p { color: var(--mute); margin: 0 0 20px; }
+.write-btn.sm {
+  display: inline-block;
+  padding: 10px 20px;
+  background: var(--ink, #171717);
+  color: #fff;
+  border-radius: 100px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.article-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.article-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--body, #525252);
+  padding: 3px 10px;
+  background: var(--canvas-soft, #fafafa);
+  border: 1px solid var(--hairline, #ebebeb);
+  border-radius: 100px;
+}
+.article-title {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0 0 16px;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.article-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--mute);
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--hairline);
+}
+.article-content {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: var(--body, #4d4d4d);
+}
+.article-content :global(p) { margin: 0 0 1.2em; }
+.article-content :global(.blog-inline-image) {
+  margin: 1.5em 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.article-content :global(.blog-inline-image img) {
+  max-width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--hairline, #ebebeb);
+}
+.article-content :global(.blog-inline-image figcaption) {
+  font-size: 0.85rem;
+  color: var(--mute);
+  text-align: center;
+}
+
+.related-section { margin-top: 60px; padding-top: 40px; border-top: 2px dashed var(--hairline); }
+.related-section h2 { font-size: 1.15rem; margin-bottom: 20px; color: var(--ink); }
+.related-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.related-card {
+  display: block;
+  padding: 20px;
+  background: var(--canvas-soft, #fafafa);
+  border: 1px solid var(--hairline, #ebebeb);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s;
+}
+.related-card:hover { border-color: var(--ink); }
+.related-card h3 { font-size: 14px; margin: 0 0 4px; color: var(--ink); }
+.related-card p { font-size: 12px; margin: 0; color: var(--mute); }
+
+@media (max-width: 560px) {
+  .related-grid { grid-template-columns: 1fr; }
+}
+</style>

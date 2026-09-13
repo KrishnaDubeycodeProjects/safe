@@ -1,4 +1,6 @@
 _pycache__/
+__pycache__/
+.env
 metadata.json
 sms_spam_llm.jsonl
 test.jsonl

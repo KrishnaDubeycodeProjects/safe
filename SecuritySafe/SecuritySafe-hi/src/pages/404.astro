@@ -1,0 +1,173 @@
+﻿---
+// src/pages/404.astro
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="404 — Page Not Found | SAFE" currentPage="404">
+  <main class="error-page">
+    <div class="error-card">
+      <div class="error-icon-box">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+
+      <span class="error-code">Error 404</span>
+      <h1 class="error-heading">Page Not Found</h1>
+      <p class="error-description">
+        The link you clicked may be broken, or the page may have moved. Don't worry — SAFE is here to protect you.
+      </p>
+
+      <div class="action-buttons">
+        <a href="/" class="btn-home">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Go to Safety Scanner
+        </a>
+        <a href="/emergency" class="btn-emergency">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+          Emergency Help (1930)
+        </a>
+      </div>
+
+      <div class="helpful-links">
+        <span>Popular destinations:</span>
+        <div class="links-row">
+          <a href="/blogs">Scam Blogs</a>
+          <span class="sep">•</span>
+          <a href="/learn">Fraud Learning Center</a>
+          <span class="sep">•</span>
+          <a href="/feedback">Feedback</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .error-page {
+    min-height: calc(100vh - 180px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: var(--canvas, #FAFAFA);
+  }
+  .error-card {
+    max-width: 540px;
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid var(--border, #E5E7EB);
+    border-radius: 20px;
+    padding: 48px 36px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  }
+  .error-icon-box {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #FEF3C7;
+    color: #D97706;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .error-code {
+    display: inline-block;
+    background: #F3F4F6;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+  .error-heading {
+    font-size: 28px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 12px;
+    letter-spacing: -0.5px;
+  }
+  .error-description {
+    font-size: 15px;
+    color: #6B7280;
+    line-height: 1.6;
+    margin: 0 0 32px;
+  }
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .btn-home {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #000000;
+    color: #FFFFFF;
+    padding: 14px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.2s ease;
+  }
+  .btn-home:hover {
+    background: #1F2937;
+    transform: translateY(-1px);
+  }
+  .btn-emergency {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #FEE2E2;
+    color: #DC2626;
+    padding: 14px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.2s ease;
+  }
+  .btn-emergency:hover {
+    background: #FECACA;
+  }
+  .helpful-links {
+    font-size: 13px;
+    color: #9CA3AF;
+    border-top: 1px solid #F3F4F6;
+    padding-top: 24px;
+  }
+  .links-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .links-row a {
+    color: #4B5563;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .links-row a:hover {
+    color: #000000;
+    text-decoration: underline;
+  }
+  .sep {
+    color: #D1D5DB;
+  }
+</style>

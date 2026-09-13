@@ -1,11 +1,11 @@
 """
 feedback_loop.py
-Community feedback loop: provides reputation overrides for URLs and image hashes
-based on human-verified scam reports collected via the /api/community/ endpoints.
+Community feedback loop: provides reputation overrides for URLs based on
+human-verified scam reports collected via the /api/community/ endpoints.
 
-If a URL or image hash has been confirmed as a scam by community reports, these
-functions return an override verdict so the cascade engines can fast-path to
-a "SCAM" verdict without running the full analysis again.
+If a URL has been confirmed as a scam by community reports, these functions
+return an override verdict so the link cascade can fast-path to a "SCAM"
+verdict without running the full analysis again.
 """
 
 import os
@@ -20,7 +20,6 @@ logger = logging.getLogger("safe_backend.feedback_loop")
 # ──────────────────────────────────────────────────────────────────────────────
 _DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 _URL_REPUTATION_FILE = os.path.join(_DATA_DIR, "url_reputation_overrides.json")
-_IMAGE_REPUTATION_FILE = os.path.join(_DATA_DIR, "image_hash_reputation_overrides.json")
 
 
 def _load_json(path: str) -> Dict[str, Any]:
@@ -54,24 +53,6 @@ def get_url_reputation_override(url: str) -> Optional[Dict[str, Any]]:
     return entry
 
 
-def get_image_hash_reputation_override(image_hash: str) -> Optional[Dict[str, Any]]:
-    """
-    Check whether a known-bad image hash has been reported by the community.
-
-    Returns a dict like:
-        {"verdict": "SCAM", "label": "Fake Paytm Receipt", "reports": 7}
-    or None if no override exists for this hash.
-    """
-    if not image_hash:
-        return None
-
-    overrides: Dict[str, Any] = _load_json(_IMAGE_REPUTATION_FILE)
-    entry = overrides.get(image_hash.strip())
-    if entry:
-        logger.info("feedback_loop: image hash override found for %s → %s", image_hash, entry.get("verdict"))
-    return entry
-
-
 def register_url_override(url: str, verdict: str, label: str = "", confidence: float = 0.9) -> bool:
     """
     Persist a community-verified URL override to the JSON store.
@@ -95,21 +76,3 @@ def register_url_override(url: str, verdict: str, label: str = "", confidence: f
         return False
 
 
-def register_image_hash_override(image_hash: str, verdict: str, label: str = "") -> bool:
-    """
-    Persist a community-verified image-hash override to the JSON store.
-    """
-    try:
-        os.makedirs(_DATA_DIR, exist_ok=True)
-        overrides = _load_json(_IMAGE_REPUTATION_FILE)
-        overrides[image_hash.strip()] = {
-            "verdict": verdict.upper(),
-            "label": label,
-            "reports": overrides.get(image_hash.strip(), {}).get("reports", 0) + 1,
-        }
-        with open(_IMAGE_REPUTATION_FILE, "w", encoding="utf-8") as f:
-            json.dump(overrides, f, indent=2)
-        return True
-    except Exception as exc:
-        logger.error("feedback_loop: failed to register image hash override — %s", exc)
-        return False

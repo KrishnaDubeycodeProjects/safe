@@ -174,7 +174,20 @@ const relatedScams = currentCategory?.fraudTypeIds
   .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--green); text-decoration: none; font-size: 14px; font-weight: 500; margin-bottom: 32px; }
   
   .detail-header { text-align: center; margin-bottom: 48px; }
-  .detail-icon { font-size: 64px; margin-bottom: 16px; }
+  .detail-icon { 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    width: 80px; 
+    height: 80px; 
+    font-size: 40px; 
+    line-height: 1; 
+    margin: 0 auto 18px; 
+    background: #F8FAFC; 
+    border: 1px solid #E2E8F0; 
+    border-radius: 20px; 
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  }
   .detail-header h1 { font-size: 32px; margin: 0; color: var(--ink); }
   .detail-subtitle { font-size: 14px; color: var(--text-dim); margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
 
@@ -223,9 +236,20 @@ const relatedScams = currentCategory?.fraudTypeIds
   .related-section { margin-top: 60px; padding-top: 40px; border-top: 2px dashed var(--border); }
   .related-section h2 { font-size: 20px; margin-bottom: 24px; }
   .related-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .related-card { display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; text-decoration: none; color: inherit; transition: border-color 0.2s; }
-  .related-card:hover { border-color: var(--green); }
-  .rel-icon { font-size: 24px; }
+  .related-card { display: flex; align-items: center; gap: 14px; padding: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; text-decoration: none; color: inherit; transition: all 0.2s ease; }
+  .related-card:hover { border-color: var(--green); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04); }
+  .rel-icon { 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    width: 40px; 
+    height: 40px; 
+    font-size: 20px; 
+    line-height: 1; 
+    background: #F1F5F9; 
+    border-radius: 10px; 
+    flex-shrink: 0; 
+  }
   .related-card h3 { font-size: 14px; margin: 0 0 2px 0; }
   .related-card p { font-size: 12px; color: var(--green); margin: 0; }
   .hidden { display: none !important; }

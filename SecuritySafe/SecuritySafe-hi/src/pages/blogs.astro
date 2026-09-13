@@ -1,183 +1,198 @@
 ---
+// src/pages/blogs.astro
 import Layout from '../layouts/Layout.astro';
-const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL ?? 'http://localhost:8000';
----
-<!-- DOMPurify for XSS-safe innerHTML rendering of Quill HTML -->
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" integrity="sha384-Y43z85H4b36Y7LKLNJknV/lLPGmO7dWV4o6gOHC5I11qdXXVc2MYTl+gCXQWPhsm" crossorigin="anonymous"></script>
 
-<Layout title="Blogs — SAFE Platform" currentPage="blogs">
+const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || (import.meta.env.DEV ? 'http://localhost:8000' : '');
+---
+
+<Layout
+  title="Scam Awareness Blogs & Real Case Studies — SAFE"
+  description="Read verified scam breakdowns, real victim stories in Hinglish, Hindi and English, and earn rewards by sharing your experience to protect millions across India."
+  currentPage="blogs"
+  keywords="scam stories india, fraud case studies, electricity bill scam hinglish, digital arrest courier scam hindi, telegram task scam, share scam story earn reward"
+>
   <main class="blogs-main">
+    <!-- Clean, High-End Professional Hero -->
     <section class="blogs-hero">
       <div class="hero-inner">
-        <span class="hero-eyebrow">Community Knowledge</span>
-        <h1>Scam Awareness Blogs</h1>
-        <p class="hero-sub">Real stories, legal insights, and safety tips written by our community — reviewed and published by the SAFE team.</p>
-        <a href="/submit-blog" class="write-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-          Write a Blog
-        </a>
+        <span class="hero-eyebrow">Community Knowledge & Case Studies</span>
+        <h1 class="hero-title">Verified Scam Breakdowns</h1>
+        <p class="hero-sub">
+          Authentic victim reports, forensic breakdowns, and recovery steps — written in English, Hinglish, and Hindi to protect Indian families.
+        </p>
+
+        <!-- Professional Reward Program Card (Modern Light / Navy Premium Theme) -->
+        <div class="reward-banner">
+          <div class="reward-header">
+            <span class="reward-badge">Citizen Reward Initiative</span>
+            <h2 class="reward-heading">Share your scam experience & earn compensation</h2>
+          </div>
+
+          <div class="reward-translations-grid">
+            <div class="translation-card">
+              <span class="lang-tag">English</span>
+              <p class="translation-text">"Submit your authentic scam story to warn fellow citizens and receive verified compensation."</p>
+            </div>
+            <div class="translation-card">
+              <span class="lang-tag">Hinglish</span>
+              <p class="translation-text">"Apni real scam story share karke doosron ko bachayein aur cash reward paayein."</p>
+            </div>
+            <div class="translation-card">
+              <span class="lang-tag">हिंदी</span>
+              <p class="translation-text">"धोखाधड़ी की सच्ची घटना साझा करें, लाखों नागरिकों को सावधान करें और प्रोत्साहन राशि पाएं।"</p>
+            </div>
+          </div>
+
+          <div class="reward-cta-row">
+            <a href="mailto:safe.princete@gmail.com?subject=Scam%20Story%20Submission%20-%20Safe&body=Hi%20Safe%20Team%2C%0A%0AI%20would%20like%20to%20submit%20a%20scam%20story%20for%20the%20community%20blog.%0A%0AStory%20Title%3A%0ADate%20of%20Incident%3A%0AScam%20Type%20(e.g.%20WhatsApp%2C%20Digital%20Arrest%2C%20Fake%20Job%2C%20Investment)%3A%0AWhat%20Happened%3A%0AEvidence%20%2F%20Screenshots%20(Please%20attach)%3A%0AMy%20Contact%20%2F%20UPI%20for%20reward%3A%0A%0AThank%20you!" class="btn-share-story">
+              <span>Email Story to safe.princete@gmail.com</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+            <span class="reward-note">Send directly to <strong>safe.princete@gmail.com</strong>. Verified scam submissions are rewarded directly via UPI within 48 hours.</span>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Category filter pills -->
-    <section class="filter-bar">
-      <div class="filter-inner">
-        <button class="pill active" data-cat="all">All</button>
-        <button class="pill" data-cat="Banking Scam">Banking</button>
-        <button class="pill" data-cat="UPI Fraud">UPI Fraud</button>
-        <button class="pill" data-cat="Digital Arrest">Digital Arrest</button>
-        <button class="pill" data-cat="Job Scam">Job Scam</button>
-        <button class="pill" data-cat="Romance Scam">Romance</button>
-        <button class="pill" data-cat="Investment Scam">Investment</button>
-        <button class="pill" data-cat="Legal & Acts">Legal & Acts</button>
+    <!-- Search Bar & Filter Section -->
+    <section class="blog-controls-section">
+      <div class="controls-inner">
+        <div class="blog-search-wrapper">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text"
+            id="blogSearchInput"
+            class="blog-search-input"
+            placeholder="Search scam stories by keyword, bank name, app, or fraud type..."
+          />
+        </div>
+
+        <div class="filter-bar" id="filterBar" style="display:none;">
+          <div class="filter-inner" id="filterInner">
+            <button class="pill active" data-tag="all">All Stories</button>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Blog grid -->
+    <!-- Blogs Grid -->
     <section class="blogs-grid-section">
       <div class="blogs-grid" id="blogsGrid">
-        <!-- Skeleton loaders -->
         <div class="blog-skeleton"></div>
         <div class="blog-skeleton"></div>
         <div class="blog-skeleton"></div>
       </div>
       <div class="empty-state" id="emptyState" style="display:none;">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--mute)" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        <h3>No blogs yet</h3>
-        <p>Be the first to share your knowledge.</p>
-        <a href="/submit-blog" class="write-btn sm">Write the first blog</a>
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--mute, #9CA3AF)" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <h3 id="emptyTitle">No articles found</h3>
+        <p id="emptySub">Try selecting another topic filter above.</p>
       </div>
     </section>
-
-    <!-- Blog detail modal -->
-    <div class="modal-overlay" id="blogModal">
-      <div class="modal-card">
-        <button class="modal-close" id="modalClose" aria-label="Close">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-        <div class="modal-body" id="modalBody"></div>
-      </div>
-    </div>
   </main>
 </Layout>
 
 <script define:vars={{ MAIN_API }}>
   const grid = document.getElementById('blogsGrid');
   const emptyState = document.getElementById('emptyState');
-  const modal = document.getElementById('blogModal');
-  const modalBody = document.getElementById('modalBody');
-  const modalClose = document.getElementById('modalClose');
+  const emptyTitle = document.getElementById('emptyTitle');
+  const emptySub = document.getElementById('emptySub');
+  const filterBar = document.getElementById('filterBar');
+  const filterInner = document.getElementById('filterInner');
 
   let allBlogs = [];
-  let activeCategory = 'all';
+  let activeTag = 'all';
 
-  const CATEGORY_COLORS = {
-    'Banking Scam': '#0070f3',
-    'UPI Fraud': '#7928ca',
-    'Digital Arrest': '#ee0000',
-    'Job Scam': '#f5a623',
-    'Romance Scam': '#ff0080',
-    'Investment Scam': '#29bc9b',
-    'Legal & Acts': '#171717',
-  };
-
-  function getCategoryColor(cat) {
-    return CATEGORY_COLORS[cat] || '#525252';
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   function formatDate(iso) {
     if (!iso) return '';
-    const d = new Date(iso);
-    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function excerptOf(text, len = 150) {
+    const clean = String(text || '').replace(/\[\d+\]/g, '').replace(/\s+/g, ' ').trim();
+    return clean.length > len ? clean.slice(0, len) + '...' : clean;
   }
 
   function renderCards(blogs) {
     if (!blogs.length) {
       grid.innerHTML = '';
+      emptyTitle.textContent = activeTag === 'all' ? 'No blogs yet' : 'No stories match this filter';
+      emptySub.textContent = activeTag === 'all' ? 'New verified cases are being drafted by the SAFE team.' : 'Select another category above or view All Stories.';
       emptyState.style.display = 'flex';
       return;
     }
     emptyState.style.display = 'none';
-    grid.innerHTML = blogs.map(b => `
-      <article class="blog-card" data-id="${b.id}">
-        <div class="card-tag" style="--tag-color:${getCategoryColor(b.category)}">${b.category}</div>
-        <h2 class="card-title">${escHtml(b.title)}</h2>
-        <p class="card-excerpt">${escHtml(b.content_text?.slice(0, 140) || '')}...</p>
-        <footer class="card-footer">
-          <span class="card-author">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-            ${escHtml(b.author_name)}
-          </span>
-          <span class="card-date">${formatDate(b.approved_at || b.submitted_at)}</span>
-        </footer>
-      </article>
-    `).join('');
+    grid.innerHTML = blogs.map(b => {
+      const thumb = (b.images || [])[0];
+      return `
+      <a class="blog-card" href="/blogs/post?id=${encodeURIComponent(b.id)}">
+        ${thumb ? `<div class="card-thumb"><img src="${escHtml(thumb.url)}" alt="${escHtml(thumb.title || '')}" loading="lazy" /></div>` : ''}
+        <div class="card-body">
+          <div class="card-tags">
+            ${(b.tags || []).map(t => `<span class="card-tag">${escHtml(t)}</span>`).join('')}
+          </div>
+          <h2 class="card-title">${escHtml(b.title)}</h2>
+          <p class="card-excerpt">${escHtml(excerptOf(b.content_text))}</p>
+          <div class="card-footer">
+            <span class="card-date">${formatDate(b.created_at)}</span>
+            <span class="read-more-label">Read Case Study →</span>
+          </div>
+        </div>
+      </a>
+    `;
+    }).join('');
+  }
 
-    grid.querySelectorAll('.blog-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const blog = allBlogs.find(b => b.id === card.dataset.id);
-        if (blog) openModal(blog);
+  function buildFilters(blogs) {
+    const tagSet = new Set();
+    blogs.forEach(b => (b.tags || []).forEach(t => tagSet.add(t)));
+    if (!tagSet.size) return;
+    const tags = [...tagSet].sort();
+    filterInner.innerHTML = `<button class="pill active" data-tag="all">All Stories</button>` +
+      tags.map(t => `<button class="pill" data-tag="${escHtml(t)}">${escHtml(t)}</button>`).join('');
+    filterBar.style.display = 'block';
+
+    filterInner.querySelectorAll('.pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        filterInner.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        activeTag = pill.dataset.tag;
+        applyFilters();
       });
     });
   }
 
-  function escHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function openModal(blog) {
-    // Sanitize HTML from Quill editor before rendering to prevent XSS
-    const safeHtml = (typeof DOMPurify !== 'undefined')
-      ? DOMPurify.sanitize(blog.content_html || '', { ALLOWED_TAGS: ['p','br','strong','em','u','s','h1','h2','h3','ul','ol','li','blockquote','a','code','pre'], ALLOWED_ATTR: ['href','target','rel'] })
-      : escHtml(blog.content_text || '');
-    modalBody.innerHTML = `
-      <div class="modal-tag" style="--tag-color:${getCategoryColor(blog.category)}">${escHtml(blog.category)}</div>
-      <h1 class="modal-title">${escHtml(blog.title)}</h1>
-      <div class="modal-meta">
-        <span>By <strong>${escHtml(blog.author_name)}</strong></span>
-        <span>${formatDate(blog.approved_at || blog.submitted_at)}</span>
-      </div>
-      <div class="modal-content ql-editor">${safeHtml}</div>
-    `;
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeModal() {
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-
-  modalClose.addEventListener('click', closeModal);
-  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-  // Category filter
-  document.querySelectorAll('.pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      activeCategory = pill.dataset.cat;
-      const filtered = activeCategory === 'all' ? allBlogs : allBlogs.filter(b => b.category === activeCategory);
-      renderCards(filtered);
+  function applyFilters() {
+    const searchVal = (document.getElementById('blogSearchInput')?.value || '').toLowerCase().trim();
+    const filtered = allBlogs.filter(b => {
+      const matchesTag = activeTag === 'all' || (b.tags || []).includes(activeTag);
+      const matchesSearch = !searchVal || 
+        (b.title || '').toLowerCase().includes(searchVal) ||
+        (b.content_text || '').toLowerCase().includes(searchVal) ||
+        (b.tags || []).some(t => t.toLowerCase().includes(searchVal));
+      return matchesTag && matchesSearch;
     });
-  });
+    renderCards(filtered);
+  }
 
-  // Fetch blogs
+  document.getElementById('blogSearchInput')?.addEventListener('input', applyFilters);
+
   async function fetchBlogs() {
-    const timeout = setTimeout(() => {
-      grid.innerHTML = `<div class="fetch-error">Request timed out. Please refresh the page.</div>`;
-    }, 10000);
     try {
       const res = await fetch(`${MAIN_API}/api/blogs`, { signal: AbortSignal.timeout(9000) });
-      clearTimeout(timeout);
       if (!res.ok) throw new Error(`Server error ${res.status}`);
       const data = await res.json();
-      allBlogs = data.blogs || [];
+      allBlogs = (data.blogs || []).slice().sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+      buildFilters(allBlogs);
       renderCards(allBlogs);
-    } catch(e) {
-      clearTimeout(timeout);
+    } catch (e) {
       grid.innerHTML = `<div class="fetch-error">Could not load blogs — ${escHtml(e.message)}. Try refreshing.</div>`;
     }
   }
@@ -185,288 +200,376 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL ?? 'http://localhost:8000';
   fetchBlogs();
 </script>
 
-<style>
-.blogs-main {
-  padding-top: var(--nav-height, 64px);
-  min-height: 100vh;
-  background: var(--canvas, #fff);
-}
+<style is:global>
+  .blogs-main {
+    padding-top: 64px;
+    min-height: 100vh;
+    background: #FAFAFA;
+    font-family: inherit;
+  }
 
-/* Hero */
-.blogs-hero {
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 60%, #16213e 100%);
-  padding: 72px 24px 56px;
-  text-align: center;
-}
-.hero-inner { max-width: 720px; margin: 0 auto; }
-.hero-eyebrow {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--cyan, #50e3c2);
-  margin-bottom: 16px;
-  padding: 4px 12px;
-  background: rgba(80,227,194,0.12);
-  border-radius: 100px;
-}
-.blogs-hero h1 {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 800;
-  color: #fff;
-  margin: 0 0 16px;
-  letter-spacing: -0.03em;
-}
-.hero-sub { font-size: 1.05rem; color: rgba(255,255,255,0.6); margin: 0 0 32px; line-height: 1.6; }
-.write-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background: var(--cyan, #50e3c2);
-  color: #0a0a0a;
-  border: none;
-  border-radius: 100px;
-  font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.write-btn:hover { background: #2dcfad; transform: translateY(-1px); }
-.write-btn.sm { margin-top: 16px; font-size: 13px; padding: 10px 20px; }
+  /* High-End Professional Hero */
+  .blogs-hero {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+    color: #0F172A;
+    padding: 56px 24px 36px;
+    border-bottom: 1px solid #E2E8F0;
+  }
+  .hero-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #059669;
+    margin-bottom: 12px;
+    padding: 4px 12px;
+    background: #ECFDF5;
+    border: 1px solid #A7F3D0;
+    border-radius: 100px;
+  }
+  .hero-title {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    font-weight: 800;
+    color: #0F172A;
+    margin: 0 0 12px;
+    letter-spacing: -0.03em;
+  }
+  .hero-sub {
+    font-size: 1.05rem;
+    color: #475569;
+    margin: 0 0 32px;
+    line-height: 1.6;
+    max-width: 660px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 
-/* Filter bar */
-.filter-bar {
-  border-bottom: 1px solid var(--hairline, #ebebeb);
-  background: var(--canvas, #fff);
-  position: sticky;
-  top: var(--nav-height, 64px);
-  z-index: 10;
-}
-.filter-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 12px 24px;
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.filter-inner::-webkit-scrollbar { display: none; }
-.pill {
-  flex-shrink: 0;
-  padding: 6px 16px;
-  border: 1px solid var(--hairline, #ebebeb);
-  border-radius: 100px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--body, #525252);
-  background: none;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s ease;
-}
-.pill:hover { border-color: var(--ink); color: var(--ink); }
-.pill.active { background: var(--ink, #171717); color: #fff; border-color: var(--ink); }
+  /* Reward Program Banner - Premium Clean Slate Card */
+  .reward-banner {
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 20px;
+    padding: 28px 32px;
+    text-align: left;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+  }
+  .reward-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .reward-badge {
+    background: #059669;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .reward-heading {
+    font-size: 19px;
+    font-weight: 800;
+    color: #0F172A;
+    margin: 0;
+  }
 
-/* Grid */
-.blogs-grid-section { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; }
-.blogs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
-}
+  .reward-translations-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .translation-card {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .lang-tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: #059669;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .translation-text {
+    font-size: 13px;
+    color: #334155;
+    line-height: 1.5;
+    margin: 0;
+  }
 
-/* Card */
-.blog-card {
-  background: var(--canvas, #fff);
-  border: 1px solid var(--hairline, #ebebeb);
-  border-radius: 16px;
-  padding: 24px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.blog-card:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  transform: translateY(-2px);
-  border-color: transparent;
-}
-.card-tag {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--tag-color, #525252);
-  padding: 3px 10px;
-  background: color-mix(in srgb, var(--tag-color, #525252) 12%, transparent);
-  border-radius: 100px;
-  width: fit-content;
-}
-.card-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--ink, #171717);
-  margin: 0;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.card-excerpt {
-  font-size: 0.88rem;
-  color: var(--body, #525252);
-  line-height: 1.6;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex: 1;
-}
-.card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--mute, #888);
-  margin-top: auto;
-  border-top: 1px solid var(--hairline, #ebebeb);
-  padding-top: 12px;
-}
-.card-author { display: flex; align-items: center; gap: 5px; }
+  .reward-cta-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-top: 1px solid #F1F5F9;
+    padding-top: 18px;
+  }
+  .btn-share-story {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #0F172A;
+    color: #FFFFFF;
+    font-size: 13.5px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .btn-share-story:hover {
+    background: #1E293B;
+    transform: translateY(-1px);
+  }
+  .reward-note {
+    font-size: 12.5px;
+    color: #64748B;
+  }
 
-/* Skeleton */
-.blog-skeleton {
-  height: 220px;
-  background: linear-gradient(90deg, var(--canvas-soft,#fafafa) 25%, var(--canvas-soft-2,#f5f5f5) 50%, var(--canvas-soft,#fafafa) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
-  border-radius: 16px;
-  border: 1px solid var(--hairline, #ebebeb);
-}
-@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  /* Search & Controls Section */
+  .blog-controls-section {
+    background: #FFFFFF;
+    border-bottom: 1px solid #E2E8F0;
+    position: sticky;
+    top: 64px;
+    z-index: 20;
+  }
+  .controls-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .blog-search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 580px;
+  }
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94A3B8;
+  }
+  .blog-search-input {
+    width: 100%;
+    padding: 10px 14px 10px 42px;
+    background: #F8FAFC;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #0F172A;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .blog-search-input:focus {
+    border-color: #059669;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+  }
 
-/* Empty state */
-.empty-state {
-  grid-column: 1/-1;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 64px 24px;
-  gap: 12px;
-}
-.empty-state h3 { font-size: 1.25rem; color: var(--ink); margin: 0; }
-.empty-state p { color: var(--mute); margin: 0; font-size: 0.9rem; }
+  /* Filter Bar */
+  .filter-bar {
+    width: 100%;
+  }
+  .filter-inner {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 4px 2px 8px;
+    align-items: center;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filter-inner::-webkit-scrollbar { display: none; }
+  .pill {
+    flex-shrink: 0;
+    padding: 7px 16px;
+    border: 1px solid #E2E8F0;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    background: #FFFFFF;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+    line-height: 1.2;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  }
+  .pill:hover { border-color: #0F172A; color: #0F172A; background: #F8FAFC; }
+  .pill.active { background: #0F172A; color: #FFFFFF; border-color: #0F172A; }
 
-/* Error */
-.fetch-error {
-  grid-column: 1/-1;
-  text-align: center;
-  color: var(--error, #ee0000);
-  padding: 40px;
-  font-size: 0.9rem;
-}
+  /* Grid & Cards */
+  .blogs-grid-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .blogs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 28px;
+  }
 
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(10,10,10,0.6);
-  backdrop-filter: blur(8px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-}
-.modal-overlay.active { opacity: 1; visibility: visible; }
-.modal-card {
-  background: var(--canvas, #fff);
-  border-radius: 20px;
-  max-width: 760px;
-  width: 100%;
-  max-height: 85vh;
-  overflow-y: auto;
-  padding: 40px;
-  position: relative;
-  transform: translateY(20px);
-  transition: transform 0.3s ease;
-  scrollbar-width: thin;
-}
-.modal-overlay.active .modal-card { transform: translateY(0); }
-.modal-close {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: var(--canvas-soft, #fafafa);
-  border: 1px solid var(--hairline, #ebebeb);
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.modal-close:hover { background: var(--canvas-soft-2, #f5f5f5); }
-.modal-tag {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--tag-color);
-  padding: 3px 10px;
-  background: color-mix(in srgb, var(--tag-color) 12%, transparent);
-  border-radius: 100px;
-  margin-bottom: 16px;
-}
-.modal-title {
-  font-size: clamp(1.4rem, 3vw, 2rem);
-  font-weight: 800;
-  color: var(--ink);
-  margin: 0 0 16px;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-}
-.modal-meta {
-  display: flex;
-  gap: 16px;
-  font-size: 13px;
-  color: var(--mute);
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--hairline);
-}
-.modal-content {
-  font-size: 1rem;
-  line-height: 1.8;
-  color: var(--body, #4d4d4d);
-}
-/* Quill content reset inside modal */
-.modal-content h1,.modal-content h2,.modal-content h3 { color: var(--ink); margin: 1.5em 0 0.5em; }
-.modal-content p { margin: 0 0 1em; }
-.modal-content ul,.modal-content ol { padding-left: 1.5em; margin-bottom: 1em; }
-.modal-content blockquote {
-  border-left: 3px solid var(--cyan,#50e3c2);
-  margin: 1em 0;
-  padding: 8px 16px;
-  background: var(--canvas-soft,#fafafa);
-  color: var(--body);
-  border-radius: 0 8px 8px 0;
-}
-.modal-content code { background: var(--canvas-soft-2); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.88em; }
-.modal-content strong { color: var(--ink); }
+  .blog-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .blog-card:hover {
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+    border-color: #CBD5E1;
+  }
+  .card-thumb {
+    width: 100%;
+    height: 200px;
+    max-height: 220px;
+    overflow: hidden;
+    background: #F1F5F9;
+    position: relative;
+  }
+  .card-thumb img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  .blog-card:hover .card-thumb img {
+    transform: scale(1.03);
+  }
+
+  .card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 10px;
+  }
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .card-tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: #334155;
+    padding: 3px 8px;
+    background: #F1F5F9;
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    line-height: 1.2;
+  }
+  .card-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-excerpt {
+    font-size: 13.5px;
+    color: #6B7280;
+    line-height: 1.6;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+  }
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #F3F4F6;
+    padding-top: 14px;
+    margin-top: 6px;
+    font-size: 12px;
+  }
+  .card-date {
+    color: #9CA3AF;
+  }
+  .read-more-label {
+    color: #111827;
+    font-weight: 700;
+  }
+
+  .blog-skeleton {
+    height: 380px;
+    background: #E5E7EB;
+    border-radius: 16px;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 60px 20px;
+    color: #6B7280;
+  }
+
+  @media (max-width: 900px) {
+    .reward-translations-grid {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .blogs-grid-section { padding: 36px 20px 60px; }
+  }
+  @media (max-width: 640px) {
+    .blogs-hero { padding: 36px 16px 28px; }
+    .hero-title { font-size: 1.85rem; margin-bottom: 10px; }
+    .hero-sub { font-size: 0.95rem; margin-bottom: 24px; }
+    .reward-banner { padding: 18px 16px; border-radius: 14px; }
+    .reward-heading { font-size: 17px; }
+    .reward-cta-row { flex-direction: column; align-items: stretch; gap: 10px; }
+    .btn-share-story { justify-content: center; width: 100%; text-align: center; }
+    .reward-note { text-align: center; font-size: 11.5px; }
+    .blogs-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .blogs-grid-section { padding: 24px 14px 48px; }
+    .card-thumb { height: 180px; max-height: 180px; }
+    .card-body { padding: 16px; }
+  }
 </style>

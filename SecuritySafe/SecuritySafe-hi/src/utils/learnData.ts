@@ -1,4 +1,4 @@
-import type { LearnFraudType } from './types';
+﻿import type { LearnFraudType } from './types';
 import type { FraudCategory } from './types';
 
 export const fraudCategories: FraudCategory[] = [
@@ -19,14 +19,14 @@ export const fraudCategories: FraudCategory[] = [
     ],
   },
   {
-    id: 'ai-deepfake-scams',
-    title: 'AI & Deepfake Scams',
+    id: 'ai-media-manipulation-scams',
+    title: 'AI & Manipulated Media Scams',
     icon: '🤖',
-    description: 'Next-generation scams powered by generative AI — cloned voices, deepfake video calls, and AI-written messages that are extremely convincing.',
+    description: 'Next-generation scams powered by generative AI — cloned voices, manipulated video calls, and AI-written messages that are extremely convincing.',
     fraudTypeIds: [
       'ai-voice-cloning-scam',
-      'deepfake-video-call-scam',
-      'ai-deepfake-investment-endorsement-scam',
+      'fake-video-call-impersonation-scam',
+      'ai-celebrity-investment-scam',
       'ai-chatbot-fake-recruiter-scam',
       'ai-generated-fake-news-scam',
     ],
@@ -34,7 +34,7 @@ export const fraudCategories: FraudCategory[] = [
   {
     id: 'government-authority-impersonation',
     title: 'Government & Authority Impersonation',
-    icon: '🚔',
+    icon: '🚓',
     description: 'Fraudsters posing as police, courts, tax officials, or telecom regulators to threaten you into paying money out of fear.',
     fraudTypeIds: [
       'digital-arrest-scam',
@@ -216,7 +216,7 @@ export const fraudTypes: LearnFraudType[] = [
     id: 'qr-scam',
     categoryId: 'banking-payment-fraud',
     title: 'QR Scam',
-    icon: '📸',
+    icon: '📷',
     howItWorks: 'Fraudster sends a QR code saying "Scan this to get money" or "Scan to pay." But scanning their QR code triggers a payment FROM your account, not TO you. QR is for receiving, not for sending.',
     realExample: 'You want to sell something on OLX. "Buyer" says: "Scan my QR code to get payment." You scan and ₹5000 is debited. This is reverse QR scam.',
     redFlags: [
@@ -440,7 +440,7 @@ export const fraudTypes: LearnFraudType[] = [
   },
   {
     id: 'ai-voice-cloning-scam',
-    categoryId: 'ai-deepfake-scams',
+    categoryId: 'ai-media-manipulation-scams',
     title: 'AI Voice Cloning Scam',
     icon: '🗣️',
     howItWorks: 'Scammers use a short clip of someone\'s voice — from social media, a call, or even a voicemail — to train an AI tool that clones it. They then call a family member in a fabricated emergency, perfectly mimicking the real person\'s voice to demand urgent money transfer.',
@@ -469,19 +469,19 @@ export const fraudTypes: LearnFraudType[] = [
       explanation: '✅ Right move! AI voice cloning can perfectly mimic a loved one\'s voice. Always verify by calling them back directly on a number you already know, never the number that called you.',
     },
     tags: [
-      'ai-voice-cloning-scam', 'voice-cloning', 'deepfake-audio', 'ai-scam',
+      'ai-voice-cloning-scam', 'voice-cloning', 'manipulated-audio', 'ai-scam',
       'family-emergency-scam', 'emotional-manipulation', 'vishing',
       'genai-scam', 'generative-ai-fraud', 'social-engineering', 'advanced',
       'high-risk', 'india', 'cybercrime', 'delhi-scam',
     ],
   },
   {
-    id: 'deepfake-video-call-scam',
-    categoryId: 'ai-deepfake-scams',
-    title: 'Deepfake Video Call Scam',
+    id: 'fake-video-call-impersonation-scam',
+    categoryId: 'ai-media-manipulation-scams',
+    title: 'Manipulated Video Call Scam',
     icon: '🎭',
-    howItWorks: 'Fraudsters use deepfake technology to digitally recreate the face and voice of a colleague, friend, or official during a live video call, convincing the victim that they are speaking to someone they trust. This can be used to authorize fund transfers or extract sensitive information.',
-    realExample: 'A 73-year-old man in Kerala lost ₹40,000 after a scammer used a deepfake video call where the impersonator\'s face and voice matched his former colleague exactly — believed to be India\'s first reported deepfake video call scam.',
+    howItWorks: 'Fraudsters use manipulated media technology to digitally recreate the face and voice of a colleague, friend, or official during a live video call, convincing the victim that they are speaking to someone they trust. This can be used to authorize fund transfers or extract sensitive information.',
+    realExample: 'A 73-year-old man in Kerala lost ₹40,000 after a scammer used a manipulated video call where the impersonator\'s face and voice matched his former colleague exactly — believed to be India\'s first reported manipulated video call scam.',
     redFlags: [
       'Video call quality looks slightly off — odd blinking, lighting, or lip-sync',
       'The "person" avoids answering personal questions only the real person would know',
@@ -492,7 +492,7 @@ export const fraudTypes: LearnFraudType[] = [
       'Ask a question only the real person would know the answer to.',
       'End the call and reconnect through a known, verified channel.',
       'Be suspicious of any video call demanding urgent financial action.',
-      'Report deepfake scam attempts to local cybercrime cells.',
+      'Report manipulated media scam attempts to local cybercrime cells.',
     ],
     quiz: {
       question: 'During a video call, a "former colleague" asks you to transfer money urgently but seems to avoid personal questions. What\'s the safest action?',
@@ -503,22 +503,22 @@ export const fraudTypes: LearnFraudType[] = [
         'Transfer a smaller test amount',
       ],
       correctIndex: 1,
-      explanation: '✅ Exactly right! Deepfake video calls can convincingly recreate a real person\'s face and voice. Always verify independently — through another call or in person — before acting on financial requests.',
+      explanation: '✅ Exactly right! manipulated video calls can convincingly recreate a real person\'s face and voice. Always verify independently — through another call or in person — before acting on financial requests.',
     },
     tags: [
-      'deepfake-scam', 'deepfake-video-call', 'ai-impersonation', 'genai-scam',
+      'manipulated-media-scam', 'manipulated-video-call', 'ai-impersonation', 'genai-scam',
       'video-call-fraud', 'face-swap-scam', 'kerala-scam', 'elderly-targeted',
       'senior-citizens', 'social-engineering', 'advanced', 'high-risk', 'india',
       'cybercrime',
     ],
   },
   {
-    id: 'ai-deepfake-investment-endorsement-scam',
-    categoryId: 'ai-deepfake-scams',
-    title: 'AI Deepfake Investment Endorsement Scam',
+    id: 'ai-celebrity-investment-scam',
+    categoryId: 'ai-media-manipulation-scams',
+    title: 'AI Manipulated Endorsement Scam',
     icon: '📊',
-    howItWorks: 'Scammers create deepfake videos of well-known public figures — finance ministers, tech CEOs, or celebrities — appearing to endorse a fake investment platform or crypto scheme. The realistic video lends false credibility, convincing victims to invest in something that doesn\'t actually exist.',
-    realExample: 'Deepfake videos of India\'s Finance Minister and a major tech company\'s CEO were used to promote a fake crypto investment platform, deceiving people who believed the endorsement was genuine.',
+    howItWorks: 'Scammers create manipulated videos of well-known public figures — finance ministers, tech CEOs, or celebrities — appearing to endorse a fake investment platform or crypto scheme. The realistic video lends false credibility, convincing victims to invest in something that doesn\'t actually exist.',
+    realExample: 'manipulated videos of India\'s Finance Minister and a major tech company\'s CEO were used to promote a fake crypto investment platform, deceiving people who believed the endorsement was genuine.',
     redFlags: [
       'A public figure "endorsing" an investment platform you\'ve never heard of',
       'Video shared widely on social media or WhatsApp with urgent calls to invest',
@@ -529,29 +529,29 @@ export const fraudTypes: LearnFraudType[] = [
       'Public figures rarely endorse specific investment apps directly.',
       'Verify any investment news through official, established news sources.',
       'Check SEBI registration before investing anywhere.',
-      'Report deepfake videos to the platform and to cybercrime authorities.',
+      'Report manipulated videos to the platform and to cybercrime authorities.',
     ],
     quiz: {
       question: 'You see a video of a well-known minister endorsing a new crypto platform with "guaranteed returns." What should you do?',
       options: [
         'Invest quickly before the offer ends',
-        'Verify through official news sources — this is likely a deepfake scam',
+        'Verify through official news sources — this is likely a manipulated media scam',
         'Invest a small amount to test it',
         'Share it with friends so they can invest too',
       ],
       correctIndex: 1,
-      explanation: '✅ Correct! Deepfake videos of public figures "endorsing" investment platforms are a fast-growing scam. Always verify through trusted, official news sources before believing or acting on such videos.',
+      explanation: '✅ Correct! manipulated videos of public figures "endorsing" investment platforms are a fast-growing scam. Always verify through trusted, official news sources before believing or acting on such videos.',
     },
     tags: [
-      'deepfake-investment-scam', 'ai-investment-fraud', 'fake-endorsement-scam',
-      'celebrity-deepfake', 'crypto-scam', 'investment-fraud', 'genai-scam',
+      'manipulated-investment-scam', 'ai-investment-fraud', 'fake-endorsement-scam',
+      'celebrity-video-manipulation', 'crypto-scam', 'investment-fraud', 'genai-scam',
       'sebi-fraud', 'social-media-scam', 'misinformation', 'advanced', 'high-risk',
       'india', 'cybercrime',
     ],
   },
   {
     id: 'ai-chatbot-fake-recruiter-scam',
-    categoryId: 'ai-deepfake-scams',
+    categoryId: 'ai-media-manipulation-scams',
     title: 'AI Chatbot Fake Recruiter Scam',
     icon: '🤖',
     howItWorks: 'Fraudsters deploy AI-powered chatbots on WhatsApp or Telegram that behave like real HR recruiters — responding naturally, answering questions, and conducting "interviews" — to lend credibility to fake job offers and extract registration fees or personal data.',
@@ -588,7 +588,7 @@ export const fraudTypes: LearnFraudType[] = [
   },
   {
     id: 'ai-generated-fake-news-scam',
-    categoryId: 'ai-deepfake-scams',
+    categoryId: 'ai-media-manipulation-scams',
     title: 'AI-Generated Fake News & Misinformation Scam',
     icon: '📰',
     howItWorks: 'AI tools are used to generate realistic-looking fake news articles, screenshots, or videos — often about elections, health emergencies, or financial markets — that spread rapidly on social media and are used to manipulate opinions or lure victims into related scams (e.g., panic-buying, fake donation drives).',
@@ -617,9 +617,9 @@ export const fraudTypes: LearnFraudType[] = [
       explanation: '✅ Correct! AI-generated fake videos can look very convincing. If no credible news outlet is reporting the same thing, treat it as likely misinformation and avoid forwarding it.',
     },
     tags: [
-      'ai-fake-news', 'deepfake-misinformation', 'election-misinformation',
+      'ai-fake-news', 'video-misinformation', 'election-misinformation',
       'fake-video-scam', 'genai-scam', 'social-media-misinformation',
-      'whatsapp-forward-scam', 'political-deepfake', 'media-literacy',
+      'whatsapp-forward-scam', 'political-video-manipulation', 'media-literacy',
       'intermediate', 'medium-risk', 'india', 'cybercrime',
     ],
   },
@@ -886,7 +886,7 @@ export const fraudTypes: LearnFraudType[] = [
     id: 'fake-ecommerce-website-scam',
     categoryId: 'shopping-ecommerce-scams',
     title: 'Fake E-commerce Website Scam',
-    icon: '🏬',
+    icon: '🏪',
     howItWorks: 'Fraudsters set up professional-looking online stores — sometimes AI-cloned copies of real brands — advertising huge discounts on social media. Customers pay for products that are either never delivered, or arrive as cheap counterfeits, with no working customer service afterward.',
     realExample: 'Fraudsters cloned a major e-commerce brand\'s website using AI, running fake discount campaigns that lured over 30,000 shoppers into buying non-existent products, leading to an estimated ₹120 crore in losses.',
     redFlags: [
@@ -1108,9 +1108,9 @@ export const fraudTypes: LearnFraudType[] = [
     id: 'crypto-investment-scam',
     categoryId: 'investment-financial-scams',
     title: 'Crypto Investment Scam',
-    icon: '₿',
+    icon: '🪙',
     howItWorks: 'Fraudsters set up fake cryptocurrency exchanges or "AI trading bots" promising automated daily profits from crypto trading. Victims deposit real money or crypto into the platform, see fake "growing balances" on a dashboard, but can never actually withdraw the funds.',
-    realExample: 'A platform called "InvestGPT" used deepfake endorsement videos of well-known public figures to promote itself as an AI-powered crypto trading bot, taking deposits from thousands before disappearing.',
+    realExample: 'A platform called "InvestGPT" used manipulated media endorsement videos of well-known public figures to promote itself as an AI-powered crypto trading bot, taking deposits from thousands before disappearing.',
     redFlags: [
       'Platform claims an "AI bot" guarantees daily crypto profits',
       'Dashboard shows growing balance but withdrawals are always "delayed" or "pending"',
@@ -1136,7 +1136,7 @@ export const fraudTypes: LearnFraudType[] = [
     },
     tags: [
       'crypto-scam', 'cryptocurrency-fraud', 'fake-trading-platform',
-      'ai-trading-bot-scam', 'deepfake-investment-scam', 'bitcoin-scam',
+      'ai-trading-bot-scam', 'manipulated-investment-scam', 'bitcoin-scam',
       'withdrawal-blocked-scam', 'investment-fraud', 'genai-scam', 'advanced',
       'high-risk', 'india', 'cybercrime', 'global',
     ],
@@ -1292,7 +1292,7 @@ export const fraudTypes: LearnFraudType[] = [
     title: 'Instant Loan App Scam',
     icon: '💸',
     howItWorks: 'Unverified loan apps offer "instant loans, no documents needed." To approve the loan, they demand access to your phone\'s contacts, photos, and gallery. After disbursing a small amount, they charge huge hidden fees and threaten to morph your photos or call your contacts to shame you into repaying inflated amounts.',
-    realExample: 'RBI flagged over 1,200 fake loan apps in a single quarter; victims who borrowed small amounts were harassed and extorted afterward, with some scammers even using AI-generated content and deepfaked video "loan officers" to pressure repayment.',
+    realExample: 'RBI flagged over 1,200 fake loan apps in a single quarter; victims who borrowed small amounts were harassed and extorted afterward, with some scammers even using AI-generated content and manipulated video "loan officers" to pressure repayment.',
     redFlags: [
       'Loan approval with no documents or credit check',
       'App asks for contacts, gallery, and SMS permissions',
@@ -1626,7 +1626,7 @@ export const fraudTypes: LearnFraudType[] = [
     categoryId: 'romance-social-engineering-scams',
     title: 'Sextortion Scam',
     icon: '🔒',
-    howItWorks: 'Scammers initiate a seemingly normal video chat or relationship, then either record an intimate video call (sometimes through a hacked app or deepfake manipulation) or convince the victim to share intimate images. They then threaten to leak the content to family, friends, or social media unless a ransom is paid.',
+    howItWorks: 'Scammers initiate a seemingly normal video chat or relationship, then either record an intimate video call (sometimes through a hacked app or manipulated media manipulation) or convince the victim to share intimate images. They then threaten to leak the content to family, friends, or social media unless a ransom is paid.',
     realExample: 'A victim is added to a video call by an attractive stranger who quickly turns explicit; the call is secretly recorded. Screenshots are later sent to the victim along with a demand for money, threatening to share them with the victim\'s entire contact list.',
     redFlags: [
       'Stranger quickly escalates a video call to be intimate or explicit',
@@ -1884,7 +1884,7 @@ export const fraudTypes: LearnFraudType[] = [
     title: 'Lottery/Prize Scam',
     icon: '🎁',
     howItWorks: 'You receive a message or call claiming you\'ve won a lottery, contest, or prize you never entered. To "claim" it, you must pay a processing fee, customs charge, or tax in advance — a prize that never actually exists.',
-    realExample: 'Email: "Congratulations! You\'ve won £500,000 in the UK National Lottery. Pay £250 processing fee to claim." You never bought a UK lottery ticket.',
+    realExample: 'Email: "Congratulations! You\'ve won Â£500,000 in the UK National Lottery. Pay Â£250 processing fee to claim." You never bought a UK lottery ticket.',
     redFlags: [
       'Winning a lottery you never entered',
       'Asked to pay a fee to release the prize',
@@ -1992,7 +1992,7 @@ export const fraudTypes: LearnFraudType[] = [
     title: 'Festival Greeting/E-Card Link Scam',
     icon: '🎉',
     howItWorks: 'Around festivals like Diwali, Holi, or New Year, scammers send festive greeting messages or e-cards via WhatsApp/email containing a malicious link. Clicking it can install malware on your device or lead to a phishing page designed to steal your information.',
-    realExample: 'WhatsApp forward: "Happy Diwali! Click here to see your personalized Diwali greeting card 🎇 [link]" — the link installs malware or redirects to a fake page asking for personal details.',
+    realExample: 'WhatsApp forward: "Happy Diwali! Click here to see your personalized Diwali greeting card ðŸŽ‡ [link]" — the link installs malware or redirects to a fake page asking for personal details.',
     redFlags: [
       'Unexpected greeting card link from an unfamiliar sender or forwarded chain message',
       'Link uses a shortened or unfamiliar URL',

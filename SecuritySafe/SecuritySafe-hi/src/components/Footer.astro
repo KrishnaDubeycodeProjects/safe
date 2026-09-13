@@ -1,0 +1,140 @@
+---
+// src/components/Footer.astro
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-grid">
+      <!-- Brand & Business Summary -->
+      <div class="footer-brand-col">
+        <a href="/" class="footer-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4" stroke-width="2.5"/>
+          </svg>
+          <span class="footer-logo-title">SAFE</span>
+        </a>
+        <p class="footer-about-text">
+          SAFE is India's personal cyber safety and threat verification platform. We empower individuals and families to independently evaluate suspicious messages, payment demands, and unverified schemes in real-time.
+        </p>
+      </div>
+
+      <!-- Quick Navigation Pages -->
+      <div class="footer-col">
+        <h4 class="col-title">Navigation</h4>
+        <ul class="footer-links">
+          <li><a href="/#scanner">Message & Image Scanner</a></li>
+          <li><a href="/blogs">Awareness Blogs & Case Studies</a></li>
+          <li><a href="/emergency">Emergency Fraud Response</a></li>
+        </ul>
+      </div>
+
+      <!-- Business & Feedback -->
+      <div class="footer-col">
+        <h4 class="col-title">About Our Mission</h4>
+        <ul class="footer-links">
+          <li><a href="/learn">Fraud Learning Center</a></li>
+          <li><a href="/feedback">Share Feedback & Scam Reports</a></li>
+          <li><a href="/blogs">Earn by Submitting Real Scam Stories</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">
+        &copy; {currentYear} SAFE Platform. Free public cyber protection service.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: #F9FAFB;
+    color: #4B5563;
+    border-top: 1px solid #E5E7EB;
+    margin-top: 64px;
+    font-family: inherit;
+  }
+  .footer-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 54px 24px 32px;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 48px;
+  }
+  .footer-brand-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #111827;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .footer-logo svg {
+    color: #10B981;
+  }
+  .footer-about-text {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #6B7280;
+    margin: 0;
+    max-width: 440px;
+  }
+
+  .col-title {
+    color: #111827;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin: 0 0 16px;
+  }
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .footer-links a {
+    color: #6B7280;
+    text-decoration: none;
+    font-size: 13.5px;
+    transition: color 0.15s ease;
+  }
+  .footer-links a:hover {
+    color: #0A0A0A;
+  }
+
+  .footer-bottom {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid #E5E7EB;
+    text-align: center;
+  }
+  .footer-copy {
+    margin: 0;
+    font-size: 12.5px;
+    color: #9CA3AF;
+  }
+
+  @media (max-width: 860px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+</style>

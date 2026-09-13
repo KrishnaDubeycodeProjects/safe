@@ -1,0 +1,5 @@
+# SAFE Production robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://safe-security.org/sitemap.xml

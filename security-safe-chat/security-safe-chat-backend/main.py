@@ -1,36 +1,28 @@
 """
 app/main.py — Unified Security Safe Chat Backend
 
-Merges:
-  • Digital-arrest-detector cascade engines (text, link, image, scoring, suggestions)
-  • security-safe-chat-backend LLM pipeline (AWS Bedrock + OCR.space + taxonomy parser)
-  • Supabase two-table logging
-
 Endpoints
 ─────────
   GET  /                      redirect to /docs
   GET  /health                liveness probe
 
-  POST /analyze/text          Bedrock + taxonomy parser (structured JSON verdict)
-  POST /analyze/image         OCR.space → Bedrock + taxonomy parser
-  POST /analyze/base64        base64 image → OCR.space → Bedrock + taxonomy parser
-
-  POST /api/scan/text         Full cascade (keyword + Bedrock) + scoring + suggestions
+  POST /api/scan/text         One-line scam verdict via LLM system prompt (tag + perspective)
   POST /api/scan/link         Link cascade (typosquatting, blocklists, heuristics)
-  POST /api/scan/image        Image cascade (OCR.space + link scan + CV) + scoring + suggestions
   POST /api/feedback          Gmail OAuth feedback (optional — configure credentials.json)
 """
-import asyncio
 import base64 as b64lib
 import json
 import logging
 import os
 import re
 from email.mime.text import MIMEText
-from pathlib import Path
 from typing import Annotated, List, Optional
+from dotenv import load_dotenv
 
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile, status
+# Ensure .env is loaded into environment
+load_dotenv()
+
+from fastapi import FastAPI, Form, File, UploadFile, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -41,23 +33,14 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 # ── Internal modules ──────────────────────────────────────────────────────────
-from app import bedrock, ocr, parser, supabase_logger
+from app import bedrock, ocr
 from app.config import settings
 from app.middleware import APIKeyMiddleware
-from app.schemas import (
-    AnalyzeBase64Request,
-    AnalyzeResponse,
-    AnalyzeTextRequest,
-    HealthResponse,
-    ScamMatch,
-)
+from app.schemas import HealthResponse, MessageVerdict, ImageVerdict
+from app.token_limiter import get_token_status
 
 # ── Cascade engines ───────────────────────────────────────────────────────────
 from utils.link_cascade import LinkCascade
-from utils.image_cascade import ImageCascade
-from utils.scoring_engine import ScoringEngine
-from utils.suggestion_engine import SuggestionEngine
-from utils.text_cascade import TextCascade
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -68,11 +51,7 @@ logging.basicConfig(
 logger = logging.getLogger("safe_backend")
 
 # ── Cascade engine instances ──────────────────────────────────────────────────
-text_cascade_engine   = TextCascade(bedrock_client=bedrock, parser=parser)
-link_cascade_engine   = LinkCascade(bedrock_client=bedrock, parser=parser)
-image_cascade_engine  = ImageCascade(text_cascade_engine, link_cascade_engine, ocr_module=ocr)
-scoring_engine        = ScoringEngine()
-suggestion_engine     = SuggestionEngine()
+link_cascade_engine = LinkCascade(bedrock_client=bedrock)
 
 # ── Rate limiter ──────────────────────────────────────────────────────────────
 limiter = Limiter(key_func=get_remote_address)
@@ -81,12 +60,10 @@ APP_VERSION = "2.0.0"
 
 # ── FastAPI app ───────────────────────────────────────────────────────────────
 app = FastAPI(
-    title="Security Safe Chat — Unified Scam Detection API",
+    title="Security Safe Chat — Scam Detection API",
     description=(
-        "Production backend combining cascade engines (keyword, link, image) "
-        "with AWS Bedrock (Claude 3 Haiku) + OCR.space + Supabase logging.\n\n"
-        "**Analyze endpoints** — structured taxonomy verdict (is_scam, score, entities)\n"
-        "**Scan endpoints** — cascade verdict (label, combined_prob, scoring, suggestions)"
+        "Message scam detection via a single LLM system prompt (one-line "
+        "verdict + tag), plus link-cascade analysis for URLs."
     ),
     version=APP_VERSION,
     docs_url="/docs" if settings.docs_enabled else None,
@@ -105,7 +82,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.get_cors_origins(),
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization", "X-Admin-Key", "X-Request-ID"],
 )
 app.add_middleware(APIKeyMiddleware)
@@ -151,23 +128,20 @@ class FeedbackRequest(BaseModel):
 # ─────────────────────────────────────────────────────────────────────────────
 # BLOG MODELS
 # ─────────────────────────────────────────────────────────────────────────────
+# Blogs are admin-authored only — there is no public submission flow. An admin
+# writes a title, a list of captioned images, and a body of plain text that
+# references images inline via markers like [1], [2] matching each image's
+# position in `images`.
 
-class BlogSubmitRequest(BaseModel):
+class BlogImage(BaseModel):
+    title: str = ""                 # caption shown under the image
+    url: str                        # image URL or data: URI
+
+class BlogRequest(BaseModel):
     title: str
-    author_name: str
-    author_email: Optional[str] = None
-    category: str                   # e.g. "Banking Scam", "UPI Fraud", etc.
-    content_html: str               # Quill Delta HTML output
-    content_text: str               # Plain-text version for email body
-    legal_disclaimer_accepted: bool = False
-
-class BlogApproveRequest(BaseModel):
-    blog_id: str
-    admin_notes: Optional[str] = None
-
-class BlogRejectRequest(BaseModel):
-    blog_id: str
-    reason: Optional[str] = None
+    tags: List[str] = []
+    images: List[BlogImage] = []
+    content_text: str               # plain text body; reference images as [1], [2], ...
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -180,15 +154,18 @@ from datetime import datetime, timezone
 
 
 def _load_blogs() -> dict:
-    """Load blogs store. Returns {approved: [...], pending: [...]}."""
+    """Load blogs store. Returns {"blogs": [...]}."""
     path = settings.blog_storage_path
     if not os.path.exists(path):
-        return {"approved": [], "pending": []}
+        return {"blogs": []}
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return {"approved": [], "pending": []}
+        with open(path, "r", encoding="utf-8-sig") as f:
+            data = json.load(f)
+            data.setdefault("blogs", [])
+            return data
+    except Exception as e:
+        logger.warning(f"Error reading blogs store from {path}: {e}")
+        return {"blogs": []}
 
 
 def _save_blogs(data: dict) -> None:
@@ -202,138 +179,6 @@ def _require_admin(request: Request) -> None:
     key = request.headers.get("X-Admin-Key", "")
     if not settings.admin_blog_key or key != settings.admin_blog_key:
         raise HTTPException(status_code=403, detail="Invalid or missing admin key.")
-
-
-# ═════════════════════════════════════════════════════════════════════════════
-# HELPERS
-# ═════════════════════════════════════════════════════════════════════════════
-
-def _build_analyze_response(parsed: dict, extracted_text: str | None = None) -> AnalyzeResponse:
-    matches = [
-        ScamMatch(
-            id=m["id"], label=m.get("label", ""), category=m.get("category", ""),
-            subcategory=m.get("subcategory", ""), verdict=m.get("verdict", ""),
-            score=m.get("score", 0), red_flags=m.get("red_flags", []),
-            detection_message=m.get("detection_message", ""), entities=m.get("entities", {}),
-        )
-        for m in parsed.get("matches", [])
-    ]
-    score = parsed.get("score")
-    if parsed["case"] == 3 and score is None:
-        score = 90
-    return AnalyzeResponse(
-        case=parsed["case"], is_scam=parsed["is_scam"], score=score,
-        matches=matches, entities=parsed.get("entities", {}),
-        detection_message=parsed.get("detection_message"),
-        ambiguous=parsed.get("ambiguous"), generic_scam=parsed.get("generic_scam"),
-        raw_model_output=parsed.get("raw", ""),
-        extracted_text=extracted_text, parse_error=parsed.get("parse_error"),
-    )
-
-
-async def _classify_text(message: str) -> AnalyzeResponse:
-    try:
-        raw = await bedrock.classify_text(message)
-        return _build_analyze_response(parser.parse(raw))
-    except RuntimeError as exc:
-        logger.warning("Bedrock unavailable (%s) — falling back to heuristic cascade", exc)
-
-    # ── Heuristic fallback (no Bedrock) ─────────────────────────────────────
-    cascade = await text_cascade_engine.scan_async(message)
-    prob = cascade.get("combined_prob", 0.0)
-    is_scam = prob >= 0.5
-    case = 1 if is_scam else 5
-    score = int(prob * 100)
-    explanation = cascade.get("explanation") or ("Scam indicators detected." if is_scam else "Message appears safe.")
-    red_flags = cascade.get("actionSteps") or []
-
-    fallback_match = ScamMatch(
-        id="heuristic",
-        label="Heuristic Detection",
-        category="Local Rules",
-        subcategory="Keyword + Pattern",
-        verdict="Likely Scam" if is_scam else "Likely Safe",
-        score=score,
-        red_flags=red_flags,
-        detection_message=explanation,
-        entities={},
-    )
-    return AnalyzeResponse(
-        case=case,
-        is_scam=is_scam,
-        score=score,
-        matches=[fallback_match] if is_scam else [],
-        entities={},
-        detection_message=explanation,
-        ambiguous=None,
-        generic_scam=None,
-        raw_model_output="[bedrock_unavailable:heuristic_fallback]",
-        extracted_text=None,
-        parse_error="Bedrock unavailable — heuristic fallback used.",
-    )
-
-
-
-
-def _fire_log(*, input_type: str, input_text: str | None, extracted_ocr: str | None,
-               response: AnalyzeResponse, request: Request) -> None:
-    user_agent = request.headers.get("user-agent")
-    ip = (request.headers.get("x-forwarded-for", "").split(",")[0].strip()
-          or (request.client.host if request.client else None))
-    session_id = request.headers.get("x-session-id")
-    asyncio.ensure_future(supabase_logger.log_result(
-        input_type=input_type, input_text=input_text, extracted_ocr=extracted_ocr,
-        response=response.model_dump(), user_agent=user_agent, ip_address=ip,
-        session_id=session_id,
-    ))
-
-
-def _build_cascade_scan_response(cascade_result: dict) -> dict:
-    """Add scoring + suggestions to any cascade result (text, image, link)."""
-    sub = cascade_result.get("sub_results", {})
-    meta = cascade_result.get("meta", {})
-    url_results = sub.get("url_results", [])
-    extracted_urls = meta.get("extracted_urls", [])
-
-    worst_link = None
-    if url_results:
-        worst_link = max(url_results, key=lambda x: x.get("result", {}).get("combined_prob", 0.0)).get("result")
-
-    score_report = scoring_engine.format_detailed_report(
-        scoring_engine.calculate_score(
-            ocr_text_result=sub.get("ocr_text_result"),
-            link_analysis_result=worst_link,
-            image_manipulation_result=cascade_result,
-            extracted_urls_count=len(extracted_urls),
-        )
-    )
-    suggestions = suggestion_engine.generate_suggestions(score_report)
-
-    return {
-        **cascade_result,
-        "scam_score": score_report["scam_score"],
-        "max_score": score_report["max_score"],
-        "risk_level": score_report["risk_level"],
-        "score_label": score_report["label"],
-        "breakdown": score_report["breakdown"],
-        "summary": score_report["summary"],
-        "suggestions": suggestions,
-        "extracted_data": {
-            "ocr_text": meta.get("ocr_text", ""),
-            "urls": meta.get("extracted_urls", []),
-            "phones": meta.get("extracted_phones", []),
-            "emails": meta.get("extracted_emails", []),
-            "qr_content": meta.get("qr_content", ""),
-            "urls_analyzed": meta.get("url_analysis_count", 0),
-        },
-        "url_analysis": [
-            {"url": r.get("url", ""), "label": r.get("result", {}).get("label", ""),
-             "combined_prob": r.get("result", {}).get("combined_prob", 0.0),
-             "explanation": r.get("result", {}).get("explanation", "")}
-            for r in url_results
-        ],
-        "rag": {"explanation": cascade_result.get("explanation"), "advice": cascade_result.get("actionSteps", [])},
-    }
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -351,7 +196,7 @@ async def health():
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# ANALYZE ENDPOINTS — structured Bedrock taxonomy verdict
+# SCAN ENDPOINTS
 # ═════════════════════════════════════════════════════════════════════════════
 
 @app.exception_handler(RequestValidationError)
@@ -364,12 +209,9 @@ async def handle_request_validation_error(request: Request, exc: RequestValidati
             decoded_text = raw_body.decode("utf-8", errors="replace")
             parsed_data = json.loads(decoded_text, strict=False)
             path = request.url.path
-            if path == "/analyze/text":
-                req_obj = AnalyzeTextRequest(**parsed_data)
-                return await analyze_text(req_obj, request)
-            elif path == "/api/scan/text":
+            if path == "/api/scan/text":
                 req_obj = TextScanRequest(**parsed_data)
-                return api_scan_text(request, req_obj)
+                return await api_scan_text(req_obj)
             elif path == "/api/scan/link":
                 req_obj = LinkScanRequest(**parsed_data)
                 return api_scan_link(req_obj)
@@ -381,81 +223,78 @@ async def handle_request_validation_error(request: Request, exc: RequestValidati
         content={"detail": exc.errors()}
     )
 
-@app.post("/analyze/text", response_model=AnalyzeResponse, tags=["Analyze"], summary="Classify plain-text (Bedrock)")
-async def analyze_text(body: AnalyzeTextRequest, request: Request):
-    """
-    Classify a raw SMS / email / chat message via AWS Bedrock + taxonomy parser.
-    Returns a structured verdict: case number, is_scam, score, matched entities.
-    """
-    response = await _classify_text(body.message)
-    _fire_log(input_type="text", input_text=body.message, extracted_ocr=None,
-              response=response, request=request)
-    return response
 
-
-@app.post("/analyze/image", response_model=AnalyzeResponse, tags=["Analyze"], summary="Upload image → OCR → Bedrock")
-async def analyze_image_endpoint(request: Request, file: UploadFile = File(...)):
-    """Upload a screenshot → OCR.space → Bedrock taxonomy classification."""
-    image_bytes = await file.read()
-    if not image_bytes:
-        raise HTTPException(400, "Uploaded file is empty.")
-    try:
-        extracted = await ocr.ocr_from_bytes(
-            image_bytes, filename=file.filename or "upload.jpg",
-            content_type=file.content_type or "image/jpeg",
-        )
-    except (RuntimeError, ValueError) as exc:
-        raise HTTPException(422, f"OCR error: {exc}") from exc
-    response = await _classify_text(extracted)
-    response.extracted_text = extracted
-    _fire_log(input_type="image", input_text=None, extracted_ocr=extracted,
-              response=response, request=request)
-    return response
-
-
-@app.post("/analyze/base64", response_model=AnalyzeResponse, tags=["Analyze"], summary="Base64 image → OCR → Bedrock")
-async def analyze_base64_endpoint(body: AnalyzeBase64Request, request: Request):
-    """Send a base64-encoded image → OCR.space → Bedrock taxonomy classification."""
-    try:
-        extracted = await ocr.ocr_from_base64(body.image, content_type=body.content_type)
-    except (RuntimeError, ValueError) as exc:
-        raise HTTPException(422, f"OCR error: {exc}") from exc
-    response = await _classify_text(extracted)
-    response.extracted_text = extracted
-    _fire_log(input_type="base64", input_text=None, extracted_ocr=extracted,
-              response=response, request=request)
-    return response
-
-
-# ═════════════════════════════════════════════════════════════════════════════
-# SCAN ENDPOINTS — cascade verdict with scoring + suggestions
-# ═════════════════════════════════════════════════════════════════════════════
-
-@app.post("/api/scan/text", tags=["Scan"], summary="Full cascade text scan")
+@app.post("/api/scan/text", response_model=MessageVerdict, tags=["Scan"], summary="Message scam-likelihood check")
 async def api_scan_text(req: TextScanRequest):
     """
-    Tiered text scam detection:
-    Layer 1 → keyword heuristics
-    Layer 2 → AWS Bedrock (Claude 3 Haiku) taxonomy classification
-
-    Returns cascade label, combined_prob, scam_score/10, and actionable suggestions.
+    Sends the message to the LLM with a single system prompt and returns a
+    one-line perspective plus a verdict tag: Safe, Likely Scam, or Scam Confirmed.
     """
     if not req.text.strip():
         raise HTTPException(400, "Text content cannot be empty.")
-    result = await text_cascade_engine.scan_async(req.text)
-    result["ml_prob"] = result.get("combined_prob", 0.0)
-    result["keywords"] = []
-    result["rag"] = {"explanation": result.get("explanation"), "advice": result.get("actionSteps", [])}
+    try:
+        return await bedrock.classify_message(req.text)
+    except HTTPException:
+        raise
+    except RuntimeError as exc:
+        logger.warning("Message classification unavailable: %s", exc)
+        raise HTTPException(503, "Message analysis is temporarily unavailable. Please try again shortly.")
 
-    # Enrich with scoring
-    score_report = scoring_engine.format_detailed_report(
-        scoring_engine.calculate_score(ocr_text_result=result)
-    )
-    suggestions = suggestion_engine.generate_suggestions(score_report)
-    result["scam_score"] = score_report["scam_score"]
-    result["risk_level"] = score_report["risk_level"]
-    result["suggestions"] = suggestions
-    return result
+
+@app.get("/api/usage", tags=["System"], summary="Get daily AI token usage status")
+def api_get_token_usage():
+    """Returns today's token consumption, 10,000 limit, and block status."""
+    return get_token_status()
+
+
+@app.post("/api/scan/image", response_model=ImageVerdict, tags=["Scan"], summary="Image scam & deepfake check with OCR")
+async def api_scan_image(
+    request: Request,
+    file: Optional[UploadFile] = File(None),
+):
+    """
+    Evaluates photos, screenshots, payment receipts, IDs, ads, profile pictures, and documents.
+    1. Extracts visible text via OCR model (OCR.space).
+    2. Runs multimodal analysis (Gemma-3-27b-it via Mantle) on Scam Usage (Axis A) and AI/Deepfake Likelihood (Axis B).
+    """
+    content_type = request.headers.get("content-type", "")
+    image_bytes = None
+    mime_type = "image/jpeg"
+
+    if "multipart/form-data" in content_type and file is not None:
+        image_bytes = await file.read()
+        mime_type = file.content_type or "image/jpeg"
+    else:
+        # Support JSON payload with base64 image
+        try:
+            body = await request.json()
+            b64_str = body.get("image_base64") or body.get("image") or ""
+            if b64_str:
+                if "base64," in b64_str:
+                    header, b64_str = b64_str.split("base64,", 1)
+                    mime_type = header.replace("data:", "").replace(";", "").strip() or "image/jpeg"
+                image_bytes = b64lib.b64decode(b64_str)
+        except Exception:
+            pass
+
+    if not image_bytes:
+        raise HTTPException(400, "No image provided. Please upload an image file or provide image_base64.")
+
+    # 1. OCR text extraction
+    ocr_text = ""
+    try:
+        ocr_text = await ocr.ocr_from_bytes(image_bytes, filename="uploaded_image.jpg", content_type=mime_type)
+        if ocr_text:
+            logger.info("OCR extracted %d characters from image", len(ocr_text))
+    except Exception as e:
+        logger.warning("OCR extraction failed gracefully: %s", e)
+
+    # 2. Multimodal analysis
+    try:
+        return await bedrock.classify_image(image_bytes=image_bytes, mime_type=mime_type, ocr_text=ocr_text)
+    except Exception as exc:
+        logger.error("Image classification error: %s", exc)
+        raise HTTPException(503, "Image analysis is temporarily unavailable. Please try again shortly.")
 
 
 @app.post("/api/scan/link", tags=["Scan"], summary="Link/URL cascade scan")
@@ -474,214 +313,276 @@ def api_scan_link(req: LinkScanRequest):
     return res
 
 
-@app.post("/api/scan/image", tags=["Scan"], summary="Full cascade image scan")
-async def api_scan_image(file: UploadFile = File(...)):
-    """
-    Multi-layer image scam analysis:
-    Layer 0 → SHA-256 hash blocklist
-    Layer 1 → QR code extraction + link cascade
-    Layer 2 → OCR.space text extraction + text cascade (Bedrock)
-    Layer 3 → CV manipulation detection (optional)
+# ═════════════════════════════════════════════════════════════════════════════
+# INVESTIGATE ENDPOINTS — YouTube Video & Comment Scam Analysis
+# ═════════════════════════════════════════════════════════════════════════════
+from app import investigate
 
-    Returns combined_prob, scam_score/10, breakdown, and contextual suggestions.
+class InvestigateRequest(BaseModel):
+    query: str
+
+@app.post("/api/investigate", tags=["Investigate"], summary="YouTube & Threat Intelligence Investigation")
+async def api_investigate(req: InvestigateRequest):
     """
-    suffix = Path(file.filename or "upload.png").suffix or ".png"
-    temp_path = f"temp_scan_{id(file)}{suffix}"
-    try:
-        with open(temp_path, "wb") as f:
-            f.write(await file.read())
-        cascade_result = await image_cascade_engine.scan_async(temp_path)
-        return _build_cascade_scan_response(cascade_result)
-    except Exception as exc:
-        logger.exception("Image scan error: %s", exc)
-        raise HTTPException(500, str(exc))
-    finally:
-        try:
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
-        except Exception:
-            pass
+    Searches YouTube discussions and exposure videos for a suspicious entity,
+    classifies positive vs negative videos, aggregates victim comment signals,
+    and returns a downloadable threat intelligence report.
+    """
+    q = req.query.strip()
+    if not q:
+        raise HTTPException(400, "Query cannot be empty.")
+    
+    videos = investigate.search_youtube_videos(q, max_results=8)
+    report_data = investigate.analyze_investigation(q, videos)
+    return report_data
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# BLOG ENDPOINTS
+# BLOG ENDPOINTS — admin-authored only, published immediately (no review queue)
 # ═════════════════════════════════════════════════════════════════════════════
 
-@app.get("/api/blogs", tags=["Blogs"], summary="List all approved blog posts")
-def list_approved_blogs():
-    """Returns all published (admin-approved) blog posts sorted newest-first."""
+@app.get("/api/blogs", tags=["Blogs"], summary="List all blog posts")
+def list_blogs():
+    """Returns all blog posts, newest first. Public — no auth required."""
     data = _load_blogs()
-    return {"blogs": data.get("approved", []), "total": len(data.get("approved", []))}
+    return {"blogs": data.get("blogs", []), "total": len(data.get("blogs", []))}
 
 
-@app.post("/api/blogs/submit", tags=["Blogs"], summary="User submits a blog post for review")
-def submit_blog(body: BlogSubmitRequest):
-    """
-    Accepts a user blog submission, saves it as PENDING, and emails the admin
-    via the same Gmail OAuth pipeline used by feedback.
-    """
-    if not body.legal_disclaimer_accepted:
-        raise HTTPException(400, "You must accept the legal disclaimer before submitting.")
+@app.get("/api/blogs/{blog_id}", tags=["Blogs"], summary="Get a single blog post")
+def get_blog(blog_id: str):
+    """Returns one blog post by ID. Public — no auth required."""
+    data = _load_blogs()
+    blog = next((b for b in data.get("blogs", []) if b["id"] == blog_id), None)
+    if not blog:
+        raise HTTPException(404, f"Blog ID '{blog_id}' not found.")
+    return blog
+
+
+@app.post("/api/blogs", tags=["Blogs"], summary="[Admin] Create a new blog post")
+def create_blog(body: BlogRequest, request: Request):
+    """Admin-only: creates and immediately publishes a blog post. Requires X-Admin-Key header."""
+    _require_admin(request)
+    if not body.title.strip():
+        raise HTTPException(400, "Title cannot be empty.")
+    if not body.content_text.strip():
+        raise HTTPException(400, "Content cannot be empty.")
 
     blog_id = str(uuid.uuid4())
     ts = datetime.now(timezone.utc).isoformat()
-
     entry = {
         "id": blog_id,
-        "title": body.title,
-        "author_name": body.author_name,
-        "author_email": body.author_email or "",
-        "category": body.category,
-        "content_html": body.content_html,
+        "title": body.title.strip(),
+        "tags": [t.strip() for t in body.tags if t.strip()],
+        "images": [img.model_dump() for img in body.images],
         "content_text": body.content_text,
-        "submitted_at": ts,
-        "status": "pending",
+        "created_at": ts,
+        "updated_at": ts,
     }
 
     data = _load_blogs()
-    data.setdefault("pending", []).insert(0, entry)
+    data.setdefault("blogs", []).insert(0, entry)
     _save_blogs(data)
-
-    # Email admin (best-effort via Gmail OAuth)
-    try:
-        service = _get_gmail_service()
-        profile = service.users().getProfile(userId="me").execute()
-        user_email = profile["emailAddress"]
-
-        email_body = (
-            f"New Blog Submission — SAFE Platform\n"
-            f"{'=' * 50}\n"
-            f"Blog ID : {blog_id}\n"
-            f"Title   : {body.title}\n"
-            f"Author  : {body.author_name} <{body.author_email or 'no email'}>\n"
-            f"Category: {body.category}\n"
-            f"Submitted: {ts}\n\n"
-            f"--- Content (plain text) ---\n{body.content_text}\n\n"
-            f"--- To approve, call: POST /api/blogs/approve with blog_id={blog_id} and X-Admin-Key header ---"
-        )
-        msg = MIMEText(email_body)
-        msg["to"] = user_email
-        msg["from"] = user_email
-        msg["subject"] = f"[Blog Submission] {body.title} | SAFE Platform"
-        raw = b64lib.urlsafe_b64encode(msg.as_bytes()).decode()
-        service.users().messages().send(userId="me", body={"raw": raw}).execute()
-        logger.info("Blog submission email sent for blog_id=%s", blog_id)
-    except Exception as exc:
-        logger.warning("Blog email notification failed (non-fatal): %s", exc)
-
-    return {"success": True, "blog_id": blog_id, "message": "Blog submitted for review. You'll hear back soon!"}
+    return {"success": True, "blog_id": blog_id, "message": "Blog published."}
 
 
-@app.get("/api/blogs/pending", tags=["Blogs"], summary="[Admin] List pending blog submissions")
-def list_pending_blogs(request: Request):
-    """Admin-only: returns all blog submissions awaiting review. Requires X-Admin-Key header."""
+@app.put("/api/blogs/{blog_id}", tags=["Blogs"], summary="[Admin] Update an existing blog post")
+def update_blog(blog_id: str, body: BlogRequest, request: Request):
+    """Admin-only: overwrites an existing blog post's fields. Requires X-Admin-Key header."""
     _require_admin(request)
-    data = _load_blogs()
-    return {"pending": data.get("pending", []), "total": len(data.get("pending", []))}
+    if not body.title.strip():
+        raise HTTPException(400, "Title cannot be empty.")
+    if not body.content_text.strip():
+        raise HTTPException(400, "Content cannot be empty.")
 
-
-@app.post("/api/blogs/approve", tags=["Blogs"], summary="[Admin] Approve a pending blog")
-def approve_blog(body: BlogApproveRequest, request: Request):
-    """Admin-only: moves a pending blog to approved. Requires X-Admin-Key header."""
-    _require_admin(request)
     data = _load_blogs()
-    pending = data.get("pending", [])
-    matched = next((b for b in pending if b["id"] == body.blog_id), None)
+    blogs = data.get("blogs", [])
+    matched = next((b for b in blogs if b["id"] == blog_id), None)
     if not matched:
-        raise HTTPException(404, f"Blog ID '{body.blog_id}' not found in pending queue.")
+        raise HTTPException(404, f"Blog ID '{blog_id}' not found.")
 
-    matched["status"] = "approved"
-    matched["approved_at"] = datetime.now(timezone.utc).isoformat()
-    matched["admin_notes"] = body.admin_notes or ""
-
-    data["pending"] = [b for b in pending if b["id"] != body.blog_id]
-    data.setdefault("approved", []).insert(0, matched)
+    matched["title"] = body.title.strip()
+    matched["tags"] = [t.strip() for t in body.tags if t.strip()]
+    matched["images"] = [img.model_dump() for img in body.images]
+    matched["content_text"] = body.content_text
+    matched["updated_at"] = datetime.now(timezone.utc).isoformat()
     _save_blogs(data)
-    return {"success": True, "blog_id": body.blog_id, "message": "Blog approved and published."}
+    return {"success": True, "blog_id": blog_id, "message": "Blog updated."}
 
 
-@app.post("/api/blogs/reject", tags=["Blogs"], summary="[Admin] Reject a pending blog")
-def reject_blog(body: BlogRejectRequest, request: Request):
-    """Admin-only: removes a pending blog. Requires X-Admin-Key header."""
+@app.delete("/api/blogs/{blog_id}", tags=["Blogs"], summary="[Admin] Delete a blog post")
+def delete_blog(blog_id: str, request: Request):
+    """Admin-only: permanently deletes a blog post. Requires X-Admin-Key header."""
     _require_admin(request)
     data = _load_blogs()
-    pending = data.get("pending", [])
-    if not any(b["id"] == body.blog_id for b in pending):
-        raise HTTPException(404, f"Blog ID '{body.blog_id}' not found in pending queue.")
+    blogs = data.get("blogs", [])
+    if not any(b["id"] == blog_id for b in blogs):
+        raise HTTPException(404, f"Blog ID '{blog_id}' not found.")
 
-    data["pending"] = [b for b in pending if b["id"] != body.blog_id]
+    data["blogs"] = [b for b in blogs if b["id"] != blog_id]
     _save_blogs(data)
-    return {"success": True, "blog_id": body.blog_id, "message": f"Blog rejected. Reason: {body.reason or 'N/A'}"}
+    return {"success": True, "blog_id": blog_id, "message": "Blog deleted."}
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# FEEDBACK (Gmail OAuth — optional)
+# FEEDBACK (Active Multi-Tier Email Dispatch: SMTP + AWS SES + Local + Mailto)
 # ═════════════════════════════════════════════════════════════════════════════
 
-def _get_gmail_service():
-    """Lazy Gmail service loader. Raises ImportError if google libs missing."""
-    from google.auth.transport.requests import Request as GRequest
-    from google.oauth2.credentials import Credentials
-    from google_auth_oauthlib.flow import InstalledAppFlow
-    from googleapiclient.discovery import build
+def _send_feedback_email(contact_info: Optional[str], message_text: str) -> dict:
+    """
+    Delivers citizen feedback to safe.princete@gmail.com via:
+    1. SMTP (using Gmail App Password if configured in .env)
+    2. AWS SES (using verified email identity with existing AWS credentials)
+    3. Graceful status feedback for client-side mailto fallback
+    """
+    load_dotenv(override=True)
+    recipient = os.getenv("FEEDBACK_RECIPIENT_EMAIL", "safe.princete@gmail.com")
+    subject = f"[SAFE Feedback] New Citizen Report ({contact_info or 'Anonymous'})"
+    now_str = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+    body_text = (
+        f"A new feedback or scam report was submitted on the SAFE Platform:\n\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"Sender Contact : {contact_info or 'Not provided (Anonymous)'}\n"
+        f"Timestamp      : {now_str}\n"
+        f"Recipient      : {recipient}\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        f"Message / Report:\n{message_text}\n\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"Automated Notification from SAFE Cyber Defense Intelligence Engine\n"
+    )
 
-    SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
-    creds = None
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(GRequest())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-            creds = flow.run_local_server(port=8001, access_type="offline", prompt="consent")
-        with open("token.json", "w") as t:
-            t.write(creds.to_json())
-    return build("gmail", "v1", credentials=creds, cache_discovery=False)
+    # --- Tier 1: SMTP Dispatch (Gmail / Custom) ---
+    smtp_pass = os.getenv("SMTP_PASSWORD") or os.getenv("GMAIL_APP_PASSWORD")
+    if smtp_pass:
+        smtp_user = os.getenv("SMTP_USER", recipient)
+        smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
+        smtp_port = int(os.getenv("SMTP_PORT", "465"))
+        try:
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+            import smtplib
 
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = subject
+            msg["From"] = smtp_user
+            msg["To"] = recipient
+            if contact_info and "@" in contact_info:
+                msg["Reply-To"] = contact_info
 
-@app.post("/api/feedback", tags=["Feedback"], summary="Submit user feedback via Gmail")
-def receive_feedback(data: FeedbackRequest):
-    """Archive user feedback as a Gmail label 'feedback'. Requires credentials.json."""
+            msg.attach(MIMEText(body_text, "plain", "utf-8"))
+
+            if smtp_port == 465:
+                with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=10) as server:
+                    server.login(smtp_user, smtp_pass)
+                    server.sendmail(smtp_user, [recipient], msg.as_string())
+            else:
+                with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
+                    server.starttls()
+                    server.login(smtp_user, smtp_pass)
+                    server.sendmail(smtp_user, [recipient], msg.as_string())
+
+            logger.info("Feedback email delivered via SMTP to %s", recipient)
+            return {"sent": True, "method": "smtp"}
+        except Exception as exc:
+            logger.warning("SMTP feedback dispatch error: %s", exc)
+
+    # --- Tier 2: AWS SES Dispatch (Using existing AWS Credentials) ---
     try:
-        from googleapiclient.errors import HttpError
-        service = _get_gmail_service()
-        profile = service.users().getProfile(userId="me").execute()
-        user_email = profile["emailAddress"]
+        import boto3
+        aws_key = os.getenv("AWS_ACCESS_KEY_ID") or getattr(settings, "aws_access_key_id", "")
+        aws_secret = os.getenv("AWS_SECRET_ACCESS_KEY") or getattr(settings, "aws_secret_access_key", "")
+        aws_reg = os.getenv("AWS_REGION", "us-east-1") or getattr(settings, "aws_region", "us-east-1")
 
-        # Get or create label
-        labels = service.users().labels().list(userId="me").execute().get("labels", [])
-        label_id = next((l["id"] for l in labels if l["name"].lower() == "feedback"), None)
-        if not label_id:
-            label_id = service.users().labels().create(
-                userId="me",
-                body={"name": "feedback", "labelListVisibility": "labelShow", "messageListVisibility": "show"},
-            ).execute()["id"]
+        if aws_key and aws_secret:
+            ses_client = boto3.client(
+                "ses",
+                region_name=aws_reg,
+                aws_access_key_id=aws_key,
+                aws_secret_access_key=aws_secret,
+            )
+            # Check verification status of recipient
+            attrs_resp = ses_client.get_identity_verification_attributes(Identities=[recipient])
+        status = attrs_resp.get("VerificationAttributes", {}).get(recipient, {}).get("VerificationStatus")
 
-        msg = MIMEText(f"From: {data.email}\n\n{data.message}")
-        msg["to"] = user_email
-        msg["from"] = user_email
-        msg["subject"] = "Feedback | Security Safe Chat"
-        raw = b64lib.urlsafe_b64encode(msg.as_bytes()).decode()
-
-        sent = service.users().messages().send(userId="me", body={"raw": raw, "labelIds": [label_id]}).execute()
-        service.users().messages().modify(
-            userId="me", id=sent["id"],
-            body={"removeLabelIds": ["INBOX", "SENT", "UNREAD"]},
-        ).execute()
-        return {"success": True, "messageId": sent["id"]}
-
-    except ImportError:
-        raise HTTPException(501, "Gmail integration not installed. Run: pip install google-api-python-client google-auth-oauthlib")
+        if status == "Success":
+            send_resp = ses_client.send_email(
+                Source=recipient,
+                Destination={"ToAddresses": [recipient]},
+                ReplyToAddresses=[contact_info] if (contact_info and "@" in contact_info) else [],
+                Message={
+                    "Subject": {"Data": subject, "Charset": "UTF-8"},
+                    "Body": {"Text": {"Data": body_text, "Charset": "UTF-8"}},
+                },
+            )
+            logger.info("Feedback email delivered via AWS SES to %s: %s", recipient, send_resp.get("MessageId"))
+            return {"sent": True, "method": "ses", "message_id": send_resp.get("MessageId")}
+        elif status == "Pending":
+            logger.info("AWS SES identity %s is pending verification", recipient)
+            return {"sent": False, "method": "ses", "status": "pending_verification"}
+        else:
+            # Trigger verification request email from AWS SES to recipient
+            ses_client.verify_email_identity(EmailAddress=recipient)
+            logger.info("Triggered AWS SES verification request to %s", recipient)
+            return {"sent": False, "method": "ses", "status": "verification_sent"}
     except Exception as exc:
-        logger.exception("Feedback error")
-        raise HTTPException(500, str(exc))
+        logger.warning("AWS SES feedback dispatch error: %s", exc)
+
+    return {"sent": False, "method": "none", "status": "no_credentials"}
+
+
+@app.post("/api/feedback", tags=["Feedback"], summary="Submit user feedback or scam report")
+def receive_feedback(data: FeedbackRequest):
+    """Archive user feedback locally and deliver to safe.princete@gmail.com via SMTP / SES."""
+    import json, urllib.parse
+
+    recipient = os.getenv("FEEDBACK_RECIPIENT_EMAIL", "safe.princete@gmail.com")
+    entry = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "email": data.email or "",
+        "message": data.message or "",
+        "recipient": recipient,
+    }
+
+    # 1. Always append to local persistence log
+    try:
+        with open("feedback_submissions.jsonl", "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry) + "\n")
+        logger.info("Feedback recorded locally for %s: %s", recipient, entry)
+    except Exception as exc:
+        logger.warning("Failed to record feedback locally: %s", exc)
+
+    # 2. Attempt active email delivery
+    delivery = _send_feedback_email(data.email, data.message)
+
+    # 3. Construct direct mailto fallback URL
+    subj_enc = urllib.parse.quote(f"SAFE Feedback from {data.email or 'Citizen'}")
+    body_enc = urllib.parse.quote(f"From: {data.email or 'Anonymous'}\n\nFeedback:\n{data.message}\n")
+    mailto_url = f"mailto:{recipient}?subject={subj_enc}&body={body_enc}"
+
+    if delivery.get("sent"):
+        return {
+            "success": True,
+            "email_sent": True,
+            "method": delivery.get("method"),
+            "message": f"Feedback successfully delivered to {recipient}",
+        }
+    else:
+        status_code = delivery.get("status", "pending")
+        return {
+            "success": True,
+            "email_sent": False,
+            "status": status_code,
+            "mailto_url": mailto_url,
+            "message": (
+                f"Feedback recorded! Note: {recipient} has an AWS verification email pending. "
+                f"Once approved, emails will deliver automatically."
+            ),
+        }
 
 # ═════════════════════════════════════════════════════════════════════════════
 # CHAT ENDPOINT — SAFE Saathi conversational + scan integration
 # Rate limit: 50 requests / IP / day
 # General responses: real Bedrock LLM (CHAT_SYSTEM_PROMPT, max 100 tokens)
-# Scan responses: cascade engines + LLM summary
+# Scan responses: LLM system-prompt verdict / link cascade
 # ═════════════════════════════════════════════════════════════════════════════
 
 from app.bedrock import chat_with_llm
@@ -701,21 +602,18 @@ async def api_chat(
     request: Request,
     message: Annotated[str, Form()] = "",
     session_id: Annotated[str, Form()] = "",
-    image: Annotated[Optional[UploadFile], File()] = None,
 ):
     """
     Unified chat endpoint consumed by SecuritySafe frontend.
 
     Routing:
-      - Image uploaded    → image cascade engine, LLM contextualises result
-      - URL or scan text  → text/link cascade engine, LLM contextualises result
+      - URL or scan text  → link cascade / LLM verdict
       - General chat      → real Bedrock LLM (SAFE Saathi strict safety assistant)
 
     Rate limit: 50 requests per IP per day.
     LLM token cap: 100 tokens per response.
     """
     text = (message.strip() if message else "")[:1000]   # hard cap input at 1000 chars
-    has_image = image is not None and image.filename
 
     response = {
         "bot_message": "",
@@ -725,50 +623,11 @@ async def api_chat(
         "is_hallucination": False,
     }
 
-    # ── Image scan path ─────────────────────────────────────────────────────────────
-    if has_image:
-        response["intent_detected"] = "scan"
-        suffix = Path(image.filename or "upload.png").suffix or ".png"
-        temp_path = f"temp_chat_{id(image)}{suffix}"
-        try:
-            contents = await image.read()
-            if len(contents) > 10 * 1024 * 1024:  # 10 MB hard limit
-                response["bot_message"] = "Image is too large (max 10 MB). Please compress and retry."
-                return response
-            with open(temp_path, "wb") as f:
-                f.write(contents)
-
-            cascade_result = await image_cascade_engine.scan_async(temp_path)
-            scan_payload   = _build_cascade_scan_response(cascade_result)
-
-            # LLM contextualises the scan result in plain language
-            try:
-                explanation = cascade_result.get("explanation") or ""
-                llm_summary = await chat_with_llm(
-                    f"An image was scanned for scams. Analysis result: {explanation[:400]}. "
-                    f"Summarize the safety verdict in 2 sentences max."
-                )
-                response["bot_message"] = llm_summary
-            except Exception:
-                response["bot_message"] = f"Image analysed. {scan_payload.get('explanation', 'Analysis complete.')}"
-
-            response["custom_payload"] = scan_payload
-        except Exception as exc:
-            logger.exception("Chat image scan error: %s", exc)
-            response["bot_message"] = "I had trouble analysing that image. Please try a clearer screenshot."
-        finally:
-            try:
-                if os.path.exists(temp_path):
-                    os.remove(temp_path)
-            except Exception:
-                pass
-        return response
-
     # ── Empty message ──────────────────────────────────────────────────────────────────
     if not text:
         response["bot_message"] = (
             "Namaste! I'm SAFE Saathi, your digital safety assistant. "
-            "Share a suspicious message, link, or screenshot and I'll check it for you."
+            "Share a suspicious message or link and I'll check it for you."
         )
         return response
 
@@ -799,39 +658,16 @@ async def api_chat(
         response["custom_payload"] = link_result
         return response
 
-    # ── Strong scan signal → text cascade ────────────────────────────────────────────
+    # ── Strong scan signal → LLM message verdict ─────────────────────────────────────
     if _SCAN_STRONG.search(text) or len(text) > 80:
         response["intent_detected"] = "scan"
-        cascade_result = await text_cascade_engine.scan_async(text)
-        prob = cascade_result.get("combined_prob", 0.0)
-
-        score_report = scoring_engine.format_detailed_report(
-            scoring_engine.calculate_score(ocr_text_result=cascade_result)
-        )
-        suggestions = suggestion_engine.generate_suggestions(score_report)
-        cascade_result.update({
-            "scam_score":  score_report["scam_score"],
-            "risk_level":  score_report["risk_level"],
-            "suggestions": suggestions,
-            "keywords":    [],
-            "rag": {
-                "explanation": cascade_result.get("explanation"),
-                "advice":      cascade_result.get("actionSteps", []),
-            },
-        })
-
-        if prob > 0.25 or _SCAN_STRONG.search(text):
-            try:
-                llm_summary = await chat_with_llm(
-                    f"Scam scan result: {cascade_result.get('explanation','')[:400]}. "
-                    f"Risk score: {score_report['scam_score']}. "
-                    f"Give a 2-sentence verdict with one protective action."
-                )
-                response["bot_message"] = llm_summary
-            except Exception:
-                response["bot_message"] = f"I found some red flags. {cascade_result.get('explanation', '')}"
-            response["custom_payload"] = cascade_result
-            return response
+        try:
+            verdict = await bedrock.classify_message(text)
+            response["bot_message"] = f"{verdict['message']} — {verdict['tag']}."
+            response["custom_payload"] = verdict
+        except RuntimeError:
+            response["bot_message"] = "I'm having trouble analysing that right now — please try again in a moment."
+        return response
 
     # ── General conversation → real LLM (SAFE Saathi strict mode) ────────────────
     response["intent_detected"] = "general"

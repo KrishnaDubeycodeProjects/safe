@@ -22,3 +22,9 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+
+
+phase 1
+system prompt is given for message and for image so now your task is to make optimized use of that 
+and replacing with the current system use for the detection of the message and image

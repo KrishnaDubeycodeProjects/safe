@@ -28,10 +28,6 @@ export default defineConfig({
           target: DEV_API_URL,
           changeOrigin: true,
         },
-        '/api/community': {
-          target: DEV_AI_URL,
-          changeOrigin: true,
-        },
       },
     }),
   },

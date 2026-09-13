@@ -25,7 +25,7 @@ echo.
 
 REM ── Step 3: Create venv if missing ───────────────────────────────────────────
 if not exist "venv\Scripts\python.exe" (
-    echo [1/5] Creating virtual environment...
+    echo [1/3] Creating virtual environment...
     "%PYTHON_EXE%" -m venv venv
     if %errorlevel% neq 0 (
         echo [ERROR] Failed to create venv. Try: python -m pip install virtualenv
@@ -34,59 +34,23 @@ if not exist "venv\Scripts\python.exe" (
     )
     echo       Done.
 ) else (
-    echo [1/5] Virtual environment already exists.
+    echo [1/3] Virtual environment already exists.
 )
 echo.
 
 REM ── Step 4: Upgrade pip ───────────────────────────────────────────────────────
-echo [2/5] Upgrading pip...
+echo [2/3] Upgrading pip...
 venv\Scripts\python.exe -m pip install --upgrade pip --quiet
 echo       Done.
 echo.
 
-REM ── Step 5: Install core packages ─────────────────────────────────────────────
-echo [3/5] Installing core packages (fastapi, uvicorn, nltk, requests, slowapi)...
-venv\Scripts\python.exe -m pip install ^
-    fastapi ^
-    "uvicorn[standard]" ^
-    python-multipart ^
-    pydantic ^
-    "pydantic-settings>=2.0.0" ^
-    "slowapi>=0.1.9" ^
-    requests ^
-    nltk ^
-    --quiet
+REM ── Step 5: Install packages ──────────────────────────────────────────────────
+echo [3/3] Installing packages from requirements.txt...
+venv\Scripts\python.exe -m pip install -r requirements.txt --quiet
 echo       Done.
 echo.
 
-echo [4/5] Installing ML and vision packages (numpy, opencv, scikit-learn, joblib)...
-venv\Scripts\python.exe -m pip install ^
-    numpy ^
-    opencv-python-headless ^
-    scikit-learn ^
-    joblib ^
-    --quiet
-if %errorlevel% neq 0 (
-    echo [WARN] Some ML packages failed. Core API will still work via heuristics.
-) else (
-    echo       Done.
-)
-echo.
-
-echo       Installing optional audio package (soundfile)...
-venv\Scripts\python.exe -m pip install soundfile --quiet >nul 2>&1
-echo       Installing optional speech model (vosk - may take time)...
-venv\Scripts\python.exe -m pip install vosk --quiet >nul 2>&1
-echo       Optional packages installed (or skipped if unavailable).
-echo.
-
-REM ── Step 6: Download NLTK data ────────────────────────────────────────────────
-echo [5/5] Downloading NLTK vader lexicon...
-venv\Scripts\python.exe -c "import nltk; nltk.download('vader_lexicon', quiet=True)"
-echo       Done.
-echo.
-
-REM ── Step 7: Start server ──────────────────────────────────────────────────────
+REM ── Step 6: Start server ──────────────────────────────────────────────────────
 echo ================================================
 echo   Starting API server on http://127.0.0.1:8001
 echo   Docs:   http://127.0.0.1:8001/docs

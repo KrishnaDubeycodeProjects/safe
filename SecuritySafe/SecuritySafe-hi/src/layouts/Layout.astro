@@ -1,42 +1,117 @@
 ---
 import '../styles/global.css';
 import Navbar from '../components/Navbar.astro';
-import AIChatBubble from '../components/AIChatBubble.astro';
+import Footer from '../components/Footer.astro';
 
 export interface Props {
   title?: string;
   description?: string;
   currentPage?: string;
+  image?: string;
+  type?: string;
+  keywords?: string;
 }
 
-const { title = 'SAFE - India\'s Personal Cyber Safety Platform', description = 'Paste any message, link, number or email and know instantly if it\'s safe.', currentPage = 'home' } = Astro.props;
+const {
+  title = "SAFE — India's Personal Cyber Safety & Scam Verification Platform",
+  description = "Verify suspicious SMS, WhatsApp messages, bank calls, UPI QR codes, and YouTube links instantly before you click or pay. India's free, real-time AI scam detection engine.",
+  currentPage = 'home',
+  image = 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
+  type = 'website',
+  keywords = 'scam check, cyber safety india, verify suspicious message, UPI fraud check, digital arrest scam, electricity bill fraud, telegram task scam, report cyber crime 1930, check fake link'
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, 'https://safe-security.org');
 ---
 
 <!doctype html>
 <html lang="en" data-theme="light">
   <head>
+    <!-- Essential Meta Tags -->
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
-    <meta name="theme-color" content="#fafafa" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="generator" content={Astro.generator} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="author" content="SAFE Cyber Defense Team" />
+    <link rel="canonical" href={canonicalURL} />
 
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta property="og:site_name" content="SAFE" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+
+    <!-- Theme & Favicons -->
+    <meta name="theme-color" content="#0A0A0A" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Client-side PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" is:inline></script>
+
+    <!-- Schema.org JSON-LD Structured Data for Rank 1 SEO -->
+    <script type="application/ld+json" is:inline>
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://safe-security.org/#website",
+            "url": "https://safe-security.org/",
+            "name": "SAFE Platform",
+            "description": "India's Personal Cyber Safety and Scam Verification Platform",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://safe-security.org/?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://safe-security.org/#organization",
+            "name": "SAFE Cyber Defense",
+            "url": "https://safe-security.org/",
+            "logo": "https://safe-security.org/favicon.svg",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "1930",
+              "contactType": "emergency",
+              "areaServed": "IN"
+            }
+          }
+        ]
+      }
     </script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4VN0EGP3YR"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-4VN0EGP3YR');
-</script>
+    <!-- Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4VN0EGP3YR"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-4VN0EGP3YR');
+    </script>
   </head>
   <body>
     <Navbar currentPage={currentPage} />
     <slot />
-    <AIChatBubble />
+    <Footer />
   </body>
 </html>

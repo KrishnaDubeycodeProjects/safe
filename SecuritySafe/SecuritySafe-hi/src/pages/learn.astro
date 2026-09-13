@@ -111,22 +111,45 @@ const fraudMap = new Map(fraudTypes.map(f => [f.id, f]));
   #fraud-search:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1); }
 
   .category-section { margin-bottom: 48px; }
-  .category-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
-  .cat-icon { font-size: 32px; background: var(--bg-muted); padding: 12px; border-radius: 12px; }
-  .category-header h2 { font-size: 24px; margin: 0 0 4px 0; color: var(--ink); }
-  .category-header p { font-size: 15px; color: var(--body); margin: 0; line-height: 1.5; }
+  .category-header { display: flex; align-items: center; gap: 18px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .cat-icon { 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    width: 56px; 
+    height: 56px; 
+    font-size: 28px; 
+    line-height: 1; 
+    flex-shrink: 0; 
+    background: #F8FAFC; 
+    border: 1px solid #E2E8F0; 
+    border-radius: 14px; 
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  }
+  .category-header h2 { font-size: 22px; margin: 0 0 4px 0; color: var(--ink); font-weight: 700; }
+  .category-header p { font-size: 14px; color: var(--body); margin: 0; line-height: 1.5; }
 
   .scam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
   
   .scam-card {
     display: block; padding: 20px; background: var(--bg-card);
-    border: 1px solid var(--border); border-radius: 12px;
+    border: 1px solid var(--border); border-radius: 14px;
     text-decoration: none; color: inherit; transition: all 0.2s ease;
   }
-  .scam-card:hover { border-color: var(--green); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+  .scam-card:hover { border-color: var(--green); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
   
-  .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .scam-icon { font-size: 28px; }
+  .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .scam-icon { 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    width: 44px; 
+    height: 44px; 
+    font-size: 24px; 
+    line-height: 1; 
+    background: #F1F5F9; 
+    border-radius: 10px; 
+  }
   .arrow { color: var(--text-dim); transition: transform 0.2s; }
   .scam-card:hover .arrow { transform: translateX(4px); color: var(--green); }
   

@@ -1,0 +1,8 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "astro",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://your-backend.onrender.com/api/$1" }
+  ]
+}

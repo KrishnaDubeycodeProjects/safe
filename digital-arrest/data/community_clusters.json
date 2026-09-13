@@ -2422,5 +2422,32 @@
     "linked_aliases": [],
     "status": "unconfirmed",
     "manually_confirmed": false
+  },
+  "youtube:fcg": {
+    "cluster_key": "youtube:fcg",
+    "platform": "youtube",
+    "handle_raw": "@fcg",
+    "handle_normalized": "fcg",
+    "display_name_seen": "fcg",
+    "company_name_seen": null,
+    "company_name_normalized": "",
+    "report_ids": [
+      "r_20260828_60c989",
+      "r_20260828_2d306a",
+      "r_20260828_43a70d",
+      "r_20260828_1954a0"
+    ],
+    "report_count": 4,
+    "first_reported_at": "2026-08-28T19:15:25.054192Z",
+    "last_reported_at": "2026-08-28T19:16:12.738955Z",
+    "matched_categories": [
+      "Generic Fraud / Impersonation Scheme"
+    ],
+    "sample_messages": [
+      "dream11 scammer"
+    ],
+    "linked_aliases": [],
+    "status": "corroborated",
+    "manually_confirmed": false
   }
 }

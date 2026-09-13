@@ -1,11 +1,6 @@
 import unittest
-import numpy as np
-import cv2
 from unittest.mock import patch, MagicMock
-from utils.image_cascade import ImageCascade
 from utils.link_cascade import LinkCascade
-from utils.scoring_engine import ScoringEngine
-from utils.suggestion_engine import SuggestionEngine
 
 
 class TestLinkCascadeLayers(unittest.TestCase):
@@ -64,9 +59,9 @@ class TestLinkCascadeLayers(unittest.TestCase):
         mock_resp = MagicMock()
         mock_resp.raw.read.return_value = b'<html><input type="password" name="pwd"></html>'
         mock_get.return_value = mock_resp
-        
+
         data = {
-            "final_url": "http://fake-scam.com", 
+            "final_url": "http://fake-scam.com",
             "decoded_domain": "fake-scam.com",
             "is_https": False
         }
@@ -87,7 +82,6 @@ class TestLinkCascadeLayers(unittest.TestCase):
             "is_https": False
         }
 
-        # This calls YOUR FIXED analyze_landing_page method
         prob, reasons = self.cascade.analyze_landing_page(data)
 
         self.assertGreater(prob, 0, f"Expected scam_prob > 0, got {prob}. Reasons: {reasons}")
@@ -96,117 +90,61 @@ class TestLinkCascadeLayers(unittest.TestCase):
             f"Expected 'sbi' in reasons, got: {reasons}"
         )
 
-
-class TestImageCascadeLayers(unittest.TestCase):
-    """Tests for utils/image_cascade.py"""
-
-    def setUp(self):
-        # Mock dependencies since we don't have real models/text_cascade in tests
-        mock_text = MagicMock()
-        mock_link = MagicMock()
-        self.cascade = ImageCascade(mock_text, mock_link)
-        
-        # Create a dummy black image for CV tests
-        self.dummy_img = np.zeros((100, 100, 3), dtype=np.uint8)
-
-    # --- Layer 0: OCR & Extraction ---
-    def test_extract_urls_from_text(self):
-        text = "Visit http://scam-site.xyz or www.phishing.com for money"
-        urls = self.cascade.extract_urls_from_text(text)
-        self.assertEqual(len(urls), 2)
-        self.assertIn("http://scam-site.xyz", urls)
-
-    def test_extract_phone_numbers_indian(self):
-        text = "Call +91-9876543210 or 09876543210 immediately"
-        phones = self.cascade.extract_phone_numbers(text)
-        self.assertGreater(len(phones), 0)
-
-    def test_extract_emails(self):
-        text = "Contact support@fake-bank.com or admin@test.org"
-        emails = self.cascade.extract_emails(text)
-        self.assertEqual(len(emails), 2)
-
-    # --- Layer 1: Hashing ---
-    def test_sha256_calculation(self):
-        # Create temp file
-        import tempfile, os
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as f:
-            cv2.imwrite(f.name, self.dummy_img)
-            temp_path = f.name
-        
-        sha = self.cascade.calculate_sha256(temp_path)
-        self.assertEqual(len(sha), 64)  # SHA256 hex length
-        os.unlink(temp_path)
-
-    def test_dhash_consistency(self):
-        h1 = self.cascade.calculate_dhash(self.dummy_img)
-        h2 = self.cascade.calculate_dhash(self.dummy_img.copy())
-        self.assertEqual(h1, h2)
-
-    # --- Layer 2: CV Manipulations ---
-    def test_clean_image_low_tamper_score(self):
-        score, reasons = self.cascade.analyze_cv_manipulations(self.dummy_img)
-        # A solid black image should have very few contours/blocks
-        self.assertLess(score, 0.1)
-
-    # --- Layer 3: Deepfake (Mocked) ---
-    def test_deepfake_model_not_loaded(self):
-        prob = self.cascade.run_deepfake_inference(self.dummy_img)
-        self.assertEqual(prob, 0.0)
-
-
-class TestScoringAndSuggestions(unittest.TestCase):
-    """Tests for Phase 3 & 4 Engines"""
-
-    def setUp(self):
-        self.scoring = ScoringEngine()
-        self.suggestions = SuggestionEngine()
-
-    def test_score_normalization(self):
-        self.assertEqual(self.scoring._normalize_to_10_scale(0.0), 0.0)
-        self.assertEqual(self.scoring._normalize_to_10_scale(1.0), 10.0)
-        self.assertEqual(self.scoring._normalize_to_10_scale(0.5), 5.0)
-
-    def test_risk_level_classification(self):
-        self.assertEqual(self.scoring._calculate_risk_level(9.0), "CRITICAL")
-        self.assertEqual(self.scoring._calculate_risk_level(7.0), "HIGH")
-        self.assertEqual(self.scoring._calculate_risk_level(5.0), "MEDIUM")
-        self.assertEqual(self.scoring._calculate_risk_level(3.0), "LOW")
-        self.assertEqual(self.scoring._calculate_risk_level(1.0), "SAFE")
-
-    def test_weighted_scoring_combination(self):
-        # Text=8/10, Link=9/10, Image=2/10
-        # Expected: (8*0.4) + (9*0.4) + (2*0.2) = 3.2 + 3.6 + 0.4 = 7.2
-        breakdown = self.scoring.calculate_score(
-            ocr_text_result={"combined_prob": 0.8},
-            link_analysis_result={"combined_prob": 0.9},
-            image_manipulation_result={"combined_prob": 0.2}
+    # --- Layer 5: LLM reasoning (mocked Ollama) ---
+    @patch('utils.link_cascade.query_ollama')
+    @patch('utils.link_cascade.is_ollama_available', return_value=True)
+    def test_llm_reasoning_parses_json(self, mock_available, mock_query):
+        mock_query.return_value = {
+            "text": '{"verdict": "Likely Scam", "risk_percent": 90, "explanation": "Typosquatted domain.", "advice": ["Do not enter credentials."]}'
+        }
+        result = self.cascade.ask_llm_reasoning(
+            {
+                "original_url": "http://fake-sbi.tk",
+                "decoded_domain": "fake-sbi.tk",
+                "final_url": "http://fake-sbi.tk",
+                "redirected": False,
+            },
+            heuristics=["Suspicious TLD"], dom_reasons=[],
         )
-        self.assertAlmostEqual(breakdown.overall_score, 7.2, places=1)
+        self.assertEqual(result.get("verdict"), "Likely Scam")
 
-    def test_suggestion_generation_critical(self):
-        report = {
-            "risk_level": "CRITICAL",
-            "breakdown": {
-                "text_analysis": {"flags": ["Urgency language detected"]},
-                "link_analysis": {"flags": ["Credential harvesting page detected"]},
-                "image_analysis": {"flags": []}
-            }
-        }
-        suggestions = self.suggestions.generate_suggestions(report)
-        
-        self.assertIn("immediate_actions", suggestions)
-        self.assertIn("reporting_info", suggestions)
-        self.assertIsNotNone(suggestions["reporting_info"])  # Should have 1930 info
-        self.assertTrue(any("STOP" in action for action in suggestions["immediate_actions"]))
+    @patch('utils.link_cascade.is_ollama_available', return_value=False)
+    def test_llm_reasoning_skipped_when_unavailable(self, mock_available):
+        result = self.cascade.ask_llm_reasoning({"original_url": "http://x.com"}, [], [])
+        self.assertEqual(result, {})
 
-    def test_suggestion_generation_safe(self):
-        report = {
-            "risk_level": "SAFE",
-            "breakdown": {"text_analysis": {}, "link_analysis": {}, "image_analysis": {}}
-        }
-        suggestions = self.suggestions.generate_suggestions(report)
-        self.assertIsNone(suggestions["reporting_info"])  # No reporting info for safe
+
+class TestMessageClassifier(unittest.TestCase):
+    """Tests for utils/rag_utils.py classify_message() / _parse_verdict()."""
+
+    def test_parse_verdict_safe(self):
+        from utils.rag_utils import _parse_verdict
+        result = _parse_verdict("SAFE|This looks like a normal message between friends.")
+        self.assertEqual(result, {"tag": "Safe", "message": "This looks like a normal message between friends."})
+
+    def test_parse_verdict_scam_confirmed(self):
+        from utils.rag_utils import _parse_verdict
+        result = _parse_verdict("SCAM_CONFIRMED|Demands OTP and threatens arrest.")
+        self.assertEqual(result["tag"], "Scam Confirmed")
+
+    def test_parse_verdict_malformed_falls_back(self):
+        from utils.rag_utils import _parse_verdict
+        result = _parse_verdict("not in the expected format")
+        self.assertEqual(result["tag"], "Likely Scam")
+
+    @patch('utils.rag_utils.is_ollama_available', return_value=False)
+    def test_classify_message_raises_when_ollama_unavailable(self, mock_available):
+        from utils.rag_utils import classify_message
+        with self.assertRaises(RuntimeError):
+            classify_message("Some message")
+
+    @patch('utils.rag_utils.query_ollama')
+    @patch('utils.rag_utils.is_ollama_available', return_value=True)
+    def test_classify_message_parses_ollama_output(self, mock_available, mock_query):
+        from utils.rag_utils import classify_message
+        mock_query.return_value = {"text": "LIKELY_SCAM|Pressures urgent action via an unfamiliar link."}
+        result = classify_message("Click this link now or your account will be suspended!")
+        self.assertEqual(result["tag"], "Likely Scam")
 
 
 if __name__ == '__main__':

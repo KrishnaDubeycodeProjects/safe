@@ -1,83 +1,73 @@
-# 📞 Digital Arrest Detector
+# 📞 Digital Arrest Detector — AI Backend
 
-An AI-powered tool to **detect digital fraud, scams, and deepfakes** across multiple channels including **Text, Audio, and Video**.  
-Built for real-time prevention, alerts, and awareness against modern cyber scams.
+FastAPI backend for the SAFE platform: community scam registry, one-line LLM
+message verdicts, and link/URL analysis.
 
 ---
 
 ## 🚀 Features
 
-- **Text Scam Detection**
-  - NLP-based classification (legit vs scam)
-  - Keyword spotting for risky terms
-  - Sentiment analysis for urgency/fear/threat
-
-- **Audio Scam Detection**
-  - Speech-to-text transcription (supports `en-in`, `hi`, `gu`)
-  - ML-based scam probability scoring
-  - Placeholder for deepfake/voice spoofing detection
-
-- **Video Deepfake Detection**
-  - Keras-based deepfake detection model (`Deepfakes_detection_model.keras`)
-  - Classifies uploaded videos as **Likely Real / Deepfake**
+- **Message scam verdict** — a message is sent to a local LLM (Ollama) with a
+  single system prompt; the response is a one-line perspective plus a tag:
+  `Safe` / `Likely Scam` / `Scam Confirmed`.
+- **Link cascade** — whitelist/blocklist checks, typosquatting detection
+  against 100+ Indian brands, domain heuristics, landing-page analysis, and
+  optional LLM reasoning.
+- **Community Scam Registry** — report/search/corroborate scam handles
+  across platforms, with TF-IDF full-text search, fuzzy matching, and
+  cross-platform identity linking. See `routes/community_routes.py`.
+- **Related videos** — surfaces relevant YouTube coverage alongside
+  community search results (`/api/community/videos`).
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Backend**: Python (Streamlit)
-- **ML/NLP**: Scikit-learn, TF-IDF, Keras
-- **Audio Processing**: Vosk, SoundFile, Wave
-- **Video Processing**: OpenCV, TensorFlow/Keras
-- **Deployment Ready**: Streamlit (demo) / React or Vue (future)
+- **Backend**: FastAPI + Uvicorn
+- **LLM**: Ollama (local), via `utils/rag_utils.py`
+- **Rate limiting**: slowapi
+- **Storage**: flat JSON files (`data/`), optional Supabase for community reports
 
 ---
 
 ## 📂 Project Structure
 
 ```
-Digital-arrest-detector/
-│── app.py                # Main app (Streamlit UI)
-│── models/               # ML models (text, tfidf, deepfake, etc.)
-│── data/                 # Sample data for training
-│── train_text.py         # Script to train text scam detection model
-│── temp_video.mp4        # Example video file for deepfake detection
-│── temp.wav              # Example audio file for scam detection
-│── requirements.txt      # Dependencies
-│── README.md             # Project documentation
+digital-arrest/
+│── app.py                # FastAPI app: health, /api/scan/text, /api/scan/link, /api/feedback
+│── routes/                # /api/community/* endpoints
+│── utils/                 # link_cascade, rag_utils, advanced_search_engine, community_*
+│── data/                  # community reports / clusters / reputation overrides (JSON)
+│── requirements.txt
 ```
 
 ---
 
 ## ⚙️ Installation
 
-1. Clone the repo:
-   ```bash
-   git clone https://github.com/VishvaNarkar/Digital-arrest-detector.git
-   cd Digital-arrest-detector
-   ```
+```bash
+cd digital-arrest
+python -m venv venv
+venv\Scripts\activate          # Windows
+pip install -r requirements.txt
+cp .env.example .env           # fill in real values (YouTube API key, etc.)
+uvicorn app:app --host 127.0.0.1 --port 8001 --reload
+```
 
+Or on Windows, just run `install_and_run.bat`.
 
-2. Run the app:
-   ```bash
-   streamlit run app.py
-   ```
+Message verdicts require a local [Ollama](https://ollama.com) instance running
+(`ollama serve`) with the model set in `utils/rag_utils.py` (`DEFAULT_MODEL`,
+default `phi3:mini`) pulled. Without Ollama running, `/api/scan/text` returns
+`503 Message analysis is temporarily unavailable`.
 
 ---
 
 ## 🖥 Usage
 
-- **Text Analysis** → Paste SMS/Email/Chat text to detect scams  
-- **Audio Analysis** → Upload call recording (wav/mp3) → Transcription + Scam detection  
-- **Video Analysis** → Upload video (mp4/avi) → Deepfake detection   
-
----
-
-## 📌 Future Roadmap
-
-- 🔲 Integrate real-time call/email blocking  
-- 🔲 Advanced multi-language NLP models  
-- 🔲 Deploy full-stack version (FastAPI + React/Vue)  
+- **Text/message check** → `POST /api/scan/text {"text": "..."}` → `{"tag": "...", "message": "..."}`
+- **Link check** → `POST /api/scan/link {"url": "..."}`
+- **Community registry** → see `/docs` (Swagger UI) for the full `/api/community/*` surface.
 
 ---
 

@@ -49,7 +49,7 @@ flowchart TB
 
     subgraph DigitalArrest[Digital-Arrest Service (FastAPI)]
         DR[Arrest Engine]
-        Models[ML Models (Vosk, Keras, Scikit-Learn)]
+        Models[LLM Verdict (Ollama) + Link Cascade]
         Data[CSV/JSON Datasets]
     end
 

@@ -6,6 +6,7 @@ Endpoints:
   GET  /api/community/search          — Basic 4-layer search (backward-compatible)
   GET  /api/community/search/advanced — 7-layer search w/ TF-IDF, pagination, trend scores
   GET  /api/community/search/autocomplete — Handle/company name autocomplete suggestions
+  GET  /api/community/videos          — Related YouTube videos for a search query
   GET  /api/community/profile/{handle} — Cross-platform identity profile
   GET  /api/community/reports/{id}    — Get full report by ID
   POST /api/community/corroborate     — One-tap corroboration
@@ -30,6 +31,7 @@ from utils.advanced_search_engine import (
     advanced_engine,
     AdvancedSearchResponse,
 )
+from utils.youtube_search import search_related_videos
 
 router = APIRouter(prefix="/api/community", tags=["Community Scam Registry"])
 
@@ -168,6 +170,31 @@ def autocomplete(
         limit=limit,
         include_unconfirmed=include_unconfirmed,
     )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Related Videos (YouTube)
+# ─────────────────────────────────────────────────────────────────────────────
+
+@router.get(
+    "/videos",
+    summary="Related scam-awareness videos for a search query (YouTube)",
+)
+def related_videos(
+    q: str = Query(..., min_length=2, description="Same query the user searched the registry with"),
+    limit: int = Query(8, ge=1, le=12, description="Max videos to return"),
+):
+    """
+    Surfaces YouTube videos related to the searched handle/company/scam type,
+    to help users cross-check against public reporting/awareness content.
+
+    The query is sent to YouTube as "`<q>` scam" server-side (the API key is
+    never exposed to the frontend), and results are re-ranked by how many of
+    the search terms actually appear in the video title. Always returns 200
+    with an (possibly empty) `videos` list — never blocks or fails the main
+    registry search if YouTube is unavailable or unconfigured.
+    """
+    return search_related_videos(q, max_results=limit)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
