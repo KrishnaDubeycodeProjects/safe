@@ -7,7 +7,7 @@ import json
 from typing import Dict, List, Tuple, Optional
 import logging
 from datetime import datetime, timezone
-# Ollama / RAG removed — LLM analysis handled by AWS Bedrock in text_cascade.py
+# Ollama / RAG removed — LLM analysis handled by AWS Bedrock (app/bedrock.py)
 def is_ollama_available() -> bool: return False
 def query_ollama(*a, **kw) -> dict: return {}
 def get_url_reputation_override(domain: str) -> float: return -1.0   # -1 = no override
@@ -118,45 +118,33 @@ def validate_ssl_certificate(domain: str) -> Tuple[bool, Optional[str], Optional
 
 
 class LinkCascade:
-    def __init__(self, bedrock_client=None, parser=None):
+    def __init__(self, bedrock_client=None):
         """
         Parameters
         ----------
         bedrock_client : module | None
-            Pass the app.bedrock module — exposes classify_text(text) -> str.
-        parser : module | None
-            Pass the app.parser module — exposes parse(raw) -> dict.
-        If either is None the cascade falls back to heuristic-only labels.
+            Pass the app.bedrock module — exposes classify_message(text) -> dict.
+            If None, the cascade falls back to heuristic-only labels.
         """
         self.bedrock = bedrock_client
-        self.parser = parser
 
     # ── LLM response helpers ──────────────────────────────────────────────────
 
     def _llm_label(self, parsed: dict, combined_prob: float) -> str:
-        """Derive a label from the parser result."""
-        if parsed.get("is_scam"):
+        """Derive a label from the {tag, message} verdict."""
+        tag = parsed.get("tag")
+        if tag in ("Scam Confirmed", "Likely Scam"):
             return "🚨 Likely Scam"
-        if parsed.get("ambiguous"):
-            return "⚠️ Uncertain"
+        if tag == "Safe":
+            return "✅ Likely Safe"
         return "✅ Likely Safe" if combined_prob < 0.35 else "🚨 Likely Scam"
 
     def _llm_explanation(self, parsed: dict, heuristic_fallback: str) -> str:
-        """Pull detection_message from parser result, fall back to heuristics."""
-        matches = parsed.get("matches") or []
-        if matches:
-            msg = matches[0].get("detection_message", "")
-            if msg:
-                return msg
-        return parsed.get("detection_message") or heuristic_fallback
+        """Pull the one-line perspective from the verdict, fall back to heuristics."""
+        return parsed.get("message") or heuristic_fallback
 
     def _llm_action_steps(self, parsed: dict, fallback: list) -> list:
-        """Pull red_flags from parser result as actionSteps, fall back to heuristics."""
-        matches = parsed.get("matches") or []
-        if matches:
-            flags = matches[0].get("red_flags", [])
-            if flags:
-                return flags
+        """The simple verdict has no action-step list — keep the heuristic ones."""
         return fallback
 
     def parse_and_normalize(self, url: str) -> Dict:
@@ -414,15 +402,13 @@ class LinkCascade:
 
     def ask_llm_reasoning(self, data: Dict, heuristics: List[str], dom_reasons: List[str]) -> Dict:
         """
-        Layer 5: AWS Bedrock phishing-intent classification.
+        Layer 5: LLM phishing-intent classification via the shared system-prompt verdict.
 
         Builds a natural-language context string from the URL data and all
-        heuristic flags, then sends it to Bedrock via classify_text().
-        The raw output is parsed by parser.parse() and the full structured
-        result (detection_message, red_flags, is_scam, score) is returned
-        so the caller can use real LLM data instead of hardcoded strings.
+        heuristic flags, then sends it to bedrock.classify_message(), which
+        returns {"tag": "Safe"|"Likely Scam"|"Scam Confirmed", "message": "..."}.
         """
-        if not self.bedrock or not self.parser:
+        if not self.bedrock:
             return {}
 
         all_flags = heuristics + dom_reasons
@@ -441,21 +427,20 @@ class LinkCascade:
 
         try:
             import asyncio
-            # Run the async classify_text in a thread-safe way
+            # Run the async classify_message in a thread-safe way
             try:
                 loop = asyncio.get_event_loop()
                 if loop.is_running():
                     import concurrent.futures
                     with concurrent.futures.ThreadPoolExecutor() as pool:
-                        raw = pool.submit(asyncio.run, self.bedrock.classify_text(context_message)).result(timeout=20)
+                        verdict = pool.submit(asyncio.run, self.bedrock.classify_message(context_message)).result(timeout=20)
                 else:
-                    raw = loop.run_until_complete(self.bedrock.classify_text(context_message))
+                    verdict = loop.run_until_complete(self.bedrock.classify_message(context_message))
             except RuntimeError:
-                raw = asyncio.run(self.bedrock.classify_text(context_message))
+                verdict = asyncio.run(self.bedrock.classify_message(context_message))
 
-            parsed = self.parser.parse(raw)
-            logger.info("Bedrock link analysis: case=%s is_scam=%s", parsed.get('case'), parsed.get('is_scam'))
-            return parsed   # full parser dict: case, is_scam, matches, detection_message, etc.
+            logger.info("Bedrock link analysis: tag=%s", verdict.get("tag"))
+            return verdict   # {"tag": ..., "message": ...}
         except Exception as exc:
             logger.warning("Bedrock link reasoning failed: %s", exc)
             return {}

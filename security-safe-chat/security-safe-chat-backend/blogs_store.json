@@ -1,0 +1,80 @@
+﻿{
+  "blogs": [
+    {
+      "id": "scam-electricity-bill-sms",
+      "title": "Electricity Bill Katne Ka Fake SMS — ₹85,000 Ka Fraud Kaise Hua",
+      "tags": [
+        "Hinglish",
+        "SMS Scam",
+        "Electricity Bill",
+        "APK Scam"
+      ],
+      "images": [
+        {
+          "title": "Fake Electricity Disconnection SMS with APK Link",
+          "url": "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80"
+        }
+      ],
+      "content_text": "Aapke phone par bhi kabhi aisa message aaya hoga: 'Dear Consumer, your electricity power will be disconnected tonight at 9:30 PM because previous month bill was not updated. Please immediately call Electricity Officer at 98xxxxxx.'\n\n[1]\n\nYeh ek bohot bada real scam chal raha hai jisme Pune ke ek retired teacher ne 85,000 rupees ganwa diye. Jab unhone us number par call kiya, toh samne wale ne khud ko official power board ka staff bataya aur bola: 'Sir sirf ₹10 ka token amount pay karke bill update kar lijiye.'\n\nUske baad unse ek APK file download karwayi gayi jiska naam tha 'Bijli_Update.apk'. Yeh koi official app nahi tha, balki ek dangerous screen-sharing tool tha. Jaise hi unhone net banking khola aur OTP aaya, scammers ne unka pura bank balance transfer kar liya.\n\nBachav ke asaan niyam:\n1. Power boards (BSES, Tata Power, Mahavitaran, etc.) kabhi bhi personal mobile number se disconnection warning nahi bhejte.\n2. WhatsApp ya SMS par aayi kisi bhi APK file ko install na karein.\n3. Bill payment sirf official bijli board website ya authorized UPI apps (Google Pay, PhonePe, Paytm) ke direct bill section se karein.",
+      "created_at": "2026-09-12T10:00:00.000Z",
+      "updated_at": "2026-09-12T10:00:00.000Z"
+    },
+    {
+      "id": "scam-digital-arrest-courier",
+      "title": "कूरियर और डिजिटल अरेस्ट फ्रॉड — 'आपके पार्सल में गैरकानूनी सामान मिला है'",
+      "tags": [
+        "Hindi",
+        "Digital Arrest",
+        "Police Impersonation",
+        "Video Call"
+      ],
+      "images": [
+        {
+          "title": "Scammers pretending to be police officials on video call",
+          "url": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80"
+        }
+      ],
+      "content_text": "दिल्ली की एक 68 वर्षीय महिला को एक कॉल आई: 'हम फेडेक्स कूरियर से बोल रहे हैं। आपके आधार नंबर से ताइवान भेजा जा रहा पार्सल कस्टम्स ने रोक लिया है जिसमें 5 जाली पासपोर्ट और नशीले पदार्थ पाए गए हैं।'\n\n[1]\n\nमहिला ने कहा कि उन्होंने कोई पार्सल नहीं भेजा, तो कॉलर ने तुरंत कॉल 'मुंबई क्राइम ब्रांच पुलिस' को ट्रांसफर कर दी। स्काइप वीडियो कॉल पर पुलिस की वर्दी पहने और पीछे पुलिस स्टेशन का बैनर लगाए एक व्यक्ति ने कहा: 'आप मनी लॉन्ड्रिंग केस में मुख्य संदिग्ध हैं। कोर्ट ने आपका डिजिटल अरेस्ट वारंट जारी किया है।'\n\nउन्हें लगातार 36 घंटे वीडियो कॉल पर कमरे में बंद रहने को मजबूर किया गया और जांच के नाम पर 'वेरिफिकेशन अकाउंट' में ₹45 लाख ट्रांसफर करवा लिए। जब पैसे चले गए, तो कॉल कट गई।\n\nयह ध्यान रखें:\n1. भारतीय कानून में 'डिजिटल अरेस्ट' नाम की कोई चीज नहीं होती।\n2. पुलिस, सीबीआई या कस्टम्स कभी भी वीडियो कॉल पर पूछताछ या पैसे ट्रांसफर करने के लिए नहीं कहते।\n3. ऐसी कॉल आते ही तुरंत फोन काटें और राष्ट्रीय साइबर हेल्पलाइन 1930 पर कॉल करें।",
+      "created_at": "2026-09-11T14:30:00.000Z",
+      "updated_at": "2026-09-11T14:30:00.000Z"
+    },
+    {
+      "id": "scam-telegram-part-time-job",
+      "title": "Part-Time Telegram Job Scam — From ₹150 YouTube Like Rewards to ₹12 Lakh Loss",
+      "tags": [
+        "English",
+        "Task Scam",
+        "Work From Home",
+        "Telegram"
+      ],
+      "images": [
+        {
+          "title": "Fake task earning dashboard with inflated balances",
+          "url": "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=1200&q=80"
+        }
+      ],
+      "content_text": "It starts with a simple WhatsApp message from an unknown number: 'Earn ₹3,000 to ₹8,000 daily by simply liking YouTube videos and rating hotels on Google Maps. No experience needed.'\n\n[1]\n\nFor the first 3 videos liked, the victim was immediately credited ₹150 directly into their UPI account. This builds instant trust. Next, the user is moved to a private Telegram group where dozens of fake members post screenshots of earning thousands of rupees every hour.\n\nThen comes the trap — 'Prepaid Merchant Tasks'. To unlock higher commissions, victims are asked to deposit money: first ₹2,000 (returned with 30% profit), then ₹10,000, then ₹50,000. When the user tries to withdraw their accumulated '₹12 Lakh earnings', the admin demands a 20% tax clearance fee. The money is never returned.\n\nGolden Rules to Remember:\n1. Legitimate companies never ask you to pay money to get paid for a job.\n2. High returns for trivial tasks like clicking 'Like' or 'Subscribe' is 100% a pyramid task scam.\n3. Never send money to unknown UPI handles or Telegram admins under the promise of investments.",
+      "created_at": "2026-09-10T09:15:00.000Z",
+      "updated_at": "2026-09-10T09:15:00.000Z"
+    },
+    {
+      "id": "scam-fake-upi-qr-olx",
+      "title": "OLX Fake Army Officer QR Code Trap — 'Pehle ₹1 Bhejo Verify Karne Ke Liye'",
+      "tags": [
+        "Hinglish",
+        "OLX Fraud",
+        "QR Code",
+        "UPI Trap"
+      ],
+      "images": [
+        {
+          "title": "Fraudulent QR code sent to victim claiming to receive payment",
+          "url": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1200&q=80"
+        }
+      ],
+      "content_text": "Jab bhi aap OLX ya Facebook Marketplace par koi purana sofa, bike ya mobile bechne ka ad daalte hain, toh 15 minute me ek buyer call karega: 'Sir mai Indian Army/CISF me posted hu, mera transfer ho raha hai. Mai bina bargaining ke pura payment abhi bhej raha hu.'\n\n[1]\n\nWo victim ko ek QR code bhejta hai aur bolta hai: 'Sir army account se direct payment allow nahi hota. Aap is QR code ko scan karke UPI PIN enter karo, aapke account me turant payment credit ho jayegi.'\n\nJaise hi seller PIN daalta hai, paise aane ke bajaye unke account se kat jaate hain. Jab seller bolta hai ki paise kat gaye, scammer bolta hai: 'Oh technical error ho gaya sir, ab double amount ka QR bhej raha hu, scan karo sab wapas aa jayega.'\n\nSabse jaruri UPI rule:\n1. Paise lene (receive karne) ke liye KABHI BHI UPI PIN enter karne ya QR code scan karne ki jarurat nahi hoti.\n2. UPI PIN sirf aur sirf aapke account se paise bhejne (send karne) ke liye hota hai.",
+      "created_at": "2026-09-09T16:45:00.000Z",
+      "updated_at": "2026-09-09T16:45:00.000Z"
+    }
+  ]
+}

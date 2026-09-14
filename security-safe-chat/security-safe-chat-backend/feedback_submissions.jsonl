@@ -1,0 +1,8 @@
+{"timestamp": "2026-09-13T19:17:44.438089", "email": "citizen@example.com", "message": "Test citizen feedback report", "recipient": "safe.princete@gmail.com"}
+{"timestamp": "2026-09-13T19:20:50.416279", "email": "", "message": "dfiu", "recipient": "safe.princete@gmail.com"}
+{"timestamp": "2026-09-13T19:26:52.905161", "email": "", "message": "gh", "recipient": "safe.princete@gmail.com"}
+{"timestamp": "2026-09-13T19:47:59.380481", "email": "", "message": "fghgfh", "recipient": "safe.princete@gmail.com"}
+{"timestamp": "2026-09-13T19:55:58.462196+00:00", "email": "citizen.tester@example.com", "message": "Testing automatic feedback delivery for safe.princete@gmail.com", "recipient": "safe.princete@gmail.com"}
+{"timestamp": "2026-09-13T19:57:29.879956+00:00", "email": "citizen.tester@example.com", "message": "Testing automatic feedback delivery for safe.princete@gmail.com", "recipient": "safe.princete@gmail.com"}
+{"timestamp": "2026-09-13T20:05:27.957346+00:00", "email": "citizen.tester@example.com", "message": "Testing automatic feedback delivery for safe.princete@gmail.com", "recipient": "safe.princete@gmail.com"}
+{"timestamp": "2026-09-13T20:05:45.706829+00:00", "email": "user.test@gmail.com", "message": "Citizen test message: Security Safe feedback is working directly via Gmail SMTP!", "recipient": "safe.princete@gmail.com"}

@@ -5,9 +5,10 @@ All values are read from environment variables or a .env file at startup.
 Access anywhere in the app via:  from app.config import settings
 """
 
+import os
+from typing import List
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import field_validator
-from typing import List
 
 
 class Settings(BaseSettings):
@@ -24,15 +25,18 @@ class Settings(BaseSettings):
     aws_region: str = "us-east-1"
     bedrock_model_id: str = "anthropic.claude-3-haiku-20240307-v1:0"
     bedrock_anthropic_version: str = "bedrock-2023-05-31"
+    # Bedrock Mantle API key (OpenAI-compatible endpoint for Gemma 4, etc.)
+    bedrock_mantle_api_key: str = ""
+
+
+    # ── OCR.space ─────────────────────────────────────────────────────────────
+    ocr_space_api_key: str = "K84422890888957"
+    ocr_space_api_url: str = "https://api.ocr.space/parse/image"
+    ocr_language: str = "eng"
 
     # ── OpenAI ─────────────────────────────────────────────────────────────────
     openai_api_key: str = ""
     openai_base_url: str = ""
-
-    # ── OCR.space ──────────────────────────────────────────────────────────────
-    ocr_space_api_key: str = ""
-    ocr_space_api_url: str = "https://api.ocr.space/parse/image"
-    ocr_language: str = "eng"
 
     # ── FastAPI App ────────────────────────────────────────────────────────────
     app_env: str = "development"
@@ -42,28 +46,22 @@ class Settings(BaseSettings):
 
     # ── CORS ───────────────────────────────────────────────────────────────────
     cors_origins: str = "*"
+    cors_origin_regex: str = r"^https:\/\/([a-zA-Z0-9_-]+\.)*vercel\.app$"
 
     @field_validator("cors_origins", mode="before")
     @classmethod
     def parse_cors(cls, v: str) -> str:
-        return v  # kept as raw string; split in main.py
+        return v or "*"
 
     def get_cors_origins(self) -> List[str]:
-        # In production: CORS must be explicitly set — never allow wildcard
-        if self.is_production and self.cors_origins == "*":
-            raise ValueError(
-                "CORS_ORIGINS must be explicitly set in production. "
-                "Set it to your frontend domain e.g. https://yourdomain.com"
-            )
-        if self.cors_origins == "*":
+        if not self.cors_origins or self.cors_origins.strip() == "*":
             return ["*"]
-        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+        origins = [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+        return origins if origins else ["*"]
 
     # ── Rate Limiting ──────────────────────────────────────────────────────────
     rate_limit_requests: int = 30
     rate_limit_window_seconds: int = 60
-    max_image_upload_bytes: int = 10 * 1024 * 1024
-    max_image_pixels: int = 25_000_000
 
     # ── Security ───────────────────────────────────────────────────────────────
     api_secret_key: str = ""  # empty = auth disabled
@@ -74,30 +72,10 @@ class Settings(BaseSettings):
     # Strong key required in X-Admin-Key header for blog approve/reject/pending
     admin_blog_key: str = ""
     # Path to JSON file where approved/pending blogs are persisted
-    blog_storage_path: str = "/app/data/blogs_store.json"
+    blog_storage_path: str = "/tmp/blogs_store.json" if os.environ.get("AWS_LAMBDA_FUNCTION_NAME") or os.environ.get("LAMBDA_TASK_ROOT") else "blogs_store.json"
 
     # ── AI Backend (Digital-arrest-detector) ──────────────────────────────────
     ai_api_base_url: str = "http://localhost:8001"
-
-    # ── Supabase Logging ───────────────────────────────────────────────────────
-    # URL and service-role key are available in your Supabase project settings.
-    # Set SUPABASE_LOG_CASES to a comma-separated list of case numbers to log.
-    # Default: "5" (log only 'err'/safe responses for review).
-    # Use "1,2,3,4,5" to log everything.
-    supabase_url: str = ""          # e.g. https://xxxx.supabase.co
-    supabase_service_key: str = ""  # service_role secret key (NOT anon key)
-    supabase_log_cases: str = "5"   # comma-separated case numbers to log
-
-    def get_log_cases(self) -> set[int]:
-        """Return the set of case numbers that should be logged to Supabase."""
-        try:
-            return {int(c.strip()) for c in self.supabase_log_cases.split(",") if c.strip()}
-        except ValueError:
-            return {5}
-
-    @property
-    def supabase_logging_enabled(self) -> bool:
-        return bool(self.supabase_url and self.supabase_service_key)
 
     @property
     def auth_enabled(self) -> bool:

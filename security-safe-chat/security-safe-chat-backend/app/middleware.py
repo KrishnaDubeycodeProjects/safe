@@ -20,7 +20,7 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
     EXEMPT_PATHS = {"/health", "/", "/docs", "/openapi.json", "/redoc"}
 
     async def dispatch(self, request: Request, call_next):
-        if not settings.auth_enabled:
+        if not settings.auth_enabled or request.method == "OPTIONS":
             return await call_next(request)
 
         if request.url.path in self.EXEMPT_PATHS:
