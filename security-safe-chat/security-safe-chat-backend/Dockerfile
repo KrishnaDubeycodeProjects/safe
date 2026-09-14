@@ -1,38 +1,24 @@
-# ── Main FastAPI Backend Dockerfile ──────────────────────────────────────────
-FROM python:3.11-slim
+# ─────────────────────────────────────────────────────────────────────────────
+# AWS Lambda Container Image — Unified SAFE Backend
+# Base: AWS Lambda Python 3.11 Official Base Image
+# ─────────────────────────────────────────────────────────────────────────────
+FROM public.ecr.aws/lambda/python:3.11
 
-# Security: run as non-root
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+# Set working directory to Lambda task root
+WORKDIR ${LAMBDA_TASK_ROOT}
 
-WORKDIR /app
-
-# Install system deps (curl for healthcheck)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Python deps first (cache layer)
+# Install dependencies into LAMBDA_TASK_ROOT
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
-# Copy application
-COPY app/ ./app/
-COPY .env.example .env.example
+# Copy application source code and seed files
+COPY main.py ${LAMBDA_TASK_ROOT}/
+COPY blogs_store.json ${LAMBDA_TASK_ROOT}/
+COPY app/ ${LAMBDA_TASK_ROOT}/app/
+COPY routes/ ${LAMBDA_TASK_ROOT}/routes/
+COPY utils/ ${LAMBDA_TASK_ROOT}/utils/
+COPY data/ ${LAMBDA_TASK_ROOT}/data/
 
-# Data directory for blog storage
-RUN mkdir -p /app/data && chown appuser:appuser /app/data
-
-USER appuser
-
-EXPOSE 8000
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
-
-CMD ["python", "-m", "uvicorn", "app.main:app", \
-     "--host", "0.0.0.0", \
-     "--port", "8000", \
-     "--workers", "4", \
-     "--proxy-headers", \
-     "--forwarded-allow-ips", "*", \
-     "--access-log"]
+# Lambda Function Handler (Mangum ASGI Adapter in main.py)
+CMD [ "main.handler" ]

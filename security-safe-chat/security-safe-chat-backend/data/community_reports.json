@@ -1,0 +1,3572 @@
+[
+  {
+    "report_id": "r_20260724_192e2f",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_0",
+      "handle_normalized": "perftester0",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 0 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_0",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.704726Z",
+    "last_reported_at": "2026-07-24T20:31:22.704726Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_f0a3c8",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_1",
+      "handle_normalized": "perftester1",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 1 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_1",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.708339Z",
+    "last_reported_at": "2026-07-24T20:31:22.708339Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_06f5b1",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_2",
+      "handle_normalized": "perftester2",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 2 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_2",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.713936Z",
+    "last_reported_at": "2026-07-24T20:31:22.713936Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_762f82",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_3",
+      "handle_normalized": "perftester3",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 3 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_3",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.718497Z",
+    "last_reported_at": "2026-07-24T20:31:22.718497Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_896bac",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_4",
+      "handle_normalized": "perftester4",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 4 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_4",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.721904Z",
+    "last_reported_at": "2026-07-24T20:31:22.721904Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_da9190",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_5",
+      "handle_normalized": "perftester5",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 5 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_5",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.727860Z",
+    "last_reported_at": "2026-07-24T20:31:22.727860Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_b3b276",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_6",
+      "handle_normalized": "perftester6",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 6 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_6",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.734971Z",
+    "last_reported_at": "2026-07-24T20:31:22.734971Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_eea30e",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_7",
+      "handle_normalized": "perftester7",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 7 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_7",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.738970Z",
+    "last_reported_at": "2026-07-24T20:31:22.738970Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_220064",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_8",
+      "handle_normalized": "perftester8",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 8 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_8",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.744524Z",
+    "last_reported_at": "2026-07-24T20:31:22.744524Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_d9c148",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_9",
+      "handle_normalized": "perftester9",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 9 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_9",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.750737Z",
+    "last_reported_at": "2026-07-24T20:31:22.750737Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_ac694e",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_10",
+      "handle_normalized": "perftester10",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 10 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_10",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.754559Z",
+    "last_reported_at": "2026-07-24T20:31:22.754559Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_8b23a3",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_11",
+      "handle_normalized": "perftester11",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 11 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_11",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.760123Z",
+    "last_reported_at": "2026-07-24T20:31:22.760123Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_26d7cc",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_12",
+      "handle_normalized": "perftester12",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 12 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_12",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.766866Z",
+    "last_reported_at": "2026-07-24T20:31:22.766866Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_1bccdd",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_13",
+      "handle_normalized": "perftester13",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 13 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_13",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.772406Z",
+    "last_reported_at": "2026-07-24T20:31:22.772406Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_ef1cf9",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_14",
+      "handle_normalized": "perftester14",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 14 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_14",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.779446Z",
+    "last_reported_at": "2026-07-24T20:31:22.779446Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_92a1e0",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_15",
+      "handle_normalized": "perftester15",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 15 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_15",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.785310Z",
+    "last_reported_at": "2026-07-24T20:31:22.785310Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_6307a5",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_16",
+      "handle_normalized": "perftester16",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 16 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_16",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.791852Z",
+    "last_reported_at": "2026-07-24T20:31:22.791852Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_999184",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_17",
+      "handle_normalized": "perftester17",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 17 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_17",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.800385Z",
+    "last_reported_at": "2026-07-24T20:31:22.800385Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_3f2691",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_18",
+      "handle_normalized": "perftester18",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 18 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_18",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.806168Z",
+    "last_reported_at": "2026-07-24T20:31:22.806168Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_3a059e",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_19",
+      "handle_normalized": "perftester19",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 19 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_19",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.813619Z",
+    "last_reported_at": "2026-07-24T20:31:22.813619Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_530906",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_20",
+      "handle_normalized": "perftester20",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 20 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_20",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.822037Z",
+    "last_reported_at": "2026-07-24T20:31:22.822037Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_6985f3",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_21",
+      "handle_normalized": "perftester21",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 21 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_21",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.831667Z",
+    "last_reported_at": "2026-07-24T20:31:22.831667Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_42ed65",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_22",
+      "handle_normalized": "perftester22",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 22 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_22",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.840618Z",
+    "last_reported_at": "2026-07-24T20:31:22.840618Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_4a7635",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_23",
+      "handle_normalized": "perftester23",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 23 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_23",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.850645Z",
+    "last_reported_at": "2026-07-24T20:31:22.850645Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_421767",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_24",
+      "handle_normalized": "perftester24",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 24 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_24",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.859192Z",
+    "last_reported_at": "2026-07-24T20:31:22.859192Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_04c121",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_25",
+      "handle_normalized": "perftester25",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 25 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_25",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.868436Z",
+    "last_reported_at": "2026-07-24T20:31:22.868436Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_600db9",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_26",
+      "handle_normalized": "perftester26",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 26 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_26",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.879385Z",
+    "last_reported_at": "2026-07-24T20:31:22.879385Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_afa576",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_27",
+      "handle_normalized": "perftester27",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 27 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_27",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.886928Z",
+    "last_reported_at": "2026-07-24T20:31:22.886928Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_3dbc95",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_28",
+      "handle_normalized": "perftester28",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 28 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_28",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.896910Z",
+    "last_reported_at": "2026-07-24T20:31:22.896910Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_550332",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_29",
+      "handle_normalized": "perftester29",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 29 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_29",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.902912Z",
+    "last_reported_at": "2026-07-24T20:31:22.902912Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_86bbe1",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_30",
+      "handle_normalized": "perftester30",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 30 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_30",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.914165Z",
+    "last_reported_at": "2026-07-24T20:31:22.914165Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_519d90",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_31",
+      "handle_normalized": "perftester31",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 31 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_31",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.921727Z",
+    "last_reported_at": "2026-07-24T20:31:22.921727Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_be8c2a",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_32",
+      "handle_normalized": "perftester32",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 32 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_32",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.933796Z",
+    "last_reported_at": "2026-07-24T20:31:22.933796Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_9241d2",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_33",
+      "handle_normalized": "perftester33",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 33 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_33",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.947120Z",
+    "last_reported_at": "2026-07-24T20:31:22.947120Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_f7bc2c",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_34",
+      "handle_normalized": "perftester34",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 34 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_34",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.957306Z",
+    "last_reported_at": "2026-07-24T20:31:22.957306Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_589231",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_35",
+      "handle_normalized": "perftester35",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 35 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_35",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.969388Z",
+    "last_reported_at": "2026-07-24T20:31:22.969388Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_65da27",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_36",
+      "handle_normalized": "perftester36",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 36 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_36",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.981452Z",
+    "last_reported_at": "2026-07-24T20:31:22.981452Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_859102",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_37",
+      "handle_normalized": "perftester37",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 37 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_37",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:22.989901Z",
+    "last_reported_at": "2026-07-24T20:31:22.989901Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_1f4644",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_38",
+      "handle_normalized": "perftester38",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 38 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_38",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.002093Z",
+    "last_reported_at": "2026-07-24T20:31:23.002093Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_b8ca92",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_39",
+      "handle_normalized": "perftester39",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 39 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_39",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.014322Z",
+    "last_reported_at": "2026-07-24T20:31:23.014322Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_cb53ff",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_40",
+      "handle_normalized": "perftester40",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 40 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_40",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.022888Z",
+    "last_reported_at": "2026-07-24T20:31:23.022888Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_e2ff26",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_41",
+      "handle_normalized": "perftester41",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 41 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_41",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.040732Z",
+    "last_reported_at": "2026-07-24T20:31:23.040732Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_21aa2b",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_42",
+      "handle_normalized": "perftester42",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 42 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_42",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.057210Z",
+    "last_reported_at": "2026-07-24T20:31:23.057210Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_b4cd11",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_43",
+      "handle_normalized": "perftester43",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 43 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_43",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.072473Z",
+    "last_reported_at": "2026-07-24T20:31:23.072473Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_a91246",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_44",
+      "handle_normalized": "perftester44",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 44 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_44",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.086378Z",
+    "last_reported_at": "2026-07-24T20:31:23.086378Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_5d1659",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_45",
+      "handle_normalized": "perftester45",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 45 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_45",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.099301Z",
+    "last_reported_at": "2026-07-24T20:31:23.099301Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_d0c333",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_46",
+      "handle_normalized": "perftester46",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 46 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_46",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.113355Z",
+    "last_reported_at": "2026-07-24T20:31:23.113355Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_569f2c",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_47",
+      "handle_normalized": "perftester47",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 47 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_47",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.124253Z",
+    "last_reported_at": "2026-07-24T20:31:23.124253Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_f36431",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_48",
+      "handle_normalized": "perftester48",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 48 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_48",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.140001Z",
+    "last_reported_at": "2026-07-24T20:31:23.140001Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_3babcd",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_49",
+      "handle_normalized": "perftester49",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 49 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_49",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.156222Z",
+    "last_reported_at": "2026-07-24T20:31:23.156222Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_ffb7fc",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_50",
+      "handle_normalized": "perftester50",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 50 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_50",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.171153Z",
+    "last_reported_at": "2026-07-24T20:31:23.171153Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_4611c7",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_51",
+      "handle_normalized": "perftester51",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 51 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_51",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.183882Z",
+    "last_reported_at": "2026-07-24T20:31:23.183882Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_f017a7",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_52",
+      "handle_normalized": "perftester52",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 52 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_52",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.196304Z",
+    "last_reported_at": "2026-07-24T20:31:23.196304Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_04a37a",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_53",
+      "handle_normalized": "perftester53",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 53 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_53",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.208750Z",
+    "last_reported_at": "2026-07-24T20:31:23.208750Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_bc4cda",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_54",
+      "handle_normalized": "perftester54",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 54 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_54",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.221972Z",
+    "last_reported_at": "2026-07-24T20:31:23.221972Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_8a135a",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_55",
+      "handle_normalized": "perftester55",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 55 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_55",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.239991Z",
+    "last_reported_at": "2026-07-24T20:31:23.239991Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_993c24",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_56",
+      "handle_normalized": "perftester56",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 56 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_56",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.258034Z",
+    "last_reported_at": "2026-07-24T20:31:23.258034Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_1947ec",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_57",
+      "handle_normalized": "perftester57",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 57 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_57",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.272032Z",
+    "last_reported_at": "2026-07-24T20:31:23.272032Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_008c5f",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_58",
+      "handle_normalized": "perftester58",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 58 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_58",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.289111Z",
+    "last_reported_at": "2026-07-24T20:31:23.289111Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_5ef9dd",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_59",
+      "handle_normalized": "perftester59",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 59 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_59",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.308761Z",
+    "last_reported_at": "2026-07-24T20:31:23.308761Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_cca901",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_60",
+      "handle_normalized": "perftester60",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 60 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_60",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.330500Z",
+    "last_reported_at": "2026-07-24T20:31:23.330500Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_11a72b",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_61",
+      "handle_normalized": "perftester61",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 61 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_61",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.352294Z",
+    "last_reported_at": "2026-07-24T20:31:23.352294Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_a766ec",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_62",
+      "handle_normalized": "perftester62",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 62 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_62",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.375233Z",
+    "last_reported_at": "2026-07-24T20:31:23.375233Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_47a079",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_63",
+      "handle_normalized": "perftester63",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 63 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_63",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.398497Z",
+    "last_reported_at": "2026-07-24T20:31:23.398497Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_838641",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_64",
+      "handle_normalized": "perftester64",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 64 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_64",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.421246Z",
+    "last_reported_at": "2026-07-24T20:31:23.421246Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_95b200",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_65",
+      "handle_normalized": "perftester65",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 65 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_65",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.441827Z",
+    "last_reported_at": "2026-07-24T20:31:23.441827Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_c4ac59",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_66",
+      "handle_normalized": "perftester66",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 66 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_66",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.465312Z",
+    "last_reported_at": "2026-07-24T20:31:23.465312Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_3e77e3",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_67",
+      "handle_normalized": "perftester67",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 67 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_67",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.479270Z",
+    "last_reported_at": "2026-07-24T20:31:23.479270Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_3a1a4c",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_68",
+      "handle_normalized": "perftester68",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 68 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_68",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.493160Z",
+    "last_reported_at": "2026-07-24T20:31:23.493160Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_e588f4",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_69",
+      "handle_normalized": "perftester69",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 69 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_69",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.511568Z",
+    "last_reported_at": "2026-07-24T20:31:23.511568Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_ccf7db",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_70",
+      "handle_normalized": "perftester70",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 70 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_70",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.526873Z",
+    "last_reported_at": "2026-07-24T20:31:23.526873Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_4a963e",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_71",
+      "handle_normalized": "perftester71",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 71 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_71",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.550679Z",
+    "last_reported_at": "2026-07-24T20:31:23.550679Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_e744bb",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_72",
+      "handle_normalized": "perftester72",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 72 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_72",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.572158Z",
+    "last_reported_at": "2026-07-24T20:31:23.572158Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_cde891",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_73",
+      "handle_normalized": "perftester73",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 73 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_73",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.589588Z",
+    "last_reported_at": "2026-07-24T20:31:23.589588Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_3f8cf9",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_74",
+      "handle_normalized": "perftester74",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 74 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_74",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.606602Z",
+    "last_reported_at": "2026-07-24T20:31:23.606602Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_21dc7d",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_75",
+      "handle_normalized": "perftester75",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 75 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_75",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.625712Z",
+    "last_reported_at": "2026-07-24T20:31:23.625712Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_2bc237",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_76",
+      "handle_normalized": "perftester76",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 76 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_76",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.646298Z",
+    "last_reported_at": "2026-07-24T20:31:23.646298Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_44cf28",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_77",
+      "handle_normalized": "perftester77",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 77 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_77",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.662616Z",
+    "last_reported_at": "2026-07-24T20:31:23.662616Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_1e7977",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_78",
+      "handle_normalized": "perftester78",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 78 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_78",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.679859Z",
+    "last_reported_at": "2026-07-24T20:31:23.679859Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_f7a062",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_79",
+      "handle_normalized": "perftester79",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 79 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_79",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.694711Z",
+    "last_reported_at": "2026-07-24T20:31:23.694711Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_40dc17",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_80",
+      "handle_normalized": "perftester80",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 80 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_80",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.712874Z",
+    "last_reported_at": "2026-07-24T20:31:23.712874Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_4ad4ba",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_81",
+      "handle_normalized": "perftester81",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 81 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_81",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.731743Z",
+    "last_reported_at": "2026-07-24T20:31:23.731743Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_328c81",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_82",
+      "handle_normalized": "perftester82",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 82 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_82",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.751661Z",
+    "last_reported_at": "2026-07-24T20:31:23.751661Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_f557cb",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_83",
+      "handle_normalized": "perftester83",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 83 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_83",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.770456Z",
+    "last_reported_at": "2026-07-24T20:31:23.770456Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_083ae1",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_84",
+      "handle_normalized": "perftester84",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 84 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_84",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.787896Z",
+    "last_reported_at": "2026-07-24T20:31:23.787896Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_ee55c1",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_85",
+      "handle_normalized": "perftester85",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 85 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_85",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.805262Z",
+    "last_reported_at": "2026-07-24T20:31:23.805262Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_0d31ff",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_86",
+      "handle_normalized": "perftester86",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 86 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_86",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.828937Z",
+    "last_reported_at": "2026-07-24T20:31:23.828937Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_629f23",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_87",
+      "handle_normalized": "perftester87",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 87 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_87",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.849997Z",
+    "last_reported_at": "2026-07-24T20:31:23.849997Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_20f004",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_88",
+      "handle_normalized": "perftester88",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 88 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_88",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.869904Z",
+    "last_reported_at": "2026-07-24T20:31:23.869904Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_878870",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_89",
+      "handle_normalized": "perftester89",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 89 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_89",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.888688Z",
+    "last_reported_at": "2026-07-24T20:31:23.888688Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_be886f",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_90",
+      "handle_normalized": "perftester90",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 90 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_90",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.908869Z",
+    "last_reported_at": "2026-07-24T20:31:23.908869Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_d16088",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_91",
+      "handle_normalized": "perftester91",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 91 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_91",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.929553Z",
+    "last_reported_at": "2026-07-24T20:31:23.929553Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_23c38c",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_92",
+      "handle_normalized": "perftester92",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 92 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_92",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.950767Z",
+    "last_reported_at": "2026-07-24T20:31:23.950767Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_a4452f",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_93",
+      "handle_normalized": "perftester93",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 93 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_93",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.968500Z",
+    "last_reported_at": "2026-07-24T20:31:23.968500Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_79b011",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_94",
+      "handle_normalized": "perftester94",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 94 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_94",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:23.988514Z",
+    "last_reported_at": "2026-07-24T20:31:23.988514Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_8930e1",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_95",
+      "handle_normalized": "perftester95",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 95 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_95",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:24.005573Z",
+    "last_reported_at": "2026-07-24T20:31:24.005573Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_080194",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_96",
+      "handle_normalized": "perftester96",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 96 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_96",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:24.026654Z",
+    "last_reported_at": "2026-07-24T20:31:24.026654Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_d2aabb",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_97",
+      "handle_normalized": "perftester97",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 97 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_97",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:24.048163Z",
+    "last_reported_at": "2026-07-24T20:31:24.048163Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_e60be0",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_98",
+      "handle_normalized": "perftester98",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 98 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_98",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:24.071922Z",
+    "last_reported_at": "2026-07-24T20:31:24.071922Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260724_9cda36",
+    "report_category": "social_media_profile",
+    "platform": "instagram",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@perf_tester_99",
+      "handle_normalized": "perftester99",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "perf test scam message number 99 with fraud recruitment job salary",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "5.1.1|text_analyzed",
+      "case": "single",
+      "matched_ids": [
+        "5.1.1"
+      ],
+      "category_label": "Fake Job / Hiring Scam",
+      "detection_message": "Message flagged as Fake Job / Hiring Scam due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "perf_99",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-07-24T20:31:24.098108Z",
+    "last_reported_at": "2026-07-24T20:31:24.098108Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260808_21c6da",
+    "report_category": "social_media_profile",
+    "platform": "facebook",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@fbu",
+      "handle_normalized": "fbu",
+      "profile_url": null,
+      "display_name_seen": "dfs",
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "sfds",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "gen|text_analyzed",
+      "case": "not_scam",
+      "matched_ids": [
+        "gen"
+      ],
+      "category_label": "Generic Fraud / Impersonation Scheme",
+      "detection_message": "Message flagged as Generic Fraud / Impersonation Scheme due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "sdfsf",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-08-08T07:29:37.873870Z",
+    "last_reported_at": "2026-08-08T07:29:37.873870Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260828_60c989",
+    "report_category": "social_media_profile",
+    "platform": "youtube",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@fcg",
+      "handle_normalized": "fcg",
+      "profile_url": null,
+      "display_name_seen": "fcg",
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "dream11 scammer",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "gen|text_analyzed",
+      "case": "not_scam",
+      "matched_ids": [
+        "gen"
+      ],
+      "category_label": "Generic Fraud / Impersonation Scheme",
+      "detection_message": "Message flagged as Generic Fraud / Impersonation Scheme due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "usr_hash_128c3197",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-08-28T19:15:25.054192Z",
+    "last_reported_at": "2026-08-28T19:15:25.054192Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260828_2d306a",
+    "report_category": "social_media_profile",
+    "platform": "youtube",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@fcg",
+      "handle_normalized": "fcg",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "dream11 scammer",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "gen|text_analyzed",
+      "case": "not_scam",
+      "matched_ids": [
+        "gen"
+      ],
+      "category_label": "Generic Fraud / Impersonation Scheme",
+      "detection_message": "Message flagged as Generic Fraud / Impersonation Scheme due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "usr_hash_7bdb0187",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-08-28T19:16:07.419963Z",
+    "last_reported_at": "2026-08-28T19:16:07.419963Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260828_43a70d",
+    "report_category": "social_media_profile",
+    "platform": "youtube",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@fcg",
+      "handle_normalized": "fcg",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "dream11 scammer",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "gen|text_analyzed",
+      "case": "not_scam",
+      "matched_ids": [
+        "gen"
+      ],
+      "category_label": "Generic Fraud / Impersonation Scheme",
+      "detection_message": "Message flagged as Generic Fraud / Impersonation Scheme due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "usr_hash_f6d1dc3e",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-08-28T19:16:08.327551Z",
+    "last_reported_at": "2026-08-28T19:16:08.327551Z",
+    "report_count": 1
+  },
+  {
+    "report_id": "r_20260828_1954a0",
+    "report_category": "social_media_profile",
+    "platform": "youtube",
+    "platform_other_name": null,
+    "identifier": {
+      "handle_raw": "@fcg",
+      "handle_normalized": "fcg",
+      "profile_url": null,
+      "display_name_seen": null,
+      "company_name_seen": null,
+      "company_name_normalized": ""
+    },
+    "message_text": "dream11 scammer",
+    "evidence_urls": [],
+    "classified_scam": {
+      "llm_output_raw": "gen|text_analyzed",
+      "case": "not_scam",
+      "matched_ids": [
+        "gen"
+      ],
+      "category_label": "Generic Fraud / Impersonation Scheme",
+      "detection_message": "Message flagged as Generic Fraud / Impersonation Scheme due to suspicious pattern match."
+    },
+    "reporter": {
+      "reporter_id": "usr_hash_9a9c6554",
+      "trust_score": 0.7
+    },
+    "status": "unconfirmed",
+    "linked_aliases": [],
+    "created_at": "2026-08-28T19:16:12.738955Z",
+    "last_reported_at": "2026-08-28T19:16:12.738955Z",
+    "report_count": 1
+  }
+]

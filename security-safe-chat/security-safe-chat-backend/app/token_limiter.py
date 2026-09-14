@@ -10,8 +10,9 @@ from fastapi import HTTPException
 logger = logging.getLogger("token_limiter")
 
 DAILY_TOKEN_LIMIT = 10_000
+IS_LAMBDA = bool(os.environ.get("AWS_LAMBDA_FUNCTION_NAME") or os.environ.get("LAMBDA_TASK_ROOT"))
 BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = os.path.join(BACKEND_DIR, "data")
+DATA_DIR = "/tmp/data" if IS_LAMBDA else os.path.join(BACKEND_DIR, "data")
 USAGE_FILE = os.path.join(DATA_DIR, "daily_token_usage.json")
 
 def _load_usage() -> dict:

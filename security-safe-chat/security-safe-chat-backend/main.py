@@ -81,11 +81,26 @@ if settings.trusted_hosts != "*":
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.get_cors_origins(),
+    allow_origin_regex=settings.cors_origin_regex,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization", "X-Admin-Key", "X-Request-ID"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=86400,
 )
 app.add_middleware(APIKeyMiddleware)
+
+# ── AWS Lambda Handler (ASGI Adapter) ─────────────────────────────────────────
+# ── Mount Community Scam Registry & Digital Arrest Router ────────────────────
+try:
+    from routes.community_routes import router as community_router
+    app.include_router(community_router)
+    logger.info("Community scam registry routes mounted at /api/community")
+except Exception as exc:
+    logger.warning("Community routes not mounted: %s", exc)
+
+from mangum import Mangum
+handler = Mangum(app, lifespan="off")
 
 @app.middleware("http")
 async def sanitize_json_control_chars_middleware(request: Request, call_next):
@@ -157,6 +172,16 @@ def _load_blogs() -> dict:
     """Load blogs store. Returns {"blogs": [...]}."""
     path = settings.blog_storage_path
     if not os.path.exists(path):
+        # Fallback to packaged seed files if running in /tmp
+        for candidate in ["blogs_store.json", "/app/blogs_store.json", "data/blogs_store.json"]:
+            if os.path.exists(candidate):
+                try:
+                    with open(candidate, "r", encoding="utf-8-sig") as cf:
+                        data = json.load(cf)
+                        data.setdefault("blogs", [])
+                        return data
+                except Exception:
+                    pass
         return {"blogs": []}
     try:
         with open(path, "r", encoding="utf-8-sig") as f:
@@ -170,7 +195,11 @@ def _load_blogs() -> dict:
 
 def _save_blogs(data: dict) -> None:
     """Persist blogs store to disk."""
-    with open(settings.blog_storage_path, "w", encoding="utf-8") as f:
+    path = settings.blog_storage_path
+    parent_dir = os.path.dirname(path)
+    if parent_dir and not os.path.exists(parent_dir):
+        os.makedirs(parent_dir, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
@@ -544,7 +573,8 @@ def receive_feedback(data: FeedbackRequest):
 
     # 1. Always append to local persistence log
     try:
-        with open("feedback_submissions.jsonl", "a", encoding="utf-8") as f:
+        log_path = "/tmp/feedback_submissions.jsonl" if (os.environ.get("AWS_LAMBDA_FUNCTION_NAME") or os.environ.get("LAMBDA_TASK_ROOT")) else "feedback_submissions.jsonl"
+        with open(log_path, "a", encoding="utf-8") as f:
             f.write(json.dumps(entry) + "\n")
         logger.info("Feedback recorded locally for %s: %s", recipient, entry)
     except Exception as exc:

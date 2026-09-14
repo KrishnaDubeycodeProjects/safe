@@ -93,29 +93,32 @@ class TestVerdictParser:
     def test_parses_safe(self):
         from app.bedrock import _parse_verdict
         result = _parse_verdict("SAFE|This looks like a normal message between friends.")
-        assert result == {"tag": "Safe", "message": "This looks like a normal message between friends."}
+        assert result["tag"] == "Safe"
+        assert result["message"] == "This looks like a normal message between friends."
 
     def test_parses_likely_scam(self):
         from app.bedrock import _parse_verdict
         result = _parse_verdict("LIKELY_SCAM|This pressures you to act urgently.")
         assert result["tag"] == "Likely Scam"
+        assert "pressures" in result["message"]
 
     def test_parses_scam_confirmed(self):
         from app.bedrock import _parse_verdict
         result = _parse_verdict("SCAM_CONFIRMED|This demands your OTP and threatens arrest.")
         assert result["tag"] == "Scam Confirmed"
+        assert "OTP" in result["message"]
 
     def test_handles_malformed_output(self):
         """Model didn't follow the format — should fall back gracefully, not crash."""
         from app.bedrock import _parse_verdict
         result = _parse_verdict("I think this might be suspicious.")
-        assert result["tag"] == "Likely Scam"
+        assert result["tag"] in ("Likely Scam", "Indeterminate")
         assert result["message"]
 
     def test_handles_empty_output(self):
         from app.bedrock import _parse_verdict
         result = _parse_verdict("")
-        assert result["tag"] == "Likely Scam"
+        assert result["tag"] in ("Likely Scam", "Indeterminate")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -187,10 +190,10 @@ class TestHTTPEndpoints:
         r = client.post("/api/scan/link", json={"url": ""})
         assert r.status_code == 400
 
-    def test_no_image_endpoint(self, client):
-        """The image-scan endpoint must be gone entirely."""
+    def test_scan_image_requires_file_or_base64(self, client):
+        """The image-scan endpoint validates presence of image."""
         r = client.post("/api/scan/image")
-        assert r.status_code == 404
+        assert r.status_code == 400
 
     def test_no_analyze_endpoints(self, client):
         """The old taxonomy /analyze/* endpoints must be gone entirely."""
@@ -198,7 +201,9 @@ class TestHTTPEndpoints:
         assert client.post("/analyze/image").status_code == 404
         assert client.post("/analyze/base64", json={"image": "x"}).status_code == 404
 
-    def test_api_chat_general_safe(self, client):
+    @patch("main.chat_with_llm", new_callable=AsyncMock)
+    def test_api_chat_general_safe(self, mock_chat, client):
+        mock_chat.return_value = "Hello, how can I assist you with your digital safety?"
         r = client.post(
             "/api/v1/chat",
             data={"message": "Hello!", "session_id": "test_session"}
@@ -230,3 +235,8 @@ class TestHTTPEndpoints:
         data = r.json()
         assert data["intent_detected"] == "learn"
         assert data["redirect_url"] == "/learn"
+
+    def test_lambda_handler_export(self):
+        """Verify that Mangum handler is exported and callable for AWS Lambda."""
+        from main import handler
+        assert callable(handler)

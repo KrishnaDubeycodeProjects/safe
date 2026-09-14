@@ -5,9 +5,10 @@ All values are read from environment variables or a .env file at startup.
 Access anywhere in the app via:  from app.config import settings
 """
 
+import os
+from typing import List
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import field_validator
-from typing import List
 
 
 class Settings(BaseSettings):
@@ -45,22 +46,18 @@ class Settings(BaseSettings):
 
     # ── CORS ───────────────────────────────────────────────────────────────────
     cors_origins: str = "*"
+    cors_origin_regex: str = r"^https:\/\/([a-zA-Z0-9_-]+\.)*vercel\.app$"
 
     @field_validator("cors_origins", mode="before")
     @classmethod
     def parse_cors(cls, v: str) -> str:
-        return v  # kept as raw string; split in main.py
+        return v or "*"
 
     def get_cors_origins(self) -> List[str]:
-        # In production: CORS must be explicitly set — never allow wildcard
-        if self.is_production and self.cors_origins == "*":
-            raise ValueError(
-                "CORS_ORIGINS must be explicitly set in production. "
-                "Set it to your frontend domain e.g. https://yourdomain.com"
-            )
-        if self.cors_origins == "*":
+        if not self.cors_origins or self.cors_origins.strip() == "*":
             return ["*"]
-        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+        origins = [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+        return origins if origins else ["*"]
 
     # ── Rate Limiting ──────────────────────────────────────────────────────────
     rate_limit_requests: int = 30
@@ -75,7 +72,7 @@ class Settings(BaseSettings):
     # Strong key required in X-Admin-Key header for blog approve/reject/pending
     admin_blog_key: str = ""
     # Path to JSON file where approved/pending blogs are persisted
-    blog_storage_path: str = "/app/data/blogs_store.json"
+    blog_storage_path: str = "/tmp/blogs_store.json" if os.environ.get("AWS_LAMBDA_FUNCTION_NAME") or os.environ.get("LAMBDA_TASK_ROOT") else "blogs_store.json"
 
     # ── AI Backend (Digital-arrest-detector) ──────────────────────────────────
     ai_api_base_url: str = "http://localhost:8001"

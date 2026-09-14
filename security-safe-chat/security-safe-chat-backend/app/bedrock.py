@@ -218,6 +218,32 @@ def _parse_message_verdict(raw: str) -> dict:
     raw = (raw or "").strip()
     raw = re.sub(r"^```(?:json|markdown|text)?\s*", "", raw)
     raw = re.sub(r"\s*```$", "", raw).strip()
+
+    # Handle pipe-separated format: TAG|message
+    if "|" in raw and "\n" not in raw:
+        parts = raw.split("|", 1)
+        tag_str = parts[0].strip().upper()
+        msg_str = parts[1].strip()
+        tag_map = {
+            "SAFE": ("Safe", "Likely legitimate"),
+            "LIKELY_SCAM": ("Likely Scam", "Likely a scam"),
+            "SCAM_CONFIRMED": ("Scam Confirmed", "Definitely a scam"),
+            "INDETERMINATE": ("Indeterminate", "Indeterminate"),
+        }
+        if tag_str in tag_map:
+            t, v = tag_map[tag_str]
+            return {
+                "verdict": v,
+                "scam_type": "N/A",
+                "why": msg_str,
+                "why_title": "Why",
+                "confidence": "High",
+                "next_steps": [],
+                "tag": t,
+                "message": msg_str,
+                "raw": raw,
+            }
+
     verdict = "Indeterminate"
     scam_type = "N/A"
     why = ""
@@ -284,6 +310,9 @@ def _parse_message_verdict(raw: str) -> dict:
         "message": why,
         "raw": raw,
     }
+
+
+_parse_verdict = _parse_message_verdict
 
 
 def _parse_image_verdict(raw: str, ocr_text: str = "") -> dict:
