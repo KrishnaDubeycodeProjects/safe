@@ -3,6 +3,6 @@
   "outputDirectory": "dist",
   "framework": "astro",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://your-backend.onrender.com/api/$1" }
+    { "source": "/api/(.*)", "destination": "https://ixil3ly75uaxbvmqzs6mdlfj4m0kdtud.lambda-url.us-east-1.on.aws/api/$1" }
   ]
 }

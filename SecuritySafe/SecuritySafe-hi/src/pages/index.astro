@@ -148,7 +148,7 @@ const modules = [
       const blogsGrid = document.getElementById('homeBlogsGrid');
       if (!blogsGrid) return;
       try {
-        const res = await fetch('http://localhost:8000/api/blogs', { signal: AbortSignal.timeout(6000) });
+        const res = await fetch('https://ixil3ly75uaxbvmqzs6mdlfj4m0kdtud.lambda-url.us-east-1.on.aws/api/blogs', { signal: AbortSignal.timeout(6000) });
         if (!res.ok) return;
         const data = await res.json();
         const blogs = (data.blogs || []).slice(0, 3);

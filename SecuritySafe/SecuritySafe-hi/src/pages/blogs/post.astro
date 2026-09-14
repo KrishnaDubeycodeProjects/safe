@@ -4,7 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 // Static route (not [id].astro) — the post id comes from ?id=<uuid> and is
 // resolved client-side against the live backend. This means a post
 // published from /mgmt-x7k9p2 is reachable immediately, with no rebuild.
-const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || (import.meta.env.DEV ? 'http://localhost:8000' : '');
+const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvmqzs6mdlfj4m0kdtud.lambda-url.us-east-1.on.aws';
 ---
 
 <Layout title="Blog — SAFE Platform" currentPage="blogs">
