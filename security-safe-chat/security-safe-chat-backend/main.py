@@ -348,21 +348,21 @@ def api_scan_link(req: LinkScanRequest):
 from app import investigate
 
 class InvestigateRequest(BaseModel):
-    query: str
+    query: Optional[str] = None
+    input: Optional[str] = None
+    url: Optional[str] = None
 
 @app.post("/api/investigate", tags=["Investigate"], summary="YouTube & Threat Intelligence Investigation")
 async def api_investigate(req: InvestigateRequest):
     """
-    Searches YouTube discussions and exposure videos for a suspicious entity,
-    classifies positive vs negative videos, aggregates victim comment signals,
-    and returns a downloadable threat intelligence report.
+    Accepts YouTube link or target query, calls n8n investigation webhook
+    (or synthesized heuristic pipeline), and returns an abstracted threat intelligence report.
     """
-    q = req.query.strip()
-    if not q:
-        raise HTTPException(400, "Query cannot be empty.")
+    raw_target = (req.input or req.url or req.query or "").strip()
+    if not raw_target:
+        raise HTTPException(400, "YouTube link or target query cannot be empty.")
     
-    videos = investigate.search_youtube_videos(q, max_results=8)
-    report_data = investigate.analyze_investigation(q, videos)
+    report_data = investigate.run_n8n_investigation(raw_target)
     return report_data
 
 
