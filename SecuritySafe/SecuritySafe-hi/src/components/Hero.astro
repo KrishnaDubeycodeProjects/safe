@@ -5,96 +5,49 @@
 <section class="hero-top">
   <div class="hero-top-inner">
     <div class="hero-top-content">
-      
-      <h1 class="hero-title">
-        <span>Is this message a scam?</span>
-        <span class="hero-title-gradient">Check before you tap or pay.</span>
-      </h1>
-
-      <p class="hero-subtext">
-        Instant check for suspicious messages, payment slips, and online schemes.
-      </p>
-
+      <h1 class="hero-title">Is this message a scam?</h1>
+      <p class="hero-subtitle">Check before you tap or pay.</p>
     </div>
   </div>
 </section>
 
-<style is:global>
+<style>
   .hero-top {
     position: relative;
-    padding: 64px 24px 28px;
-    background: #FFFFFF;
-    overflow: hidden;
-  }
-  .hero-top::before {
-    content: '';
-    position: absolute;
-    top: -100px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 650px;
-    height: 350px;
-    background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, transparent 80%);
-    pointer-events: none;
-    z-index: 0;
+    padding: 30px 16px 14px;
+    background: transparent;
+    text-align: center;
+    z-index: 1;
   }
   .hero-top-inner {
-    position: relative;
-    z-index: 1;
-    max-width: 860px;
+    max-width: 480px;
     margin: 0 auto;
   }
   .hero-top-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 18px;
-    text-align: center;
+    gap: 6px;
   }
-  
-  /* Title */
   .hero-title {
-    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-size: 24px;
     font-weight: 800;
-    letter-spacing: -0.035em;
-    line-height: 1.15;
-    color: #0A0A0A;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .hero-title-gradient {
-    color: #4B5563;
-    font-weight: 700;
-  }
-
-  .hero-subtext {
-    font-size: clamp(1rem, 2vw, 1.15rem);
-    color: #6B7280;
-    max-width: 620px;
-    line-height: 1.6;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    color: #0F172A;
     margin: 0;
   }
+  .hero-subtitle {
+    font-size: 16px;
+    font-weight: 500;
+    color: #64748B;
+    margin: 0;
+    line-height: 1.35;
+  }
 
-  @media (max-width: 640px) {
-    .hero-top { padding: 18px 16px 6px; }
-    .hero-top-content { gap: 8px; }
-    .hero-title { font-size: 1.45rem; line-height: 1.25; gap: 2px; }
-    .hero-subtext { display: none; }
+  @media (min-width: 640px) {
+    .hero-title {
+      font-size: 26px;
+    }
   }
 </style>
-
-<script is:inline>
-  window.handleHeroStartScanning = function(e) {
-    e.preventDefault();
-    const el = document.getElementById('scanner');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    const input = document.getElementById('scan-text-input');
-    if (input) {
-      setTimeout(() => input.focus(), 300);
-    }
-  };
-</script>

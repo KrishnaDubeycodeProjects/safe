@@ -3,670 +3,307 @@ import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
 import ScannerInput from '../components/ScannerInput.astro';
 import ScannerResult from '../components/ScannerResult.astro';
-
-
-const modules = [
-  {
-    id: 'feedback',
-    label: 'Feedback',
-    path: '/feedback',
-    description: 'Help us to Improve your Experience',
-    iconBg: 'var(--cyan-soft)',
-    iconColor: 'var(--cyan)',
-    svg: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`
-  },
-  {
-    id: 'learn',
-    label: 'Fraud Learning Center',
-    path: '/learn',
-    description: 'Learn about scams',
-    iconBg: 'var(--cyan-soft)',
-    iconColor: 'var(--cyan)',
-    svg: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
-  },
-  {
-    id: 'emergency',
-    label: 'Emergency Center',
-    path: '/emergency',
-    description: 'Fraud response',
-    iconBg: 'var(--error-soft)',
-    iconColor: 'var(--error)',
-    svg: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`
-  },
-  {
-    id: 'blogs',
-    label: 'Awareness Blogs',
-    path: '/blogs',
-    description: 'Scam stories & safety tips',
-    iconBg: 'var(--warning-soft)',
-    iconColor: 'var(--warning-deep)',
-    svg: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`
-  },
-];
 ---
-<Layout
-  title="SAFE — India's Personal Cyber Safety & Scam Verification Platform"
-  description="Instant verification for suspicious messages, links, SMS, UPI requests, and video schemes. Protect yourself against online fraud."
-  currentPage="scan"
-  keywords="scam check, verify fake message, cyber crime help 1930, UPI scam verification, digital arrest check, safe platform india"
->
+
+<Layout title="SAFE - Scan & Verify" currentPage="scan">
   <main class="main-home">
-    <!-- Google tag (gtag.js) -->
-   
+    <!-- Subtle Wavy Mint Glow Background on top half -->
+    <div class="hero-bg-waves" aria-hidden="true"></div>
 
-    <!-- 1. Compact Hero Intro (Top) -->
-    <Hero />
+    <div class="app-container">
+      <!-- 1. Centered Hero -->
+      <Hero />
 
-    <!-- 2. Scanner (Now at the top, wider) -->
-    <ScannerInput />
+      <!-- 2. Main Action Card (Run Investigation, Text, Image) -->
+      <ScannerInput />
 
-    <!-- 3. Scanner Result -->
-    <ScannerResult />
+      <!-- 3. Text / Image Scanner Result Component -->
+      <ScannerResult />
 
-    <!-- 4. Trust Stats Bar -->
-    <section class="trust-strip">
-      <div class="trust-strip-inner">
-        <div class="trust-item">
-          <span class="trust-value">&lt;1s</span>
-          <span class="trust-label">Scan Response</span>
+      <!-- 4. Stats Bar (Full-Width Card Below Action Card) -->
+      <section class="stats-bar-section">
+        <div class="stats-card">
+          <div class="stat-col">
+            <span class="stat-value">&lt;1s</span>
+            <span class="stat-label">SCAN RESPONSE</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-col">
+            <span class="stat-value stat-highlight">24/7</span>
+            <span class="stat-label">REAL-TIME DEFENSE</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-col">
+            <span class="stat-value">100%</span>
+            <span class="stat-label">FREE &amp; CONFIDENTIAL</span>
+          </div>
         </div>
-        <div class="trust-divider"></div>
-        <div class="trust-item">
-          <span class="trust-value">24/7</span>
-          <span class="trust-label">Real-time Defense</span>
-        </div>
-        <div class="trust-divider"></div>
-        <div class="trust-item">
-          <span class="trust-value">100%</span>
-          <span class="trust-label">Free & Confidential</span>
-        </div>
-      </div>
-    </section>
+      </section>
 
-
-<section class="modules-section">
-  <div class="container">
-    <div class="modules-grid">
-      {modules.map((module) => (
-        <a href={module.path} class="module-card">
-          <div class="module-card-inner">
-            <div 
-              class="module-icon" 
-              style={`--icon-bg: ${module.iconBg}; --icon-color: ${module.iconColor};`}
-              set:html={module.svg}
-            ></div>
-            
-            <div class="module-content">
-              <span class="module-name">{module.label}</span>
-              <span class="module-desc">{module.description}</span>
-            </div>
-            
-            <div class="module-arrow">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"/>
-                <polyline points="12 5 19 12 12 19"/>
-              </svg>
-            </div>
+      <!-- 5. Action List (Bottom Section: Feedback, Fraud Learning, Emergency) -->
+      <section class="action-list-section">
+        <!-- Card 1: Feedback -->
+        <a href="/feedback" class="action-card">
+          <div class="action-icon-box icon-teal">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <div class="action-card-text">
+            <h3 class="action-card-title">Feedback</h3>
+            <p class="action-card-sub">Help us to Improve your Experience</p>
+          </div>
+          <div class="action-card-arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
           </div>
         </a>
-      ))}
-    </div>
-  </div>
-</section>
 
-  <!-- 6. Real Scam Case Studies & Blog Suggestions (Mix of all stories) -->
-  <section class="home-blogs-section">
-    <div class="container">
-      <div class="home-blogs-header">
-        <div>
-          <span class="home-blogs-badge">Verified Case Studies</span>
-          <h2 class="home-blogs-title">Recent Scam Investigations & Alerts</h2>
-          <p class="home-blogs-desc">Real stories in Hinglish, Hindi and English reported by citizens across India.</p>
-        </div>
-        <a href="/blogs" class="view-all-blogs-btn">
-          <span>View All Stories</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        <!-- Card 2: Fraud Learning Center -->
+        <a href="/learn" class="action-card">
+          <div class="action-icon-box icon-teal">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="3"/>
+              <line x1="5" y1="14" x2="19" y2="14"/>
+            </svg>
+          </div>
+          <div class="action-card-text">
+            <h3 class="action-card-title">Fraud Learning Center</h3>
+            <p class="action-card-sub">Learn about scams</p>
+          </div>
+          <div class="action-card-arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </div>
         </a>
-      </div>
 
-      <div class="home-blogs-grid" id="homeBlogsGrid">
-        <div class="home-blog-skel"></div>
-        <div class="home-blog-skel"></div>
-        <div class="home-blog-skel"></div>
-      </div>
+        <!-- Card 3: Emergency Center -->
+        <a href="/emergency" class="action-card">
+          <div class="action-icon-box icon-red">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <div class="action-card-text">
+            <h3 class="action-card-title">Emergency Center</h3>
+            <p class="action-card-sub">Fraud response</p>
+          </div>
+          <div class="action-card-arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </div>
+        </a>
+      </section>
     </div>
-  </section>
   </main>
 
-
+  <!-- Floating Write Blog Button -->
+  <a href="/submit-blog" class="write-fab" id="writeFab" aria-label="Write a Blog">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 20h9"/>
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+    </svg>
+    <span class="fab-label">Write a Blog</span>
+  </a>
 </Layout>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Fetch and populate Recent Scam Case Studies / Blogs on Home Page
-    async function loadHomeBlogs() {
-      const blogsGrid = document.getElementById('homeBlogsGrid');
-      if (!blogsGrid) return;
-      try {
-        const res = await fetch('https://ixil3ly75uaxbvmqzs6mdlfj4m0kdtud.lambda-url.us-east-1.on.aws/api/blogs', { signal: AbortSignal.timeout(6000) });
-        if (!res.ok) return;
-        const data = await res.json();
-        const blogs = (data.blogs || []).slice(0, 3);
-        if (!blogs.length) return;
-
-        blogsGrid.innerHTML = blogs.map(b => {
-          const thumb = (b.images || [])[0];
-          const excerpt = (b.content_text || '').replace(/\[\d+\]/g, '').replace(/\s+/g, ' ').trim().slice(0, 110) + '...';
-          return `
-            <a href="/blogs/post?id=${encodeURIComponent(b.id)}" class="home-blog-card">
-              ${thumb ? `<div class="home-blog-thumb"><img src="${thumb.url}" alt="" loading="lazy" /></div>` : ''}
-              <div class="home-blog-body">
-                <div class="home-blog-tags">
-                  ${(b.tags || []).slice(0, 2).map(t => `<span class="home-blog-tag">${t}</span>`).join('')}
-                </div>
-                <h4 class="home-blog-card-title">${b.title}</h4>
-                <p class="home-blog-excerpt">${excerpt}</p>
-                <div class="home-blog-read">Read Verified Analysis →</div>
-              </div>
-            </a>
-          `;
-        }).join('');
-      } catch (e) {
-        console.warn('Could not load home blogs:', e);
-      }
-    }
-    loadHomeBlogs();
-  });
-</script>
 
 <style is:global>
   .main-home {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
+    position: relative;
+    min-height: 100vh;
+    background: #F8FCFA;
+    overflow-x: hidden;
+    padding-bottom: 48px;
   }
 
-  /* Trust Strip */
-  .trust-strip {
-    padding: 22px 20px;
-    background: var(--canvas-soft, #F7F7F7);
-    border-top: 1px solid var(--hairline, #E5E5E5);
-    border-bottom: 1px solid var(--hairline, #E5E5E5);
+  /* Wavy soft light-green mesh background on the upper half */
+  .hero-bg-waves {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 440px;
+    background: 
+      radial-gradient(circle at 10% 18%, rgba(190, 245, 220, 0.75) 0%, rgba(220, 252, 238, 0.4) 45%, transparent 75%),
+      radial-gradient(circle at 90% 12%, rgba(205, 250, 232, 0.6) 0%, rgba(232, 252, 245, 0.3) 50%, transparent 80%),
+      linear-gradient(180deg, #EDFCF6 0%, #F5FDF9 65%, rgba(248, 252, 250, 0) 100%);
+    pointer-events: none;
+    z-index: 0;
   }
-  .trust-strip-inner {
-    max-width: 900px;
+
+  .app-container {
+    max-width: 480px;
     margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: nowrap;
+    padding: 0 16px;
+    position: relative;
+    z-index: 1;
   }
-  .trust-item {
+
+  /* Stats Bar Section */
+  .stats-bar-section {
+    margin-top: 4px;
+    margin-bottom: 14px;
+  }
+  .stats-card {
+    background: #EDF8F4;
+    border: 1px solid #D2EDE2;
+    border-radius: 16px;
+    padding: 13px 8px;
+    display: grid;
+    grid-template-columns: 1fr 1px 1.2fr 1px 1fr;
+    align-items: center;
+    text-align: center;
+  }
+  .stat-col {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    flex: 1;
-    text-align: center;
-    min-width: 0;
+    gap: 3px;
   }
-  .trust-value {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: var(--ink, #0A0A0A);
-    letter-spacing: -0.02em;
+  .stat-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: #064E3B;
     line-height: 1.1;
-    white-space: nowrap;
+    letter-spacing: -0.02em;
   }
-  .trust-label {
-    font-size: 0.72rem;
-    color: var(--mute, #A3A3A3);
+  .stat-value.stat-highlight {
+    color: #059669;
+  }
+  .stat-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #64748B;
+    letter-spacing: 0.4px;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-weight: 600;
-    white-space: nowrap;
   }
-  .trust-divider {
+  .stat-divider {
     width: 1px;
     height: 28px;
-    background: var(--hairline, #E5E5E5);
-    flex-shrink: 0;
-  }
-
-  /* Quick Actions */
-  .quick-actions {
-    padding: 40px 24px;
-    max-width: 900px;
+    background: #D1EAE0;
     margin: 0 auto;
   }
-  .quick-actions-inner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+
+  /* Action List Section */
+  .action-list-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
   }
-  .quick-card {
+  .action-card {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 20px 24px;
-    background: var(--canvas, #FFFFFF);
-    border: 1.5px solid var(--hairline, #E5E5E5);
+    gap: 14px;
+    background: #FFFFFF;
+    border: 1px solid rgba(226, 232, 240, 0.85);
     border-radius: 16px;
+    padding: 15px 16px;
     text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   }
-  .quick-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--cyan, #00B8D4), var(--violet, #9C27B0));
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  .action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+    border-color: #CBD5E1;
   }
-  .quick-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.08);
-    border-color: transparent;
-  }
-  .quick-card:hover::before { opacity: 1; }
-  .quick-icon {
+  .action-icon-box {
     width: 48px;
     height: 48px;
-    border-radius: 12px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
   }
-  .quick-feedback .quick-icon {
-    background: var(--cyan-soft, #E0F7FA);
-    color: var(--cyan, #00B8D4);
+  .action-icon-box.icon-teal {
+    background: #D2F6EA;
   }
-  .quick-learn .quick-icon {
-    background: var(--violet-soft, #F3E5F5);
-    color: var(--violet, #9C27B0);
+  .action-icon-box.icon-red {
+    background: #FEE2E2;
   }
-  .quick-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+  .action-card-text {
     flex: 1;
     min-width: 0;
   }
-  .quick-text strong {
-    font-size: 0.95rem;
+  .action-card-title {
+    font-size: 15.5px;
     font-weight: 700;
-    color: var(--ink, #0A0A0A);
-    letter-spacing: -0.01em;
-  }
-  .quick-text span {
-    font-size: 0.8rem;
-    color: var(--mute, #A3A3A3);
-  }
-  .quick-arrow {
-    color: var(--mute, #A3A3A3);
-    opacity: 0;
-    transform: translateX(-8px);
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-  }
-  .quick-card:hover .quick-arrow {
-    opacity: 1;
-    transform: translateX(0);
-    color: var(--ink, #0A0A0A);
-  }
-
-  /* Modules */
-  .modules-section {
-    padding: 60px 24px 80px;
-    border-top: 1px solid var(--hairline, #E5E5E5);
-  }
-  .container { max-width: 1400px; margin: 0 auto; }
-
-  .modules-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 40px;
-    gap: 16px;
-  }
-  .modules-header-text { flex: 1; }
-  .modules-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    background: linear-gradient(135deg, var(--cyan-soft, #E0F7FA), var(--violet-soft, #F3E5F5));
-    color: var(--cyan, #00B8D4);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    border-radius: 20px;
-    margin-bottom: 12px;
-  }
-  .modules-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    letter-spacing: -0.04em;
-    color: var(--ink, #0A0A0A);
-    margin: 0 0 8px 0;
-    background: linear-gradient(135deg, var(--ink, #0A0A0A) 0%, var(--body, #525252) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .modules-desc { font-size: 0.95rem; color: var(--body, #525252); line-height: 1.5; margin: 0; }
-
-  .modules-nav { display: none; gap: 8px; }
-  .nav-arrow {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    border: 1.5px solid var(--hairline, #E5E5E5);
-    background: var(--canvas, #FFFFFF);
-    color: var(--ink, #0A0A0A);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  }
-  .nav-arrow:hover:not(.disabled) {
-    background: var(--ink, #0A0A0A);
-    color: var(--canvas, #FFFFFF);
-    border-color: var(--ink, #0A0A0A);
-    transform: scale(1.05);
-  }
-  .nav-arrow.disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .modules-scroll-wrapper { position: relative; margin: 0 -24px; padding: 0 24px; }
-
-  .modules-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-  }
-
-  .module-card {
-    text-decoration: none;
-    display: block;
-    border-radius: 16px;
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  }
-  .module-card:hover {
-    border-color: #D1D5DB;
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.07);
-  }
-
-  .module-card-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 24px;
-    position: relative;
-    height: 100%;
-    box-sizing: border-box;
-  }
-  .module-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--icon-bg, #F3F4F6);
-    color: var(--icon-color, #111827);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    flex-shrink: 0;
-    transition: transform 0.2s ease;
-  }
-  .module-card:hover .module-icon {
-    transform: scale(1.06);
-  }
-  .module-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    text-align: left;
-    flex: 1;
-  }
-  .module-name {
-    font-size: 16px;
-    font-weight: 700;
-    color: #111827;
-    letter-spacing: -0.02em;
-  }
-  .module-desc {
-    font-size: 13px;
-    color: #6B7280;
-    line-height: 1.45;
-  }
-  .module-arrow {
-    position: absolute;
-    top: 24px;
-    right: 20px;
-    width: 24px;
-    height: 24px;
-    color: #9CA3AF;
-    transition: all 0.2s ease;
-  }
-  .module-card:hover .module-arrow {
-    color: #111827;
-    transform: translateX(3px);
-  }
-
-  .modules-dots {
-    display: none;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    margin-top: 24px;
-  }
-  .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--hairline, #E5E5E5);
-    border: none; padding: 0;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  .dot.active { width: 20px; border-radius: 3px; background: var(--ink, #0A0A0A); }
-
-  /* Responsive */
-  @media (max-width: 1024px) {
-    .modules-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  }
-
-  @media (max-width: 640px) {
-    .trust-strip { padding: 12px 6px; }
-    .trust-strip-inner { 
-      gap: 6px; 
-      justify-content: space-between; 
-      flex-wrap: nowrap !important;
-    }
-    .trust-item {
-      flex: 1;
-      padding: 0 2px;
-    }
-    .trust-value { font-size: 0.95rem; }
-    .trust-label { font-size: 0.58rem; letter-spacing: 0.01em; }
-    .trust-divider { height: 18px; }
-    .modules-section { padding: 24px 16px 40px; }
-    .modules-grid { grid-template-columns: 1fr; gap: 12px; }
-    .module-card-inner { padding: 18px; flex-direction: row; align-items: center; gap: 14px; }
-    .module-arrow { position: static; opacity: 0.6; }
-  }
-
-  /* Home Blogs Section */
-  .home-blogs-section {
-    padding: 64px 24px 80px;
-    background: #FFFFFF;
-    border-top: 1px solid var(--border-light, #F3F4F6);
-  }
-  .home-blogs-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 36px;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  .home-blogs-badge {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #10B981;
-    background: rgba(16, 185, 129, 0.1);
-    padding: 4px 10px;
-    border-radius: 6px;
-    margin-bottom: 10px;
-  }
-  .home-blogs-title {
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    font-weight: 800;
-    color: #111827;
-    margin: 0 0 8px;
-    letter-spacing: -0.02em;
-  }
-  .home-blogs-desc {
-    font-size: 14px;
-    color: #6B7280;
+    color: #0F172A;
     margin: 0;
+    line-height: 1.25;
   }
-  .view-all-blogs-btn {
-    display: inline-flex;
+  .action-card-sub {
+    font-size: 12.5px;
+    color: #64748B;
+    margin: 2px 0 0;
+    line-height: 1.3;
+  }
+  .action-card-arrow {
+    color: #64748B;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+  .action-card:hover .action-card-arrow {
+    transform: translateX(3px);
+    color: #0F172A;
+  }
+
+  /* Floating Write Blog FAB */
+  .write-fab {
+    position: fixed;
+    bottom: 104px;
+    right: 24px;
+    display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13.5px;
-    font-weight: 700;
-    color: #111827;
-    background: #F3F4F6;
-    border: 1px solid #E5E7EB;
-    padding: 10px 18px;
-    border-radius: 8px;
+    background: #062319;
+    color: #fff;
+    border-radius: 100px;
+    padding: 12px 16px;
     text-decoration: none;
-    transition: all 0.2s ease;
-  }
-  .view-all-blogs-btn:hover {
-    background: #E5E7EB;
-    color: #000000;
-    transform: translateY(-1px);
-  }
-  .home-blogs-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-  }
-  .home-blog-card {
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 14px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  }
-  .home-blog-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(0,0,0,0.06);
-    border-color: #D1D5DB;
-  }
-  .home-blog-thumb {
-    height: 170px;
-    overflow: hidden;
-    background: #111827;
-  }
-  .home-blog-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.3s ease;
-  }
-  .home-blog-card:hover .home-blog-thumb img {
-    transform: scale(1.04);
-  }
-  .home-blog-body {
-    padding: 18px 20px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    gap: 10px;
-  }
-  .home-blog-tags {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  .home-blog-tag {
-    font-size: 10.5px;
-    font-weight: 700;
-    color: #4B5563;
-    padding: 2px 7px;
-    background: #F3F4F6;
-    border: 1px solid #E5E7EB;
-    border-radius: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-  }
-  .home-blog-card-title {
-    font-size: 16px;
-    font-weight: 800;
-    color: #111827;
-    margin: 0;
-    line-height: 1.35;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .home-blog-excerpt {
     font-size: 13px;
-    color: #6B7280;
-    line-height: 1.55;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    flex: 1;
-  }
-  .home-blog-read {
-    font-size: 12.5px;
     font-weight: 700;
-    color: #10B981;
-    margin-top: 4px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    z-index: 90;
+    transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+    overflow: hidden;
+    max-width: 52px;
+    white-space: nowrap;
   }
-  .home-blog-skel {
-    height: 320px;
-    background: #F3F4F6;
-    border-radius: 14px;
-    animation: pulseSkel 1.5s infinite;
+  .write-fab:hover {
+    max-width: 160px;
+    background: #0A3728;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    transform: translateY(-2px);
   }
-  @keyframes pulseSkel { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
+  .fab-label {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.2s 0.05s, width 0.25s;
+  }
+  .write-fab:hover .fab-label {
+    opacity: 1;
+    width: auto;
+  }
 
-  @media (max-width: 960px) {
-    .home-blogs-grid { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 767px) {
+    .write-fab {
+      bottom: 88px;
+      right: 16px;
+      padding: 11px 14px;
+    }
   }
-  @media (max-width: 640px) {
-    .home-blogs-grid { grid-template-columns: 1fr; }
-    .home-blogs-section { padding: 40px 16px 60px; }
-  }
-
-  @media (max-width: 479px) {
-    .modules-section { padding: 48px 16px 64px; }
-    .modules-scroll-wrapper { margin: 0 -16px; padding: 0 16px; }
-    .module-card { flex: 0 0 240px; }
-  }
-
 </style>

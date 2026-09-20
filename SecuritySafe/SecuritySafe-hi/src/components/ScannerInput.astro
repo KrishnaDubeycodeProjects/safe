@@ -7,69 +7,65 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   <div class="scanner-container">
     <!-- Scanner Card -->
     <div class="scanner-card">
-      <!-- Clean Responsive Segmented Control: Run Investigation | Text | Image -->
+      <!-- Clean Segmented Control: Run Investigation | Text | Image -->
       <div class="scanner-tabs">
         <button id="tab-btn-investigate" class="tab-btn active" onclick="switchScannerTab('investigate')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"/>
             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
-          <span class="tab-text-desktop">Run Investigation</span>
-          <span class="tab-text-mobile">Run Investigation</span>
+          <span>Run Investigation</span>
         </button>
 
         <button id="tab-btn-text" class="tab-btn" onclick="switchScannerTab('text')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
           </svg>
-          <span class="tab-text-desktop">Text</span>
-          <span class="tab-text-mobile">Text</span>
+          <span>Text</span>
         </button>
 
+        <div class="tab-divider"></div>
+
         <button id="tab-btn-image" class="tab-btn" onclick="switchScannerTab('image')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
             <circle cx="8.5" cy="8.5" r="1.5"/>
             <polyline points="21 15 16 10 5 21"/>
           </svg>
-          <span class="tab-text-desktop">Image</span>
-          <span class="tab-text-mobile">Image</span>
+          <span>Image</span>
         </button>
       </div>
 
       <div class="scanner-body">
         <!-- Input Form Panels -->
         <div class="forms-panel">
-          <!-- 1. Investigate Panel (YouTube Intelligence, Heuristic Signals & Threat Dossier) -->
+          <!-- 1. Investigate Panel -->
           <div id="form-investigate" class="channel-form active">
-            <div class="investigate-intro">
-              <h3 class="investigate-title">YouTube Creator & Threat Intelligence Audit</h3>
-              <p class="investigate-desc">Audit any YouTube creator or scheme via AI bot comment analysis, engagement anomalies, and cross-platform verification.</p>
-            </div>
-
             <div class="investigate-input-row">
               <div class="search-bar-wrapper">
-                <svg class="search-bar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
-                  <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor"/>
-                </svg>
+                <span class="search-bar-icon">
+                  <svg width="22" height="16" viewBox="0 0 24 18" fill="none">
+                    <rect width="24" height="18" rx="4" fill="#EF4444"/>
+                    <polygon points="9.5 4.5 16 9 9.5 13.5" fill="#FFFFFF"/>
+                  </svg>
+                </span>
                 <input
                   type="text"
                   id="investigate-query-input"
                   class="investigate-input"
-                  placeholder="Paste YouTube channel link or video (e.g., https://youtube.com/@dhruvrathee or watch?v=...)"
+                  placeholder="Paste YouTube channel link or video (e.g..."
                   onkeydown="if(event.key === 'Enter') startInvestigate();"
                 />
               </div>
               <button id="investigate-btn" class="investigate-action-btn" onclick="startInvestigate()">
                 <span>Run Investigation</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"/>
                   <polyline points="12 5 19 12 12 19"/>
                 </svg>
               </button>
             </div>
-            <div id="investigate-validation-msg" class="validation-msg hidden">Please enter a valid YouTube channel or video link (e.g., youtube.com/@dhruvrathee, youtube.com/watch?v=..., or youtu.be/...).</div>
+            <div id="investigate-validation-msg" class="validation-msg hidden">Please enter a valid YouTube channel or video link.</div>
 
             <div class="quick-tags-row">
               <span class="quick-tags-label">Quick Test:</span>
@@ -241,10 +237,10 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                         </svg>
-                        Filtered & Sentiment Evidence Samples
+                        Comment Evidence &amp; Samples
                       </span>
-                      <span class="cs-samples-sub">Top 2–3 quotes per category</span>
                     </div>
+                    <div class="cs-filter-pills" id="cs-filter-pills"></div>
                     <div class="comment-samples-grid" id="comment-samples-grid">
                       <!-- Rendered dynamically by JS -->
                     </div>
@@ -1037,17 +1033,21 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     if (neuBar) { neuBar.style.width = `${neuPct}%`; neuBar.title = `Neutral: ${neuPct}%`; }
     if (negBar) { negBar.style.width = `${negPct}%`; negBar.title = `Negative: ${negPct}%`; }
 
-    // 6b. Render Representative Comment Samples
+    // 6b. Render Representative Comment Samples with Decluttered Category Pills
     const samples = data.commentSamples || {};
     const samplesGrid = document.getElementById('comment-samples-grid');
+    const filterPillsContainer = document.getElementById('cs-filter-pills');
     const samplesWrapper = document.getElementById('comment-samples-wrapper');
-    if (samplesGrid) {
+
+    if (samplesGrid && filterPillsContainer) {
+      filterPillsContainer.innerHTML = '';
       samplesGrid.innerHTML = '';
+
       const categories = [
-        { key: 'positive', label: 'Organic Positive', cls: 'pos', icon: '🟢', desc: 'Verified Audience' },
-        { key: 'negative', label: 'Organic Negative', cls: 'neg', icon: '🔴', desc: 'Critical Audience' },
-        { key: 'neutral', label: 'Organic Neutral', cls: 'neu', icon: '⚪', desc: 'General Inquiry' },
-        { key: 'filtered', label: 'Filtered Bot / Spam', cls: 'warn', icon: '🟠', desc: 'Flagged Patterns' }
+        { key: 'positive', label: 'Positive', cls: 'pos', icon: '🟢', desc: 'Verified Audience' },
+        { key: 'negative', label: 'Negative', cls: 'neg', icon: '🔴', desc: 'Critical Audience' },
+        { key: 'neutral', label: 'Neutral', cls: 'neu', icon: '⚪', desc: 'General Inquiries' },
+        { key: 'filtered', label: 'Bot / Spam', cls: 'warn', icon: '🟠', desc: 'Filtered Flags' }
       ];
 
       function safeEscape(str) {
@@ -1057,34 +1057,55 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
         });
       }
 
-      let hasAnySample = false;
-      categories.forEach(cat => {
-        const list = samples[cat.key] || [];
-        if (list && list.length > 0) {
-          hasAnySample = true;
-          const col = document.createElement('div');
-          col.className = `cs-sample-card cs-card-${cat.cls}`;
-          
-          let quotesHtml = list.slice(0, 3).map(q => 
-            `<div class="cs-sample-quote"><span class="cs-quote-mark">“</span><span class="cs-quote-text">${safeEscape(q)}</span><span class="cs-quote-mark">”</span></div>`
-          ).join('');
-
-          col.innerHTML = `
-            <div class="cs-sample-badge ${cat.cls}">
-              <span class="cs-badge-icon">${cat.icon}</span>
-              <span class="cs-badge-label">${cat.label}</span>
-              <span class="cs-badge-desc">${cat.desc}</span>
-            </div>
-            <div class="cs-sample-quotes-list">
-              ${quotesHtml}
-            </div>
-          `;
-          samplesGrid.appendChild(col);
-        }
+      const availableCats = categories.filter(cat => {
+        const arr = samples[cat.key];
+        return arr && arr.length > 0;
       });
 
-      if (samplesWrapper) {
-        samplesWrapper.style.display = hasAnySample ? 'block' : 'none';
+      if (availableCats.length > 0) {
+        if (samplesWrapper) samplesWrapper.style.display = 'block';
+
+        function renderCategorySamples(catKey) {
+          filterPillsContainer.querySelectorAll('.cs-pill-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-cat') === catKey);
+          });
+
+          const cat = categories.find(c => c.key === catKey) || availableCats[0];
+          const list = samples[cat.key] || [];
+
+          samplesGrid.innerHTML = `
+            <div class="cs-sample-card cs-card-${cat.cls}">
+              <div class="cs-sample-badge ${cat.cls}">
+                <span class="cs-badge-icon">${cat.icon}</span>
+                <span class="cs-badge-label">Organic ${cat.label}</span>
+                <span class="cs-badge-desc">${cat.desc} (${list.length} quote${list.length > 1 ? 's' : ''})</span>
+              </div>
+              <div class="cs-sample-quotes-list">
+                ${list.slice(0, 3).map(q => `
+                  <div class="cs-sample-quote">
+                    <span class="cs-quote-mark">“</span><span class="cs-quote-text">${safeEscape(q)}</span><span class="cs-quote-mark">”</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        availableCats.forEach((cat, idx) => {
+          const count = (samples[cat.key] || []).length;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `cs-pill-btn ${idx === 0 ? 'active' : ''} pill-${cat.cls}`;
+          btn.setAttribute('data-cat', cat.key);
+          btn.innerHTML = `<span>${cat.icon} ${cat.label}</span><span class="cs-pill-count">${count}</span>`;
+          btn.onclick = () => renderCategorySamples(cat.key);
+          filterPillsContainer.appendChild(btn);
+        });
+
+        // Show first category by default
+        renderCategorySamples(availableCats[0].key);
+      } else {
+        if (samplesWrapper) samplesWrapper.style.display = 'none';
       }
     }
 
@@ -1259,28 +1280,28 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
 
           return `
             <a href="${linkUrl || '#'}" target="_blank" rel="noopener noreferrer" class="mention-item ${isNeg ? 'item-warn' : (isPos ? 'item-verified' : 'item-media')}" title="Open: ${title}">
-              <div class="mention-left">
+              <div class="mention-header-row">
                 <span class="mention-badge ${badgeClass}">
                   <span class="mb-icon">${badgeIcon}</span>
                   <span>${badgeText}</span>
                 </span>
-                <span class="mention-title">${title}</span>
-              </div>
-              <div class="mention-right">
-                ${cleanDomain ? `
-                  <span class="mention-domain" title="${brandLabel}">
-                    ${brandIconSvg}
-                    <span>${brandLabel}</span>
+                <div class="mention-source-tag">
+                  ${cleanDomain ? `
+                    <span class="mention-domain" title="${brandLabel}">
+                      ${brandIconSvg}
+                      <span>${brandLabel}</span>
+                    </span>
+                  ` : ''}
+                  <span class="mention-redirect-icon">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                      <polyline points="15 3 21 3 21 9"/>
+                      <line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
                   </span>
-                ` : ''}
-                <span class="mention-redirect-icon">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                    <polyline points="15 3 21 3 21 9"/>
-                    <line x1="10" y1="14" x2="21" y2="3"/>
-                  </svg>
-                </span>
+                </div>
               </div>
+              <div class="mention-title-text">${title}</div>
             </a>
           `;
         }).join('');
@@ -1678,9 +1699,11 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
 
 <style>
   .scanner-section {
-    padding: 24px 24px 48px;
-    background: var(--canvas, #FFFFFF);
+    padding: 0 16px 16px;
+    background: transparent;
     transition: all 0.5s ease;
+    position: relative;
+    z-index: 2;
   }
   .scanner-section.fade-out-up {
     opacity: 0;
@@ -1691,249 +1714,276 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     padding: 0;
   }
   .scanner-container {
-    max-width: 960px;
+    max-width: 480px;
     margin: 0 auto;
+    width: 100%;
   }
 
   .scanner-card {
     background: #FFFFFF;
-    border-radius: 24px;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 16px 48px -8px rgba(0, 0, 0, 0.09), 0 4px 16px -2px rgba(0, 0, 0, 0.04);
-    border: 1px solid #E5E7EB;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(226, 232, 240, 0.85);
     width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
     animation: fadeInUp 0.6s ease-out;
   }
 
-  /* Clean App-Style Segmented Tabs */
+  /* Segmented Control matching screenshot */
   .scanner-tabs {
     display: flex;
-    background: #F9FAFB;
-    border-bottom: 1px solid #E5E7EB;
-    padding: 10px 14px;
-    gap: 8px;
-    overflow-x: auto;
-    scrollbar-width: none;
+    align-items: center;
+    justify-content: space-between;
+    background: #F1F5F9;
+    border-radius: 12px;
+    padding: 4px;
+    gap: 4px;
+    margin-bottom: 16px;
+    border: 1px solid #E2E8F0;
+    box-sizing: border-box;
+    width: 100%;
   }
-  .scanner-tabs::-webkit-scrollbar { display: none; }
   
   .tab-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 10px 18px;
-    font-size: 13.5px;
+    gap: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
     font-weight: 600;
-    color: #4B5563;
+    color: #64748B;
     background: transparent;
-    border: 1px solid transparent;
-    border-radius: 12px;
+    border: none;
+    border-radius: 9px;
     cursor: pointer;
     font-family: inherit;
     text-decoration: none;
     white-space: nowrap;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s ease;
+    flex: 1;
   }
   .tab-btn svg {
     stroke: currentColor;
-    transition: transform 0.2s ease;
+    flex-shrink: 0;
   }
   .tab-btn:hover {
-    color: #111827;
-    background: rgba(255, 255, 255, 0.85);
+    color: #0F172A;
   }
   .tab-btn.active {
-    color: #0A0A0A;
-    background: #FFFFFF;
-    border-color: #E5E7EB;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    color: #065F46 !important;
+    background: #E8F7F0 !important;
     font-weight: 700;
+    box-shadow: 0 1px 2px rgba(6, 95, 70, 0.08);
   }
   .tab-btn.active svg {
-    stroke: #10B981;
+    stroke: #065F46 !important;
   }
 
-  .tab-investigate-trigger {
-    margin-left: auto;
-    background: #F3F4F6;
-    border-color: #E5E7EB;
-    color: #1F2937;
-  }
-  .tab-investigate-trigger:hover {
-    background: #E5E7EB;
-    color: #000000;
-  }
-  .tab-investigate-trigger:hover .trigger-arrow {
-    transform: translateX(3px);
-  }
-  .trigger-arrow {
-    transition: transform 0.2s ease;
-  }
-  .tab-investigate-trigger.active {
-    background: #111827;
-    color: #FFFFFF;
-    border-color: #111827;
-  }
-  .tab-investigate-trigger.active svg {
-    stroke: #34D399;
+  .tab-divider {
+    width: 1px;
+    height: 16px;
+    background: #CBD5E1;
+    flex-shrink: 0;
   }
 
-  .tab-text-desktop {
-    display: inline;
+  .scanner-body {
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
   }
-  .tab-text-mobile {
-    display: none;
-  }
-
-  .scanner-body { padding: 28px; }
   .channel-form { display: none; }
   .channel-form.active { display: block; animation: fadeIn 0.3s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-  .input-wrapper { margin-bottom: 16px; }
+  .input-wrapper { margin-bottom: 14px; }
   .scan-textarea {
     width: 100%;
-    padding: 16px;
+    padding: 14px;
     background: #FFFFFF;
-    border: 1.5px solid var(--border, #E5E7EB);
+    border: 1.5px solid #E2E8F0;
     border-radius: 12px;
-    color: #000000;
-    font-size: 15px;
-    line-height: 1.6;
+    color: #0F172A;
+    font-size: 14px;
+    line-height: 1.5;
     resize: vertical;
-    min-height: 140px;
+    min-height: 120px;
     font-family: inherit;
     transition: all 0.2s ease;
     box-sizing: border-box;
   }
   .scan-textarea:focus {
     outline: none;
-    border-color: #000000;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    border-color: #10B981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
   }
-  .scan-textarea::placeholder { color: #9CA3AF; }
-  .scan-textarea.shake { animation: shake 0.4s; border-color: #000000; }
-  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .scan-textarea::placeholder { color: #94A3B8; }
+  .scan-textarea.shake { animation: shake 0.4s; border-color: #EF4444; }
 
   /* Upload area */
   .image-upload-zone {
-    border: 2px dashed var(--border, #D1D5DB);
-    border-radius: 16px;
-    padding: 36px 24px;
+    border: 2px dashed #CBD5E1;
+    border-radius: 14px;
+    padding: 24px 16px;
     text-align: center;
-    background: #FAFAFA;
+    background: #F8FAFC;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
   .image-upload-zone:hover, .image-upload-zone.drag-over {
-    border-color: #000000;
-    background: #F3F4F6;
+    border-color: #10B981;
+    background: #F0FDF4;
   }
   .file-input-hidden { display: none; }
   .upload-icon-circle {
-    width: 60px; height: 60px;
+    width: 48px; height: 48px;
     border-radius: 50%;
     background: #FFFFFF;
-    border: 1px solid #E5E7EB;
+    border: 1px solid #E2E8F0;
     display: inline-flex; align-items: center; justify-content: center;
-    margin-bottom: 14px;
-    color: #4B5563;
+    margin-bottom: 10px;
+    color: #64748B;
   }
-  .upload-heading { font-size: 16px; font-weight: 700; color: #111827; margin: 0 0 6px; }
-  .upload-subtext { font-size: 13.5px; color: #6B7280; margin: 0 0 14px; }
+  .upload-heading { font-size: 14.5px; font-weight: 700; color: #0F172A; margin: 0 0 4px; }
+  .upload-subtext { font-size: 12.5px; color: #64748B; margin: 0 0 10px; }
   .ocr-feature-badge {
     display: inline-flex; align-items: center; gap: 6px;
     background: #EFF6FF; color: #2563EB;
-    font-size: 12px; font-weight: 600;
-    padding: 6px 12px; border-radius: 100px;
+    font-size: 11.5px; font-weight: 600;
+    padding: 5px 10px; border-radius: 100px;
   }
 
   .upload-preview-state {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
     background: #FFFFFF;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid #E5E7EB;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #E2E8F0;
   }
   .preview-thumb {
-    width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #E5E7EB;
+    width: 64px; height: 64px; object-fit: cover; border-radius: 8px; border: 1px solid #E2E8F0;
   }
-  .preview-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-  .preview-filename { font-size: 14px; font-weight: 600; color: #111827; word-break: break-all; }
-  .preview-filesize { font-size: 12px; color: #6B7280; }
+  .preview-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+  .preview-filename { font-size: 13px; font-weight: 600; color: #0F172A; word-break: break-all; }
+  .preview-filesize { font-size: 11.5px; color: #64748B; }
   .remove-image-btn {
     display: inline-flex; align-items: center; gap: 4px;
     background: #FEE2E2; color: #DC2626; border: none;
-    border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 600;
-    cursor: pointer; margin-top: 4px;
+    border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600;
+    cursor: pointer; margin-top: 2px;
   }
 
   .analyze-btn {
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    width: 100%; padding: 16px 24px;
-    background: #000000; color: #FFFFFF; font-size: 15px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 13px 20px;
+    background: #062319; color: #FFFFFF; font-size: 15px; font-weight: 700;
     border: none; border-radius: 12px; cursor: pointer; font-family: inherit;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
   .analyze-btn:hover:not(:disabled) {
+    background: #0A3728;
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-    background: #111827;
+    box-shadow: 0 4px 14px rgba(6, 35, 25, 0.25);
   }
   .analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
 
-  /* Investigate Styling */
-  .investigate-intro { margin-bottom: 14px; }
-  .investigate-title { font-size: 18px; font-weight: 700; color: #111827; margin: 0 0 4px; }
-  .investigate-desc { font-size: 13.5px; color: #6B7280; margin: 0; line-height: 1.4; }
-
+  /* Investigate Row: Input on Top, Full-Width Action Button Below */
   .investigate-input-row {
-    display: flex; gap: 12px; margin-top: 18px; margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
+    margin-bottom: 12px;
   }
   .search-bar-wrapper {
-    flex: 1; position: relative; display: flex; align-items: center;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
   }
   .search-bar-icon {
-    position: absolute; left: 16px; color: #EF4444; pointer-events: none;
+    position: absolute;
+    left: 14px;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
   }
   .investigate-input {
-    width: 100%; padding: 14px 16px 14px 48px;
-    background: #FFFFFF; border: 1.5px solid var(--border, #E5E7EB);
-    border-radius: 12px; font-size: 15px; color: #111827; font-family: inherit;
-    box-sizing: border-box; transition: all 0.2s ease;
+    width: 100%;
+    padding: 13px 14px 13px 46px;
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #0F172A;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
   }
   .investigate-input:focus {
-    outline: none; border-color: #EF4444;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    outline: none;
+    border-color: #10B981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+  }
+  .investigate-input::placeholder {
+    color: #94A3B8;
   }
   .investigate-action-btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: #000000; color: #FFFFFF; border: none;
-    border-radius: 12px; padding: 0 24px; font-size: 14px; font-weight: 700;
-    cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: #062319;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    padding: 13px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
   .investigate-action-btn:hover:not(:disabled) {
-    background: #1F2937; transform: translateY(-1px);
+    background: #0A3728;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(6, 35, 25, 0.25);
   }
   .validation-msg {
-    color: #DC2626; font-size: 12px; font-weight: 600; margin-top: 4px; margin-bottom: 8px;
+    color: #DC2626; font-size: 12px; font-weight: 600; margin-top: 2px; margin-bottom: 8px;
   }
 
   .quick-tags-row {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
   }
-  .quick-tags-label { font-size: 12.5px; color: #9CA3AF; font-weight: 500; }
+  .quick-tags-label {
+    font-size: 13px;
+    color: #64748B;
+    font-weight: 500;
+  }
   .quick-tag-chip {
-    background: #F3F4F6; color: #374151; border: 1px solid #E5E7EB;
-    border-radius: 100px; padding: 4px 12px; font-size: 12px; font-weight: 500;
-    cursor: pointer; transition: all 0.15s ease;
+    background: #EEF2F6;
+    color: #334155;
+    border: none;
+    border-radius: 100px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
   }
-  .quick-tag-chip:hover { background: #E5E7EB; color: #000000; }
+  .quick-tag-chip:hover {
+    background: #E2E8F0;
+    color: #0F172A;
+  }
 
   /* Staged 6-Step Loader */
   .investigate-staged-loader {
@@ -2220,19 +2270,62 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .cs-samples-title {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 700;
     color: #0F172A;
   }
-  .cs-samples-sub {
+  .cs-filter-pills {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cs-filter-pills::-webkit-scrollbar { display: none; }
+  .cs-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #F1F5F9;
+    border: 1px solid #E2E8F0;
+    border-radius: 100px;
+    padding: 5px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+  .cs-pill-btn:hover {
+    background: #E2E8F0;
+    color: #0F172A;
+  }
+  .cs-pill-btn.active {
+    background: #0F172A;
+    color: #FFFFFF;
+    border-color: #0F172A;
+  }
+  .cs-pill-count {
+    background: #E2E8F0;
+    color: #475569;
+    padding: 1px 6px;
+    border-radius: 100px;
     font-size: 10px;
-    color: #94A3B8;
+    font-weight: 700;
+  }
+  .cs-pill-btn.active .cs-pill-count {
+    background: rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
   }
   .comment-samples-grid {
     display: flex;
@@ -2406,30 +2499,20 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     .intel-metrics-grid { grid-template-columns: 1fr; }
     .action-footer-grid { grid-template-columns: 1fr; }
     .metrics-subgrid { grid-template-columns: repeat(2, 1fr); }
-    .scanner-section { padding: 12px 14px 28px; }
-    .scanner-card { border-radius: 16px; }
-    .scanner-body { padding: 16px 14px; }
-    .scan-textarea { min-height: 120px; font-size: 14px; padding: 12px; }
-    .tab-text-desktop {
-      display: none !important;
-    }
-    .tab-text-mobile {
-      display: inline !important;
-      font-weight: 600;
-    }
-    .scanner-tabs { 
-      display: flex;
+    .scanner-section { padding: 0 10px 14px; }
+    .scanner-card { border-radius: 18px; padding: 14px 12px; }
+    .scanner-tabs {
       background: #F1F5F9;
       padding: 4px;
       border-radius: 12px;
       gap: 3px;
-      margin: 8px 10px 0;
+      margin-bottom: 12px;
       border: 1px solid #E2E8F0;
-      overflow-x: visible;
+      width: 100%;
     }
     .tab-btn { 
-      padding: 8px 4px; 
-      font-size: 12px; 
+      padding: 7px 4px; 
+      font-size: 11.5px; 
       gap: 4px;
       flex: 1;
       justify-content: center;
@@ -2440,71 +2523,53 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
       transition: all 0.2s ease;
       white-space: nowrap;
     }
-    .tab-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .tab-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
     .tab-btn.active {
-      background: #FFFFFF;
-      color: #0F172A;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      background: #E8F7F0 !important;
+      color: #065F46 !important;
       font-weight: 700;
+      box-shadow: 0 1px 2px rgba(6, 95, 70, 0.08);
     }
     .tab-btn.active svg {
-      stroke: #10B981;
+      stroke: #065F46 !important;
     }
-    .tab-investigate-trigger {
-      display: flex !important;
-      margin-left: 0;
-      background: transparent;
-      border: none;
-      color: #64748B;
-    }
-    .tab-investigate-trigger:hover {
-      background: rgba(255, 255, 255, 0.6);
-      color: #0F172A;
-    }
-    .tab-investigate-trigger.active {
-      background: #FFFFFF;
-      color: #0F172A;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-      border: none;
-    }
-    .tab-investigate-trigger.active svg {
-      stroke: #10B981;
-    }
-    .tab-investigate-trigger .trigger-arrow {
-      display: none !important;
+    .tab-divider {
+      width: 1px;
+      height: 14px;
+      background: #CBD5E1;
+      flex-shrink: 0;
     }
     .analyze-btn {
       width: 100%;
-      padding: 14px 16px;
+      padding: 13px 16px;
       font-size: 14px;
       justify-content: center;
     }
-    /* Mobile Low-Text & Clean Spacing */
     .investigate-intro { display: none !important; }
     .scanner-hint { display: none !important; }
     .upload-subtext { display: none !important; }
     .ocr-feature-badge { display: none !important; }
     .upload-heading { font-size: 13px !important; margin-top: 6px !important; font-weight: 600; }
-    .image-upload-zone { padding: 22px 14px !important; }
-    .upload-icon-circle { width: 44px !important; height: 44px !important; margin-bottom: 4px !important; }
-    .upload-icon-circle svg { width: 22px !important; height: 22px !important; }
+    .image-upload-zone { padding: 20px 12px !important; }
+    .upload-icon-circle { width: 42px !important; height: 42px !important; margin-bottom: 4px !important; }
+    .upload-icon-circle svg { width: 20px !important; height: 20px !important; }
     .investigate-input-row { flex-direction: column; gap: 10px; margin-top: 4px; }
     .investigate-action-btn { width: 100%; padding: 13px 16px; justify-content: center; font-size: 14px; }
     .investigate-columns { grid-template-columns: 1fr; gap: 16px; }
-    .investigate-header-card { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .header-status-right { width: 100%; justify-content: space-between; }
+    .investigate-header-card { flex-direction: column; align-items: stretch; gap: 12px; padding: 14px 12px; }
+    .header-status-right { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn-download-dossier, .btn-new-audit { width: 100%; justify-content: center; padding: 8px 10px; font-size: 12px; }
     .investigate-signals-grid { grid-template-columns: 1fr; gap: 14px; }
-    .yt-thumb-box { width: 70px; height: 46px; }
-    .yt-title { font-size: 12px; }
+    .fb-links { flex-direction: column; gap: 6px; }
+    .fb-link { width: 100%; text-align: center; box-sizing: border-box; }
   }
 
   @media (max-width: 480px) {
-    .scanner-section { padding: 4px 10px 16px; }
-    .scanner-card { border-radius: 14px; }
-    .scanner-tabs { padding: 4px; margin: 6px 8px 0; }
-    .tab-btn { padding: 7px 6px; font-size: 12px; border-radius: 8px; }
-    .scanner-body { padding: 14px 12px; }
-    .scan-textarea { min-height: 100px; font-size: 13.5px; padding: 10px 12px; }
+    .scanner-section { padding: 0 8px 12px; }
+    .scanner-card { border-radius: 16px; padding: 12px 10px; }
+    .scanner-tabs { padding: 3px; margin-bottom: 10px; }
+    .tab-btn { padding: 6px 3px; font-size: 11px; border-radius: 7px; }
+    .scan-textarea { min-height: 100px; font-size: 13px; padding: 10px; }
   }
 
   @media (min-width: 1024px) {
@@ -2597,22 +2662,29 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   }
 
   /* 2. Third-Party Mentions List & Items */
+  .mentions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
   .mention-item {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 12px 16px;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 14px;
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
-    border-radius: 10px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     transition: all 0.15s ease;
     text-decoration: none;
     color: inherit;
     cursor: pointer;
     overflow: hidden;
     box-sizing: border-box;
+    width: 100%;
     max-width: 100%;
   }
   .mention-item:hover {
@@ -2638,18 +2710,19 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     border-left: 4px solid #64748B;
     background: #F8FAFC;
   }
-  .mention-left {
+  .mention-header-row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex: 1;
-    min-width: 0;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    flex-wrap: wrap;
   }
   .mention-badge {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -2676,47 +2749,35 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     color: #475569;
     border: 1px solid #E2E8F0;
   }
-  .mention-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: #1E293B;
-    line-height: 1.45;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
-  .mention-right {
+  .mention-source-tag {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    margin-left: auto;
     flex-shrink: 0;
-    max-width: 220px;
   }
   .mention-domain {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 11.5px;
+    gap: 5px;
+    font-size: 11px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-weight: 600;
     color: #64748B;
     background: #F1F5F9;
     border: 1px solid #E2E8F0;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 6px;
     white-space: nowrap;
-    max-width: 180px;
+    max-width: 150px;
     overflow: hidden;
-    flex-shrink: 0;
   }
   .mention-domain span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
-    max-width: 140px;
+    max-width: 120px;
   }
   .mention-domain svg {
     display: inline-block;
@@ -2734,6 +2795,14 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   .mention-item:hover .mention-redirect-icon {
     color: #0F172A;
     transform: translate(1px, -1px);
+  }
+  .mention-title-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1E293B;
+    line-height: 1.45;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   /* 3. Balanced Signals (Supported / Questioned) */
