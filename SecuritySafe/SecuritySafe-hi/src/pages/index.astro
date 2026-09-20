@@ -164,11 +164,11 @@ import ScannerResult from '../components/ScannerResult.astro';
         return;
       }
       blogsGrid.innerHTML = blogs.map(b => {
-        const thumb = b.images?.[0]?.url || 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&auto=format&fit=crop&q=80';
-        const excerpt = (b.content || '').slice(0, 110) + '...';
+        const thumb = (b.images || [])[0]?.url || (typeof b.images?.[0] === 'string' ? b.images[0] : null) || 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&auto=format&fit=crop&q=80';
+        const excerpt = (b.content_text || b.content || '').replace(/\[\d+\]/g, '').replace(/\s+/g, ' ').trim().slice(0, 110) + '...';
         const tag = (b.tags || ['SCAM ALERT'])[0];
         return `
-          <a href="/blogs/${encodeURIComponent(b.id)}" class="home-blog-card">
+          <a href="/blogs/post?id=${encodeURIComponent(b.id)}" class="home-blog-card">
             <div class="home-blog-thumb">
               <img src="${thumb}" alt="${b.title || 'Blog'}" loading="lazy" />
             </div>
@@ -176,7 +176,7 @@ import ScannerResult from '../components/ScannerResult.astro';
               <div class="home-blog-tags"><span class="home-blog-tag">${tag}</span></div>
               <h3 class="home-blog-card-title">${b.title || 'Safety Alert'}</h3>
               <p class="home-blog-excerpt">${excerpt}</p>
-              <span class="home-blog-read">Read Full Story →</span>
+              <span class="home-blog-read">Read Verified Analysis →</span>
             </div>
           </a>
         `;
