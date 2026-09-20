@@ -27,44 +27,7 @@ The system is intended for organizations that need a secure, extensible, and pri
 
 ---
 
-## 3. High‑Level Architecture
 
-```mermaid
-flowchart TB
-    subgraph Client
-        UI[Web UI (Astro)]
-        Mobile[Mobile (future)]
-    end
-
-    subgraph API_Gateway[API Gateway (NGINX)]
-        direction LR
-        UI -->|REST/WS| GW[NGINX]
-    end
-
-    subgraph Backend
-        CH[Chat Backend (FastAPI)]
-        DB[PostgreSQL + Supabase]
-        LLM[LLM Provider (OpenAI/Anthropic)]
-    end
-
-    subgraph DigitalArrest[Digital-Arrest Service (FastAPI)]
-        DR[Arrest Engine]
-        Models[LLM Verdict (Ollama) + Link Cascade]
-        Data[CSV/JSON Datasets]
-    end
-
-    UI -->|GET/POST| GW
-    GW -->|proxy| CH
-    GW -->|proxy| DR
-    CH -->|store/retrieve| DB
-    DR -->|store/retrieve| DB
-    CH -->|LLM calls| LLM
-    DR -->|ML inference| Models
-    style Client fill:#f9f9f9,stroke:#333,stroke-width:1px
-    style API_Gateway fill:#e8f5ff,stroke:#333,stroke-width:1px
-    style Backend fill:#e6ffe6,stroke:#333,stroke-width:1px
-    style DigitalArrest fill:#fff5e6,stroke:#333,stroke-width:1px
-```
 
 **Explanation**
 - The **frontend** is a static site built with Astro; it communicates with the API gateway.
@@ -76,7 +39,7 @@ flowchart TB
 
 ---
 
-## 4. Detailed Tech Stack
+## 3. Detailed Tech Stack
 
 | Layer | Technology | Rationale |
 |-------|------------|-----------|
@@ -97,7 +60,7 @@ flowchart TB
 
 ## 5. Core Functional Flow
 
-### 5.1 Blog Submission Flow
+### 4.1 Blog Submission Flow
 
 ```mermaid
 sequenceDiagram
@@ -118,7 +81,7 @@ sequenceDiagram
     end
 ```
 
-### 5.2 Chat Interaction Flow
+### 4.2 Chat Interaction Flow
 
 ```mermaid
 sequenceDiagram
@@ -138,7 +101,7 @@ sequenceDiagram
     end
 ```
 
-### 5.3 Digital‑Arrest Risk‑Analysis Flow
+### 4.3 Digital‑Arrest Risk‑Analysis Flow
 
 ```mermaid
 sequenceDiagram
@@ -157,7 +120,7 @@ sequenceDiagram
 
 ---
 
-## 6. Deployment & CI/CD Pipeline
+## 5. Deployment & CI/CD Pipeline
 
 ```mermaid
 flowchart TD
@@ -188,7 +151,7 @@ flowchart TD
 
 ---
 
-## 7. Non‑Functional Requirements
+## 6. Non‑Functional Requirements
 
 | Category | Requirement |
 |----------|--------------|
@@ -202,9 +165,9 @@ flowchart TD
 
 ---
 
-## 8. Open Issues & Future Enhancements
+## 7. Open Issues & Future Enhancements
 
-- **Mobile app**: Build native React Native client for push notifications.
+- **Mobile app**: Build native React Native client for push notifications with complete inflow messages via locally running the bonsai-227B.
 - **Role‑based access control**: Extend admin key model to granular permissions.
 - **Advanced LLM safety**: Integrate content‑filtering pipelines.
 - **Kubernetes migration**: Move from Docker‑Compose to Helm charts for easier scaling.
