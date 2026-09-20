@@ -2507,7 +2507,7 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
       border-radius: 12px;
       gap: 3px;
       margin-bottom: 12px;
-      border: 1px solid #E2E8F0;
+      border: none !important;
       width: 100%;
     }
     .tab-btn { 
@@ -2556,18 +2556,119 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     .investigate-input-row { flex-direction: column; gap: 10px; margin-top: 4px; }
     .investigate-action-btn { width: 100%; padding: 13px 16px; justify-content: center; font-size: 14px; }
     .investigate-columns { grid-template-columns: 1fr; gap: 16px; }
-    .investigate-header-card { flex-direction: column; align-items: stretch; gap: 12px; padding: 14px 12px; }
+    .investigate-results-box {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
+      margin-top: 18px;
+      padding-top: 18px;
+      gap: 14px;
+    }
+    .investigate-header-card {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      padding: 14px 12px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .dossier-target {
+      font-size: 16px;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .dossier-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .dossier-pill {
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      line-height: 1.3;
+      font-size: 10.5px;
+      padding: 2.5px 8px;
+    }
+    .composite-overview-card {
+      padding: 14px 12px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .reasoning-title {
+      font-size: 12.5px;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .reasoning-text {
+      font-size: 12.5px;
+      padding: 10px 12px;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .signal-card {
+      padding: 14px 12px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .breakdown-card {
+      padding: 14px 12px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .intel-card {
+      padding: 14px 12px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .mentions-card {
+      padding: 14px 12px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
     .header-status-right { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .btn-download-dossier, .btn-new-audit { width: 100%; justify-content: center; padding: 8px 10px; font-size: 12px; }
     .investigate-signals-grid { grid-template-columns: 1fr; gap: 14px; }
-    .fb-links { flex-direction: column; gap: 6px; }
-    .fb-link { width: 100%; text-align: center; box-sizing: border-box; }
+    .action-footer-grid { gap: 12px; }
+    .footer-box {
+      padding: 14px 12px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .fb-desc {
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .fb-links { flex-direction: column; gap: 6px; width: 100%; }
+    .fb-link {
+      width: 100%;
+      text-align: center;
+      box-sizing: border-box;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
   }
 
   @media (max-width: 480px) {
     .scanner-section { padding: 0 8px 12px; }
     .scanner-card { border-radius: 16px; padding: 12px 10px; }
-    .scanner-tabs { padding: 3px; margin-bottom: 10px; }
+    .scanner-tabs { padding: 3px; margin-bottom: 10px; border: none !important; }
     .tab-btn { padding: 6px 3px; font-size: 11px; border-radius: 7px; }
     .scan-textarea { min-height: 100px; font-size: 13px; padding: 10px; }
   }
@@ -2754,7 +2855,9 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     align-items: center;
     gap: 6px;
     margin-left: auto;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 100%;
   }
   .mention-domain {
     display: inline-flex;
@@ -2771,6 +2874,8 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     white-space: nowrap;
     max-width: 150px;
     overflow: hidden;
+    flex-shrink: 1;
+    min-width: 0;
   }
   .mention-domain span {
     overflow: hidden;
@@ -2802,7 +2907,30 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     color: #1E293B;
     line-height: 1.45;
     word-break: break-word;
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .mention-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .mention-title {
+    font-size: 13px;
+    color: #334155;
+    line-height: 1.45;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    width: 100%;
+    max-width: 100%;
   }
 
   /* 3. Balanced Signals (Supported / Questioned) */
@@ -2814,6 +2942,9 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     line-height: 1.4;
     padding: 10px 12px;
     border-radius: 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   .signal-item.questioned {
     background: #FEF2F2;
@@ -2831,6 +2962,9 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   }
   .signal-text {
     flex: 1;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    min-width: 0;
   }
 
   /* 4. Red Flags Chips */
@@ -2842,27 +2976,132 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     font-weight: 600;
     padding: 2px 8px;
     border-radius: 4px;
+    max-width: 100%;
+    word-break: break-word;
+    overflow-wrap: anywhere;
   }
 
   @media (max-width: 768px) {
+    .breakdown-mini-card {
+      padding: 12px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    .bmc-title {
+      font-size: 12px;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .mentions-list {
+      gap: 8px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
     .mention-item {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 10px;
+      padding: 10px;
+      gap: 8px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .mention-header-row {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    .mention-badge {
+      flex-shrink: 0;
+      font-size: 10px;
+      padding: 2.5px 6px;
+    }
+    .mention-source-tag {
+      margin-left: 0;
+      flex-shrink: 1;
+      min-width: 0;
+      max-width: 100%;
+      gap: 4px;
+    }
+    .mention-domain {
+      max-width: 140px;
+      font-size: 10.5px;
+      padding: 2px 6px;
+      flex-shrink: 1;
+      min-width: 0;
+    }
+    .mention-domain span {
+      max-width: 105px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .mention-redirect-icon svg {
+      width: 12px;
+      height: 12px;
+    }
+    .mention-title-text {
+      font-size: 12px;
+      line-height: 1.4;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      hyphens: auto;
+      width: 100%;
+      max-width: 100%;
     }
     .mention-left {
       width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
-    .mention-right {
+    .mention-title {
+      font-size: 12px;
+      line-height: 1.4;
+      word-break: break-word;
+      overflow-wrap: anywhere;
       width: 100%;
       max-width: 100%;
+    }
+    .signal-item {
+      padding: 8px 10px;
+      font-size: 12px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    .signal-text {
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      min-width: 0;
+    }
+    .comment-bar-row {
+      font-size: 11.5px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .mention-header-row {
+      flex-direction: row;
+      align-items: center;
       justify-content: space-between;
+      gap: 4px;
     }
     .mention-domain {
-      max-width: calc(100% - 30px);
+      max-width: 115px;
     }
     .mention-domain span {
-      max-width: calc(100% - 30px);
+      max-width: 85px;
+    }
+    .mention-title-text {
+      font-size: 11.5px;
+      line-height: 1.35;
     }
   }
 </style>
