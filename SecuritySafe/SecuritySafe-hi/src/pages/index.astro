@@ -40,9 +40,29 @@ import ScannerResult from '../components/ScannerResult.astro';
         </div>
       </section>
 
-      <!-- 5. Action List (Bottom Section: Feedback, Fraud Learning, Emergency) -->
+      <!-- 5. Action List (Bottom Section: Blogs, Feedback, Fraud Learning, Emergency) -->
       <section class="action-list-section">
-        <!-- Card 1: Feedback -->
+        <!-- Card 1: Scam Stories & Blogs -->
+        <a href="/blogs" class="action-card">
+          <div class="action-icon-box icon-teal">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+          </div>
+          <div class="action-card-text">
+            <h3 class="action-card-title">Scam Stories &amp; Blogs</h3>
+            <p class="action-card-sub">Real victim stories &amp; breakdowns</p>
+          </div>
+          <div class="action-card-arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </div>
+        </a>
+
+        <!-- Card 2: Feedback -->
         <a href="/feedback" class="action-card">
           <div class="action-icon-box icon-teal">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -61,7 +81,7 @@ import ScannerResult from '../components/ScannerResult.astro';
           </div>
         </a>
 
-        <!-- Card 2: Fraud Learning Center -->
+        <!-- Card 3: Fraud Learning Center -->
         <a href="/learn" class="action-card">
           <div class="action-icon-box icon-teal">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -81,7 +101,7 @@ import ScannerResult from '../components/ScannerResult.astro';
           </div>
         </a>
 
-        <!-- Card 3: Emergency Center -->
+        <!-- Card 4: Emergency Center -->
         <a href="/emergency" class="action-card">
           <div class="action-icon-box icon-red">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -103,8 +123,69 @@ import ScannerResult from '../components/ScannerResult.astro';
         </a>
       </section>
     </div>
+
+    <!-- 6. Recommended Blogs Section (Latest safety stories & breakdowns) -->
+    <section class="home-blogs-section">
+      <div class="app-container">
+        <div class="home-blogs-header">
+          <div>
+            <span class="home-blogs-badge">LATEST SAFETY ALERTS &amp; STORIES</span>
+            <h2 class="home-blogs-title">Recommended Blogs &amp; Scam Breakdowns</h2>
+            <p class="home-blogs-desc">Read real victim experiences, breakdown of new scam patterns, and stay protected.</p>
+          </div>
+          <a href="/blogs" class="view-all-blogs-btn">
+            <span>View All Blogs</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </a>
+        </div>
+        <div class="home-blogs-grid" id="homeBlogsGrid">
+          <!-- Skeleton Loaders -->
+          <div class="home-blog-skel"></div>
+          <div class="home-blog-skel"></div>
+          <div class="home-blog-skel"></div>
+        </div>
+      </div>
+    </section>
   </main>
 </Layout>
+
+<script>
+  // Load top 3 recommended blogs for the homepage
+  document.addEventListener('DOMContentLoaded', async () => {
+    const blogsGrid = document.getElementById('homeBlogsGrid');
+    if (!blogsGrid) return;
+    try {
+      const res = await fetch('https://ixil3ly75uaxbvmqzs6mdlfj4m0kdtud.lambda-url.us-east-1.on.aws/api/blogs', { signal: AbortSignal.timeout(6000) });
+      if (!res.ok) return;
+      const data = await res.json();
+      const blogs = (data.blogs || []).slice(0, 3);
+      if (blogs.length === 0) {
+        blogsGrid.style.display = 'none';
+        return;
+      }
+      blogsGrid.innerHTML = blogs.map(b => {
+        const thumb = b.images?.[0]?.url || 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&auto=format&fit=crop&q=80';
+        const excerpt = (b.content || '').slice(0, 110) + '...';
+        const tag = (b.tags || ['SCAM ALERT'])[0];
+        return `
+          <a href="/blogs/${encodeURIComponent(b.id)}" class="home-blog-card">
+            <div class="home-blog-thumb">
+              <img src="${thumb}" alt="${b.title || 'Blog'}" loading="lazy" />
+            </div>
+            <div class="home-blog-body">
+              <div class="home-blog-tags"><span class="home-blog-tag">${tag}</span></div>
+              <h3 class="home-blog-card-title">${b.title || 'Safety Alert'}</h3>
+              <p class="home-blog-excerpt">${excerpt}</p>
+              <span class="home-blog-read">Read Full Story →</span>
+            </div>
+          </a>
+        `;
+      }).join('');
+    } catch {
+      // fallback silently
+    }
+  });
+</script>
 
 <style is:global>
   .main-home {
@@ -251,5 +332,169 @@ import ScannerResult from '../components/ScannerResult.astro';
     color: #0F172A;
   }
 
+  /* Home Recommended Blogs Section */
+  .home-blogs-section {
+    padding: 56px 20px 72px;
+    background: #FFFFFF;
+    border-top: 1px solid rgba(226, 232, 240, 0.85);
+    margin-top: 40px;
+  }
+  .home-blogs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 28px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .home-blogs-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #065F46;
+    background: #D2F6EA;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .home-blogs-title {
+    font-size: clamp(1.4rem, 3vw, 1.85rem);
+    font-weight: 800;
+    color: #0F172A;
+    margin: 0 0 6px;
+    letter-spacing: -0.02em;
+  }
+  .home-blogs-desc {
+    font-size: 13.5px;
+    color: #64748B;
+    margin: 0;
+  }
+  .view-all-blogs-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #065F46;
+    background: #E8F7F0;
+    border: 1px solid #A7F3D0;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .view-all-blogs-btn:hover {
+    background: #065F46;
+    color: #FFFFFF;
+    border-color: #065F46;
+    transform: translateY(-1px);
+  }
+  .home-blogs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .home-blog-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    box-sizing: border-box;
+  }
+  .home-blog-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+    border-color: #CBD5E1;
+  }
+  .home-blog-thumb {
+    height: 160px;
+    overflow: hidden;
+    background: #0F172A;
+  }
+  .home-blog-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  .home-blog-card:hover .home-blog-thumb img {
+    transform: scale(1.04);
+  }
+  .home-blog-body {
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 8px;
+    box-sizing: border-box;
+  }
+  .home-blog-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .home-blog-tag {
+    font-size: 10px;
+    font-weight: 700;
+    color: #065F46;
+    padding: 2px 7px;
+    background: #ECFDF5;
+    border: 1px solid #A7F3D0;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .home-blog-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0F172A;
+    margin: 0;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .home-blog-excerpt {
+    font-size: 12.5px;
+    color: #64748B;
+    line-height: 1.5;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+  }
+  .home-blog-read {
+    font-size: 12px;
+    font-weight: 700;
+    color: #059669;
+    margin-top: 4px;
+  }
+  .home-blog-skel {
+    height: 280px;
+    background: #F1F5F9;
+    border-radius: 14px;
+    animation: pulseSkel 1.5s infinite;
+  }
+  @keyframes pulseSkel { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
 
+  @media (max-width: 900px) {
+    .home-blogs-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  }
+  @media (max-width: 600px) {
+    .home-blogs-grid { grid-template-columns: 1fr; gap: 14px; }
+    .home-blogs-section { padding: 36px 14px 48px; margin-top: 28px; }
+  }
 </style>
