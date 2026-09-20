@@ -51,7 +51,10 @@ if p.returncode != 0:
     sys.exit(1)
 print("[+] Docker login succeeded.")
 
-# 3. Tag & Push Docker Image
+# 3. Build, Tag & Push Docker Image
+print("[*] Building Docker image for Lambda...")
+subprocess.run(["docker", "build", "-t", "safe-backend-lambda:latest", "."], check=True)
+
 print(f"[*] Tagging image as {ecr_uri}...")
 subprocess.run(["docker", "tag", "safe-backend-lambda:latest", ecr_uri], check=True)
 
@@ -101,15 +104,24 @@ lambda_client = session.client("lambda")
 
 env_vars = {
     "APP_ENV": "production",
-    "CORS_ORIGINS": "https://safe.princete.com,https://princete.com,https://www.princete.com,http://localhost:4321,*",
+    "CORS_ORIGINS": "https://safe.princete.com,https://princete.com,https://www.princete.com,https://safe-chat.vercel.app,http://localhost:4321",
+    "BEDROCK_MODEL_ID": os.getenv("BEDROCK_MODEL_ID", "google.gemma-3-27b-it"),
+    "BEDROCK_ANTHROPIC_VERSION": "bedrock-2023-05-31",
     "BEDROCK_MANTLE_API_KEY": os.getenv("BEDROCK_MANTLE_API_KEY", ""),
-    "OCR_SPACE_API_KEY": os.getenv("OCR_SPACE_API_KEY", "K84422890888957"),
-    "ADMIN_BLOG_KEY": os.getenv("ADMIN_BLOG_KEY", "safe-admin-2026"),
-    "FEEDBACK_RECIPIENT_EMAIL": os.getenv("FEEDBACK_RECIPIENT_EMAIL", "safe.princete@gmail.com"),
-    "SMTP_USER": os.getenv("SMTP_USER", "safe.princete@gmail.com"),
+    "BEDROCK_API_KEY": os.getenv("BEDROCK_MANTLE_API_KEY", "") or os.getenv("BEDROCK_API_KEY", ""),
+    "YOUTUBE_API_KEY": os.getenv("YOUTUBE_API_KEY", ""),
+    "TAVILY_API_KEY": os.getenv("TAVILY_API_KEY", ""),
+    "OCR_SPACE_API_KEY": os.getenv("OCR_SPACE_API_KEY", ""),
+    "OCR_SPACE_API_URL": os.getenv("OCR_SPACE_API_URL", "https://api.ocr.space/parse/image"),
+    "OCR_LANGUAGE": os.getenv("OCR_LANGUAGE", "eng"),
+    "ADMIN_BLOG_KEY": os.getenv("ADMIN_BLOG_KEY", ""),
+    "FEEDBACK_RECIPIENT_EMAIL": os.getenv("FEEDBACK_RECIPIENT_EMAIL", ""),
+    "SMTP_USER": os.getenv("SMTP_USER", ""),
     "SMTP_PASSWORD": os.getenv("SMTP_PASSWORD", ""),
     "SMTP_HOST": os.getenv("SMTP_HOST", "smtp.gmail.com"),
     "SMTP_PORT": os.getenv("SMTP_PORT", "465"),
+    "SUPABASE_URL": os.getenv("SUPABASE_URL", ""),
+    "BLOG_STORAGE_PATH": "/tmp/blogs_store.json",
 }
 
 # 5. Create or Update Lambda Function
@@ -159,22 +171,15 @@ except lambda_client.exceptions.ResourceNotFoundException:
     url_resp = lambda_client.create_function_url_config(
         FunctionName=FUNCTION_NAME,
         AuthType="NONE",
-        Cors={
-            "AllowOrigins": ["*"],
-            "AllowMethods": ["*"],
-            "AllowHeaders": ["*"],
-            "ExposeHeaders": ["*"],
-            "MaxAge": 86400
-        }
+        Cors={}
     )
     func_url = url_resp["FunctionUrl"]
     try:
         lambda_client.add_permission(
             FunctionName=FUNCTION_NAME,
-            StatementId="FunctionURLAllowPublicAccess",
-            Action="lambda:InvokeFunctionUrl",
-            Principal="*",
-            FunctionUrlAuthType="NONE"
+            StatementId="AllowPublicInvokeFunction",
+            Action="lambda:InvokeFunction",
+            Principal="*"
         )
     except Exception:
         pass

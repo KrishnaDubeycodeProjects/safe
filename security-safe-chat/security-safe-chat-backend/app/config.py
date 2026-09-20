@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     ocr_space_api_url: str = "https://api.ocr.space/parse/image"
     ocr_language: str = "eng"
 
+    # ── Investigation API Keys ────────────────────────────────────────────────
+    youtube_api_key: str = ""
+    tavily_api_key: str = ""
+
     # ── OpenAI ─────────────────────────────────────────────────────────────────
     openai_api_key: str = ""
     openai_base_url: str = ""

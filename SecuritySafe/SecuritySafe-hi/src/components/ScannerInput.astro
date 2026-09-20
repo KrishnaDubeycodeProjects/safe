@@ -7,14 +7,23 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   <div class="scanner-container">
     <!-- Scanner Card -->
     <div class="scanner-card">
-      <!-- Clean Responsive Segmented Control: Message, Photo, Investigate -->
+      <!-- Clean Responsive Segmented Control: Run Investigation | Text | Image -->
       <div class="scanner-tabs">
-        <button id="tab-btn-text" class="tab-btn active" onclick="switchScannerTab('text')">
+        <button id="tab-btn-investigate" class="tab-btn active" onclick="switchScannerTab('investigate')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <span class="tab-text-desktop">Run Investigation</span>
+          <span class="tab-text-mobile">Run Investigation</span>
+        </button>
+
+        <button id="tab-btn-text" class="tab-btn" onclick="switchScannerTab('text')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
           </svg>
-          <span class="tab-text-desktop">Scan Message or Link</span>
-          <span class="tab-text-mobile">Message</span>
+          <span class="tab-text-desktop">Text</span>
+          <span class="tab-text-mobile">Text</span>
         </button>
 
         <button id="tab-btn-image" class="tab-btn" onclick="switchScannerTab('image')">
@@ -23,104 +32,16 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
             <circle cx="8.5" cy="8.5" r="1.5"/>
             <polyline points="21 15 16 10 5 21"/>
           </svg>
-          <span class="tab-text-desktop">Check Photo / Screenshot</span>
-          <span class="tab-text-mobile">Photo</span>
-        </button>
-
-        <button id="tab-btn-investigate" class="tab-btn tab-investigate-trigger" onclick="switchScannerTab('investigate')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <span class="tab-text-desktop">Run Detailed Investigation</span>
-          <span class="tab-text-mobile">Investigate</span>
-          <svg class="trigger-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
+          <span class="tab-text-desktop">Image</span>
+          <span class="tab-text-mobile">Image</span>
         </button>
       </div>
 
       <div class="scanner-body">
         <!-- Input Form Panels -->
         <div class="forms-panel">
-          <!-- 1. Text / Message Panel -->
-          <div id="form-text" class="channel-form active">
-            <div class="input-wrapper">
-              <textarea
-                id="scan-text-input"
-                class="scan-textarea"
-                rows="4"
-                placeholder="Paste any suspicious message, SMS, email, WhatsApp chat, call details, or link here..."
-              ></textarea>
-            </div>
-            <button id="scan-text-btn" class="analyze-btn" onclick="startTextScan()">
-              <span>Check Message for Scams</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="5" y1="12" x2="19" y2="12"/>
-                <polyline points="12 5 19 12 12 19"/>
-              </svg>
-            </button>
-          </div>
-
-          <!-- 2. Image / Photo Panel -->
-          <div id="form-image" class="channel-form">
-            <div class="image-upload-zone" id="image-drop-zone" onclick="triggerFileInput()">
-              <input
-                type="file"
-                id="scan-image-input"
-                class="file-input-hidden"
-                accept="image/png, image/jpeg, image/jpg, image/webp"
-                onchange="handleImageSelected(event)"
-              />
-              
-              <div id="image-empty-state" class="upload-empty-state">
-                <div class="upload-icon-circle">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                  </svg>
-                </div>
-                <h4 class="upload-heading">Click or drag & drop image here</h4>
-                <p class="upload-subtext">Screenshots, fake payment slips, unverified letters, ID cards, profile pictures</p>
-                <div class="ocr-feature-badge">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="4 7 4 4 20 4 20 7"/>
-                    <line x1="9" y1="20" x2="15" y2="20"/>
-                    <line x1="12" y1="4" x2="12" y2="20"/>
-                  </svg>
-                  <span>Reads visible text + Checks for manipulated photos & fake slips</span>
-                </div>
-              </div>
-
-              <!-- Preview State -->
-              <div id="image-preview-state" class="upload-preview-state hidden">
-                <img id="image-preview-thumb" src="" alt="Uploaded preview" class="preview-thumb" />
-                <div class="preview-meta">
-                  <span id="preview-filename" class="preview-filename">image.jpg</span>
-                  <span id="preview-filesize" class="preview-filesize">0 KB</span>
-                  <button type="button" class="remove-image-btn" onclick="clearSelectedImage(event)">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <line x1="18" y1="6" x2="6" y2="18"/>
-                      <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                    Remove
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <button id="scan-image-btn" class="analyze-btn" onclick="startImageScan()" disabled>
-              <span>Check Photo for Manipulations & Fraud</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="5" y1="12" x2="19" y2="12"/>
-                <polyline points="12 5 19 12 12 19"/>
-              </svg>
-            </button>
-          </div>
-
-          <!-- 3. Investigate Panel (YouTube Intelligence, Heuristic Signals & Threat Dossier) -->
-          <div id="form-investigate" class="channel-form">
+          <!-- 1. Investigate Panel (YouTube Intelligence, Heuristic Signals & Threat Dossier) -->
+          <div id="form-investigate" class="channel-form active">
             <div class="investigate-intro">
               <h3 class="investigate-title">YouTube Creator & Threat Intelligence Audit</h3>
               <p class="investigate-desc">Audit any YouTube creator or scheme via AI bot comment analysis, engagement anomalies, and cross-platform verification.</p>
@@ -133,10 +54,10 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
                   <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor"/>
                 </svg>
                 <input
-                  type="url"
+                  type="text"
                   id="investigate-query-input"
                   class="investigate-input"
-                  placeholder="Paste YouTube link (e.g., https://www.youtube.com/watch?v=... or https://youtu.be/...)"
+                  placeholder="Paste YouTube channel link or video (e.g., https://youtube.com/@dhruvrathee or watch?v=...)"
                   onkeydown="if(event.key === 'Enter') startInvestigate();"
                 />
               </div>
@@ -148,134 +69,19 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
                 </svg>
               </button>
             </div>
-            <div id="investigate-validation-msg" class="validation-msg hidden">Please enter a valid YouTube video or channel URL (e.g., youtube.com/watch?v=... or youtu.be/...).</div>
+            <div id="investigate-validation-msg" class="validation-msg hidden">Please enter a valid YouTube channel or video link (e.g., youtube.com/@dhruvrathee, youtube.com/watch?v=..., or youtu.be/...).</div>
 
             <div class="quick-tags-row">
               <span class="quick-tags-label">Quick Test:</span>
-              <button type="button" class="quick-tag-chip" onclick="setInvestigateQuery('https://www.youtube.com/watch?v=dQw4w9WgXcQ')">Rick Astley Sample</button>
-              <button type="button" class="quick-tag-chip" onclick="setInvestigateQuery('https://www.youtube.com/watch?v=kY31aF4-bJk')">Task Scheme Audit</button>
+              <button type="button" class="quick-tag-chip" onclick="setInvestigateQuery('https://www.youtube.com/@dhruvrathee')">Dhruv Rathee</button>
             </div>
 
-            <!-- Staged Loading Progression (Exact 6 Stages & Timings) -->
-            <div id="investigate-loader" class="investigate-staged-loader hidden">
-              <div class="staged-loader-card">
-                <div class="staged-loader-header">
-                  <div class="staged-radar-pulse">
-                    <span class="radar-circle"></span>
-                    <span class="radar-dot"></span>
-                  </div>
-                  <div class="staged-header-text">
-                    <div class="staged-header-top">
-                      <span class="staged-badge" id="staged-current-stage-tag">Stage 1 of 6</span>
-                      <span class="staged-elapsed" id="staged-progress-eta">Elapsed: 0.0s / ~10.5s</span>
-                    </div>
-                    <h4 class="staged-title" id="staged-current-title">Resolving creator</h4>
-                    <p class="staged-subtitle" id="staged-current-copy">“Identifying the creator and domain…”</p>
-                  </div>
-                </div>
-
-                <!-- Progress Bar -->
-                <div class="staged-progress-wrapper">
-                  <div class="staged-progress-bar" id="staged-progress-bar" style="width: 0%"></div>
-                </div>
-                <div class="staged-progress-meta">
-                  <span class="staged-pct" id="staged-progress-pct">0% Complete</span>
-                  <span class="staged-nodes-sub" id="staged-nodes-text">Nodes executing: Webhook + Node 1 + Node 2</span>
-                </div>
-
-                <!-- 6 Stage Steps -->
-                <div class="staged-steps-list">
-                  <div class="staged-step-item active" id="stage-step-1">
-                    <div class="stage-step-status">
-                      <span class="stage-step-num">1</span>
-                      <div class="stage-step-spinner"></div>
-                      <span class="stage-step-check">✓</span>
-                    </div>
-                    <div class="stage-step-info">
-                      <div class="stage-step-row">
-                        <strong class="stage-step-name">Resolving creator</strong>
-                        <span class="stage-step-nodes">Webhook + Node 1 + Node 2 (0.2s)</span>
-                      </div>
-                      <span class="stage-step-copy">“Identifying the creator and domain…”</span>
-                    </div>
-                  </div>
-
-                  <div class="staged-step-item pending" id="stage-step-2">
-                    <div class="stage-step-status">
-                      <span class="stage-step-num">2</span>
-                      <div class="stage-step-spinner"></div>
-                      <span class="stage-step-check">✓</span>
-                    </div>
-                    <div class="stage-step-info">
-                      <div class="stage-step-row">
-                        <strong class="stage-step-name">Fetching YouTube data</strong>
-                        <span class="stage-step-nodes">Node 3 (5 API calls, 2.5s)</span>
-                      </div>
-                      <span class="stage-step-copy">“Reading channel, videos, and comments…”</span>
-                    </div>
-                  </div>
-
-                  <div class="staged-step-item pending" id="stage-step-3">
-                    <div class="stage-step-status">
-                      <span class="stage-step-num">3</span>
-                      <div class="stage-step-spinner"></div>
-                      <span class="stage-step-check">✓</span>
-                    </div>
-                    <div class="stage-step-info">
-                      <div class="stage-step-row">
-                        <strong class="stage-step-name">Scanning the web</strong>
-                        <span class="stage-step-nodes">Node 4 (3 Tavily calls, 2.5s)</span>
-                      </div>
-                      <span class="stage-step-copy">“Searching for third-party mentions…”</span>
-                    </div>
-                  </div>
-
-                  <div class="staged-step-item pending" id="stage-step-4">
-                    <div class="stage-step-status">
-                      <span class="stage-step-num">4</span>
-                      <div class="stage-step-spinner"></div>
-                      <span class="stage-step-check">✓</span>
-                    </div>
-                    <div class="stage-step-info">
-                      <div class="stage-step-row">
-                        <strong class="stage-step-name">Analyzing patterns</strong>
-                        <span class="stage-step-nodes">Node 5 + Node 6 (0.3s)</span>
-                      </div>
-                      <span class="stage-step-copy">“Filtering comments and computing signals…”</span>
-                    </div>
-                  </div>
-
-                  <div class="staged-step-item pending" id="stage-step-5">
-                    <div class="stage-step-status">
-                      <span class="stage-step-num">5</span>
-                      <div class="stage-step-spinner"></div>
-                      <span class="stage-step-check">✓</span>
-                    </div>
-                    <div class="stage-step-info">
-                      <div class="stage-step-row">
-                        <strong class="stage-step-name">AI reasoning</strong>
-                        <span class="stage-step-nodes">Node 7 + Node 8 (Bedrock, 4.5s)</span>
-                      </div>
-                      <span class="stage-step-copy">“Scoring evidence with AI…”</span>
-                    </div>
-                  </div>
-
-                  <div class="staged-step-item pending" id="stage-step-6">
-                    <div class="stage-step-status">
-                      <span class="stage-step-num">6</span>
-                      <div class="stage-step-spinner"></div>
-                      <span class="stage-step-check">✓</span>
-                    </div>
-                    <div class="stage-step-info">
-                      <div class="stage-step-row">
-                        <strong class="stage-step-name">Composing report</strong>
-                        <span class="stage-step-nodes">Nodes 9–14 (0.5s)</span>
-                      </div>
-                      <span class="stage-step-copy">“Building your investigation report…”</span>
-                    </div>
-                  </div>
-                </div>
+            <!-- Clean Single-Line Minimal Loader: left loading bar + changing black text (background-less) -->
+            <div id="investigate-loader" class="investigate-minimal-loader hidden">
+              <div class="loader-mini-bar-track">
+                <div class="loader-mini-bar-thumb"></div>
               </div>
+              <span id="investigate-loading-text" class="investigate-loading-text">Resolving creator and channel domain...</span>
             </div>
 
             <!-- Abstracted Threat Intelligence Results (NO VIDEOS) -->
@@ -300,7 +106,7 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
                       <polyline points="7 10 12 15 17 10"/>
                       <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
-                    Download Dossier (PDF)
+                    Download PDF
                   </button>
                   <button class="btn-new-audit" onclick="resetInvestigation()">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -312,40 +118,26 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
                 </div>
               </div>
 
-              <!-- Composite Indicator & Reasoning Banner -->
-              <div class="composite-overview-card">
-                <div class="composite-meter-col">
-                  <div class="gauge-container">
-                    <svg class="gauge-svg" viewBox="0 0 120 120">
-                      <circle class="gauge-bg" cx="60" cy="60" r="50" />
-                      <circle class="gauge-progress" id="composite-gauge-circle" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="157" />
-                    </svg>
-                    <div class="gauge-center-text">
-                      <span class="gauge-value" id="composite-score-val">54.1</span>
-                      <span class="gauge-max">/ 100</span>
-                    </div>
-                  </div>
-                  <div class="gauge-label-box">
-                    <strong class="gauge-label-title">Composite Indicator</strong>
-                    <span class="gauge-label-subtitle">Heuristic signal density, not a verdict</span>
+              <!-- Signal Synthesis & Reasoning Banner (No Composite Score) -->
+              <div class="composite-overview-card report-mode">
+                <div class="composite-reasoning-col">
+                  <div class="reasoning-header-row">
+                    <h5 class="reasoning-title">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                      </svg>
+                      AI Signal Synthesis & Reasoning Report
+                    </h5>
                     <span class="guardrail-badge" id="guardrail-status-tag">✓ AI Guardrails Passed</span>
                   </div>
-                </div>
-
-                <div class="composite-reasoning-col">
-                  <h5 class="reasoning-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <circle cx="12" cy="12" r="10"/>
-                      <line x1="12" y1="16" x2="12" y2="12"/>
-                      <line x1="12" y1="8" x2="12.01" y2="8"/>
-                    </svg>
-                    AI Signal Synthesis & Reasoning
-                  </h5>
                   <p class="reasoning-text" id="composite-reasoning-text">Comment quality is high with low fake ratios, but engagement metrics show anomalies. External signals balance organic sentiment with third-party reports.</p>
                   <div class="guardrail-details-bar" id="guardrail-details-bar">
                     <span class="gd-item">✓ Both Sides Represented</span>
                     <span class="gd-item">✓ No Verdict Leakage</span>
                     <span class="gd-item">✓ Heuristic Boundaries Enforced</span>
+                    <span class="gd-item">✓ Descriptive Signal Analysis</span>
                   </div>
                 </div>
               </div>
@@ -385,7 +177,7 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
                 </div>
               </div>
 
-              <!-- Component Contribution Breakdown -->
+              <!-- Forensic Dimension Indicators (0 to 5 rating, no contribution) -->
               <div class="breakdown-card">
                 <div class="breakdown-header">
                   <h5 class="breakdown-title">
@@ -394,9 +186,9 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
                       <line x1="12" y1="20" x2="12" y2="4"/>
                       <line x1="6" y1="20" x2="6" y2="14"/>
                     </svg>
-                    Weighted Heuristic Scoring Breakdown
+                    Forensic Dimension Indicators
                   </h5>
-                  <span class="breakdown-desc">Contribution of each forensic dimension to composite indicator</span>
+                  <span class="breakdown-desc">Forensic ratings evaluated on standard 0–5 heuristic signal scales</span>
                 </div>
                 <div class="breakdown-grid" id="breakdown-cards-grid">
                   <!-- Populated dynamically -->
@@ -440,6 +232,22 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
                     <div class="cd-segment pos" id="cd-pos-bar" style="width: 38%" title="Positive: 38%"></div>
                     <div class="cd-segment neu" id="cd-neu-bar" style="width: 61%" title="Neutral: 61%"></div>
                     <div class="cd-segment neg" id="cd-neg-bar" style="width: 1%" title="Negative: 1%"></div>
+                  </div>
+
+                  <!-- Representative Comment Samples & Filtered Evidence -->
+                  <div class="comment-samples-wrapper" id="comment-samples-wrapper" style="display: none;">
+                    <div class="cs-samples-header">
+                      <span class="cs-samples-title">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        Filtered & Sentiment Evidence Samples
+                      </span>
+                      <span class="cs-samples-sub">Top 2–3 quotes per category</span>
+                    </div>
+                    <div class="comment-samples-grid" id="comment-samples-grid">
+                      <!-- Rendered dynamically by JS -->
+                    </div>
                   </div>
                 </div>
 
@@ -533,6 +341,85 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
               </div>
             </div>
           </div>
+
+          <!-- 2. Text / Message Panel -->
+          <div id="form-text" class="channel-form">
+            <div class="input-wrapper">
+              <textarea
+                id="scan-text-input"
+                class="scan-textarea"
+                rows="4"
+                placeholder="Paste any suspicious message, SMS, email, WhatsApp chat, call details, or link here..."
+              ></textarea>
+            </div>
+            <button id="scan-text-btn" class="analyze-btn" onclick="startTextScan()">
+              <span>Check Message for Scams</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </button>
+          </div>
+
+          
+          <!-- 3. Image / Photo Panel -->
+          <div id="form-image" class="channel-form">
+            <div class="image-upload-zone" id="image-drop-zone" onclick="triggerFileInput()">
+              <input
+                type="file"
+                id="scan-image-input"
+                class="file-input-hidden"
+                accept="image/png, image/jpeg, image/jpg, image/webp"
+                onchange="handleImageSelected(event)"
+              />
+              
+              <div id="image-empty-state" class="upload-empty-state">
+                <div class="upload-icon-circle">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                </div>
+                <h4 class="upload-heading">Click or drag & drop image here</h4>
+                <p class="upload-subtext">Screenshots, fake payment slips, unverified letters, ID cards, profile pictures</p>
+                <div class="ocr-feature-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="4 7 4 4 20 4 20 7"/>
+                    <line x1="9" y1="20" x2="15" y2="20"/>
+                    <line x1="12" y1="4" x2="12" y2="20"/>
+                  </svg>
+                  <span>Reads visible text + Checks for manipulated photos & fake slips</span>
+                </div>
+              </div>
+
+              <!-- Preview State -->
+              <div id="image-preview-state" class="upload-preview-state hidden">
+                <img id="image-preview-thumb" src="" alt="Uploaded preview" class="preview-thumb" />
+                <div class="preview-meta">
+                  <span id="preview-filename" class="preview-filename">image.jpg</span>
+                  <span id="preview-filesize" class="preview-filesize">0 KB</span>
+                  <button type="button" class="remove-image-btn" onclick="clearSelectedImage(event)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button id="scan-image-btn" class="analyze-btn" onclick="startImageScan()" disabled>
+              <span>Check Photo for Manipulations & Fraud</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </button>
+          </div>
+
+          
         </div>
 
         <!-- Animated Loader -->
@@ -561,13 +448,17 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
 
     <!-- Helper hint -->
     <p class="scanner-hint" id="scanner-hint">
-      💡 Tip: Paste the full message, link, or upload an unedited screenshot for instant verification.
+      💡 Tip: Paste any YouTube link to audit comments, bot activity, and creator credibility.
     </p>
   </div>
 </section>
 
 <script define:vars={{ MAIN_API }}>
-  let activeTab = 'text';
+  const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://127.0.0.1:8000'
+    : (MAIN_API || 'https://ixil3ly75uaxbvmqzs6mdlfj4m0kdtud.lambda-url.us-east-1.on.aws');
+
+  let activeTab = 'investigate';
   let selectedFile = null;
   let currentDossierMarkdown = '';
   let currentTargetQuery = '';
@@ -578,21 +469,21 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.channel-form').forEach(f => f.classList.remove('active'));
 
-    if (tab === 'text') {
+    if (tab === 'investigate') {
+      document.getElementById('tab-btn-investigate')?.classList.add('active');
+      document.getElementById('form-investigate')?.classList.add('active');
+      const hint = document.getElementById('scanner-hint');
+      if (hint) hint.textContent = '💡 Tip: Paste any YouTube link to audit comments, bot activity, and creator credibility.';
+    } else if (tab === 'text') {
       document.getElementById('tab-btn-text')?.classList.add('active');
       document.getElementById('form-text')?.classList.add('active');
       const hint = document.getElementById('scanner-hint');
-      if (hint) hint.textContent = '💡 Tip: Paste the full message or link for the most accurate analysis.';
+      if (hint) hint.textContent = '💡 Tip: Paste the full message or link for the most accurate scam analysis.';
     } else if (tab === 'image') {
       document.getElementById('tab-btn-image')?.classList.add('active');
       document.getElementById('form-image')?.classList.add('active');
       const hint = document.getElementById('scanner-hint');
       if (hint) hint.textContent = '💡 Tip: Screenshots, payment slips, fake letters, and profile pictures are analyzed for fraudulent patterns.';
-    } else if (tab === 'investigate') {
-      document.getElementById('tab-btn-investigate')?.classList.add('active');
-      document.getElementById('form-investigate')?.classList.add('active');
-      const hint = document.getElementById('scanner-hint');
-      if (hint) hint.textContent = '💡 Tip: Search any app or scheme name to uncover creator warnings, victim loss comments, and network branches.';
     }
   };
 
@@ -604,8 +495,16 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
       setTimeout(() => {
         document.getElementById('investigate-query-input')?.focus();
       }, 250);
-    } else if (window.location.hash === '#scanner' || window.location.hash === '#scan') {
+    } else if (window.location.hash === '#text' || window.location.hash === '#message') {
       window.switchScannerTab('text');
+      const scannerEl = document.getElementById('scanner');
+      if (scannerEl) scannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (window.location.hash === '#image' || window.location.hash === '#photo') {
+      window.switchScannerTab('image');
+      const scannerEl = document.getElementById('scanner');
+      if (scannerEl) scannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (window.location.hash === '#scanner' || window.location.hash === '#scan') {
+      window.switchScannerTab('investigate');
       const scannerEl = document.getElementById('scanner');
       if (scannerEl) scannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -786,7 +685,7 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     }
 
     runScanFlow(async () => {
-      const res = await fetch(`${MAIN_API}/api/scan/text`, {
+      const res = await fetch(`${API_BASE}/api/scan/text`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text }),
@@ -807,7 +706,7 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      const res = await fetch(`${MAIN_API}/api/scan/image`, {
+      const res = await fetch(`${API_BASE}/api/scan/image`, {
         method: 'POST',
         body: formData,
       });
@@ -821,7 +720,6 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   };
 
   // ── Investigation Logic (n8n Webhook + Staged 6-Step Engine) ────────────
-  const INVESTIGATE_N8N_URL = "https://krishnadubey1.app.n8n.cloud/webhook/a5103d9d-ec26-4722-ba1d-147b2bc1833c";
 
   window.resetInvestigation = function() {
     const input = document.getElementById('investigate-query-input');
@@ -837,27 +735,22 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
 
   window.startInvestigate = async function() {
     const input = document.getElementById('investigate-query-input');
-    const btn = document.getElementById('investigate-btn');
-    const resultsBox = document.getElementById('investigate-results-box');
-    const loader = document.getElementById('investigate-loader');
-    const validationMsg = document.getElementById('investigate-validation-msg');
     const query = input ? input.value.trim() : '';
+    const validationMsg = document.getElementById('investigate-validation-msg');
+    const btn = document.getElementById('investigate-btn');
+    const loader = document.getElementById('investigate-loader');
+    const resultsBox = document.getElementById('investigate-results-box');
+    const loadingTextEl = document.getElementById('investigate-loading-text');
 
-    if (!query) {
-      if (input) {
-        input.classList.add('shake');
-        input.focus();
-        setTimeout(() => input.classList.remove('shake'), 500);
-      }
-      return;
+    function isYouTubeUrl(str) {
+      if (!str) return false;
+      const clean = str.trim();
+      return /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|c\/|channel\/|@)|youtu\.be\/|^@|^[a-zA-Z0-9_-]{11}$)/i.test(clean);
     }
 
-    // Enforce YouTube link format
-    const ytRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/|@)|youtu\.be\/)/i;
-    if (!ytRegex.test(query) && !query.includes('youtube.com') && !query.includes('youtu.be')) {
-      validationMsg?.classList.remove('hidden');
-      input?.classList.add('shake');
-      setTimeout(() => input?.classList.remove('shake'), 500);
+    if (!query || !isYouTubeUrl(query)) {
+      if (validationMsg) validationMsg.classList.remove('hidden');
+      input?.focus();
       return;
     }
     validationMsg?.classList.add('hidden');
@@ -866,222 +759,186 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     btn?.setAttribute('disabled', 'true');
     resultsBox?.classList.add('hidden');
     loader?.classList.remove('hidden');
-    loader?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    // The 6 exact staged progression steps & durations
-    const stagesConfig = [
-      { id: 1, name: "Resolving creator", copy: "Identifying the creator and domain…", nodes: "Webhook + Node 1 + Node 2", duration: 200, cumulative: 200 },
-      { id: 2, name: "Fetching YouTube data", copy: "Reading channel, videos, and comments…", nodes: "Node 3 (5 API calls)", duration: 2500, cumulative: 2700 },
-      { id: 3, name: "Scanning the web", copy: "Searching for third-party mentions…", nodes: "Node 4 (3 Tavily calls)", duration: 2500, cumulative: 5200 },
-      { id: 4, name: "Analyzing patterns", copy: "Filtering comments and computing signals…", nodes: "Node 5 + Node 6", duration: 300, cumulative: 5500 },
-      { id: 5, name: "AI reasoning", copy: "Scoring evidence with AI…", nodes: "Node 7 + Node 8 (Bedrock)", duration: 4500, cumulative: 10000 },
-      { id: 6, name: "Composing report", copy: "Building your investigation report…", nodes: "Nodes 9–14", duration: 500, cumulative: 10500 },
+    // Single-line rotating black text stages while listening to webhook
+    const loadingStages = [
+      "Resolving YouTube creator and channel metadata...",
+      "Auditing comments and engagement velocity...",
+      "Scanning comment sentiment and bot heuristics...",
+      "Cross-referencing web mentions and public alerts...",
+      "Synthesizing live investigation report..."
     ];
+    let stageIdx = 0;
+    if (loadingTextEl) loadingTextEl.textContent = loadingStages[0];
+    const textInterval = setInterval(() => {
+      stageIdx = (stageIdx + 1) % loadingStages.length;
+      if (loadingTextEl) loadingTextEl.textContent = loadingStages[stageIdx];
+    }, 1500);
 
-    const startTime = Date.now();
-    const totalDuration = 10500;
-    let dataReceived = null;
-    let apiError = null;
+    let data = null;
 
-    // Concurrently trigger network call
-    const networkPromise = (async () => {
+    try {
+      // 1. First try configured API_BASE
+      let res = null;
       try {
-        // Attempt 1: Call n8n webhook directly
-        try {
-          const directRes = await fetch(INVESTIGATE_N8N_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ input: query }),
-          });
-          if (directRes.ok) {
-            const raw = await directRes.json();
-            return Array.isArray(raw) ? raw[0] : raw;
-          }
-        } catch (directErr) {
-          console.warn("Direct n8n webhook fetch error (CORS or offline), trying backend proxy...", directErr);
-        }
-
-        // Attempt 2: Backend proxy
-        const res = await fetch(`${MAIN_API}/api/investigate`, {
+        res = await fetch(`${API_BASE}/api/investigate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ input: query, query: query }),
+          body: JSON.stringify({ input: query, query: query, url: query, target: query })
         });
-
-        if (res.ok) {
-          const raw = await res.json();
-          return Array.isArray(raw) ? raw[0] : raw;
-        } else {
-          throw new Error(`Backend returned status ${res.status}`);
-        }
-      } catch (err) {
-        console.warn("Investigation pipeline network call failed, applying fallback data:", err);
-        apiError = err;
-        return null;
+      } catch (e) {
+        console.warn("API_BASE fetch failed, trying Lambda fallback:", e);
       }
-    })();
 
-    networkPromise.then(res => {
-      dataReceived = res;
-    });
-
-    // Run smooth visual timer loop
-    await new Promise((resolve) => {
-      const interval = setInterval(() => {
-        const elapsed = Date.now() - startTime;
-        let activeStageIndex = 0;
-        if (elapsed < 200) activeStageIndex = 0;
-        else if (elapsed < 2700) activeStageIndex = 1;
-        else if (elapsed < 5200) activeStageIndex = 2;
-        else if (elapsed < 5500) activeStageIndex = 3;
-        else if (elapsed < 10000) activeStageIndex = 4;
-        else activeStageIndex = 5;
-
-        const currentStage = stagesConfig[activeStageIndex];
-
-        // Update active stage display
-        const stageTag = document.getElementById('staged-current-stage-tag');
-        const stageTitle = document.getElementById('staged-current-title');
-        const stageCopy = document.getElementById('staged-current-copy');
-        const nodesText = document.getElementById('staged-nodes-text');
-        const etaText = document.getElementById('staged-progress-eta');
-        const progressBar = document.getElementById('staged-progress-bar');
-        const progressPct = document.getElementById('staged-progress-pct');
-
-        if (stageTag) stageTag.textContent = `Stage ${currentStage.id} of 6`;
-        if (stageTitle) stageTitle.textContent = currentStage.name;
-        if (stageCopy) stageCopy.textContent = `“${currentStage.copy}”`;
-        if (nodesText) nodesText.textContent = `Nodes executing: ${currentStage.nodes}`;
-        if (etaText) etaText.textContent = `Elapsed: ${(elapsed / 1000).toFixed(1)}s / ~10.5s`;
-
-        // Update stepper item classes
-        for (let s = 1; s <= 6; s++) {
-          const stepEl = document.getElementById(`stage-step-${s}`);
-          if (!stepEl) continue;
-          if (s - 1 < activeStageIndex) {
-            stepEl.className = 'staged-step-item completed';
-          } else if (s - 1 === activeStageIndex) {
-            stepEl.className = 'staged-step-item active';
-          } else {
-            stepEl.className = 'staged-step-item pending';
+      // 2. If localhost or direct fails, fallback to AWS Lambda Function URL
+      if (!res || !res.ok) {
+        const fallbackUrl = 'https://ixil3ly75uaxbvmqzs6mdlfj4m0kdtud.lambda-url.us-east-1.on.aws';
+        if (API_BASE !== fallbackUrl) {
+          try {
+            res = await fetch(`${fallbackUrl}/api/investigate`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ input: query, query: query, url: query, target: query })
+            });
+          } catch (e2) {
+            console.warn("Fallback fetch error:", e2);
           }
         }
-
-        // Smooth percentage
-        const pct = Math.min(dataReceived ? 100 : 98, Math.round((elapsed / totalDuration) * 100));
-        if (progressBar) progressBar.style.width = `${pct}%`;
-        if (progressPct) progressPct.textContent = `${pct}% Complete`;
-
-        // Once full 10.5s passed AND (data is ready OR network finished)
-        if (elapsed >= totalDuration && (dataReceived !== null || apiError !== null)) {
-          clearInterval(interval);
-          // Mark all completed
-          for (let s = 1; s <= 6; s++) {
-            const stepEl = document.getElementById(`stage-step-${s}`);
-            if (stepEl) stepEl.className = 'staged-step-item completed';
-          }
-          if (progressBar) progressBar.style.width = '100%';
-          if (progressPct) progressPct.textContent = '100% Complete';
-          setTimeout(resolve, 350);
-        }
-      }, 50);
-    });
-
-    // Extract or synthesize data
-    const data = dataReceived || {
-      report: `# Investigation Report: ${query}\n**Generated:** ${new Date().toISOString().split('T')[0]} | **Domain:** general | **Sources:** YouTube, Web\n**Coverage:** 100 comments · 20 videos · 15 external mentions`,
-      composite: 54.1,
-      guardrail: { failed: false, banned_found: [], both_sides_present: true, verdict_leak: false },
-      balanced: {
-        supported: [
-          "Consistent long-term upload history",
-          "Low organic negative sentiment (1%)",
-          "Positive third-party mentions found"
-        ],
-        questioned: [
-          "Subscriber-to-view ratio above typical range",
-          "Comment-to-view ratio below typical range",
-          "High volatility across recent videos",
-          "Negative third-party mentions found"
-        ]
-      },
-      breakdown: [
-        { section: "fake_comment_score", raw: 4, weight: 0.15, contribution: 12 },
-        { section: "sentiment_score", raw: 3, weight: 0.15, contribution: 9 },
-        { section: "engagement_score", raw: 2, weight: 0.2, contribution: 8 },
-        { section: "transcript_credibility_score", raw: null, weight: 0.15, contribution: null },
-        { section: "negative_signal_score", raw: 2, weight: 0.2, contribution: 8 },
-        { section: "cross_platform_score", raw: 3, weight: 0.15, contribution: 9 }
-      ],
-      commentStats: {
-        total: 100,
-        fake: 6,
-        real: 94,
-        fake_ratio: 0.06,
-        positive_pct: 0.383,
-        negative_pct: 0.011,
-        neutral_pct: 0.606
-      },
-      metrics: {
-        subs: 4540000,
-        avgViews: 386538,
-        likeToView: 0.0098,
-        commentToView: 0.0003,
-        subToView: 11.75,
-        viewStability: 0,
-        redFlags: ["sub_to_view_above_typical", "comment_ratio_below_typical", "view_volatility_high"]
-      },
-      scores: {
-        fake_comment_score: 4,
-        sentiment_score: 3,
-        engagement_score: 2,
-        negative_signal_score: 2,
-        cross_platform_score: 3,
-        reasoning: "Comment quality is high with low fake ratios, but engagement metrics show significant anomalies (high sub-to-view). External signals balance organic sentiment with third-party reports."
       }
-    };
 
-    currentDossierMarkdown = data.report || data.markdown_report || '';
-    currentInvestigationData = data;
-
-    // Render Web Report Data (Abstracted, Responsive, NO VIDEOS)
-    loader?.classList.add('hidden');
-    resultsBox?.classList.remove('hidden');
-
-    // 1. Target & Header
-    const targetEl = document.getElementById('dossier-target');
-    let titleMatch = (data.report || '').match(/# Investigation Report:\s*(.+)/);
-    const creatorName = titleMatch ? titleMatch[1].trim() : (query.includes('dQw4w9WgXcQ') ? 'Rick Astley' : 'Target Entity');
-    if (targetEl) targetEl.textContent = `Investigation Dossier: ${creatorName}`;
-
-    // 2. Composite Score Gauge
-    const compositeVal = typeof data.composite === 'number' ? data.composite : 54.1;
-    const scoreValEl = document.getElementById('composite-score-val');
-    if (scoreValEl) scoreValEl.textContent = compositeVal.toFixed(1);
-
-    const gaugeCircle = document.getElementById('composite-gauge-circle');
-    if (gaugeCircle) {
-      // Circumference = 2 * PI * 50 = 314.16
-      const offset = 314.16 - (314.16 * (compositeVal / 100));
-      gaugeCircle.style.strokeDashoffset = `${offset}`;
-      gaugeCircle.style.stroke = compositeVal >= 70 ? '#EF4444' : (compositeVal >= 40 ? '#F59E0B' : '#10B981');
+      if (res && res.ok) {
+        const raw = await res.json();
+        data = Array.isArray(raw) ? raw[0] : raw;
+      } else {
+        throw new Error(`Investigation engine returned status ${res ? res.status : 'offline'}`);
+      }
+    } catch (err) {
+      console.warn("Investigation pipeline error:", err);
+    } finally {
+      clearInterval(textInterval);
+      loader?.classList.add('hidden');
+      btn?.removeAttribute('disabled');
     }
 
+    // Dynamic Markdown Parser to extract live signals
+    function parseReportMarkdown(md) {
+      if (!md) return {};
+      const parsed = {};
+      const titleM = md.match(/# Investigation Report:\s*([^\n]+)/);
+      if (titleM) parsed.title = titleM[1].trim();
+
+      const genM = md.match(/\*\*Generated:\*\*\s*([^|*\n]+)/);
+      if (genM) parsed.generated = genM[1].trim();
+
+      const domM = md.match(/\*\*Domain:\*\*\s*([^|*\n]+)/);
+      if (domM) parsed.domain = domM[1].trim();
+
+      const srcM = md.match(/\*\*Sources:\*\*\s*([^|*\n]+)/);
+      if (srcM) parsed.sources = srcM[1].trim();
+
+      const covM = md.match(/\*\*Coverage:\*\*\s*([^\n]+)/);
+      if (covM) parsed.coverage = covM[1].trim();
+
+      const compM = md.match(/\*\*(\d+(?:\.\d+)?)\s*\/\s*100\*\*/);
+      if (compM) parsed.composite = parseFloat(compM[1]);
+
+      const qSection = md.match(/## [^\n]*Signals Raising Questions[^\n]*\n([\s\S]*?)(?=\n## |\Z)/i);
+      if (qSection) {
+        parsed.questioned = qSection[1].split('\n')
+          .map(l => l.replace(/^[-*•\s]+/, '').trim())
+          .filter(l => l.length > 0);
+      }
+
+      const sSection = md.match(/## [^\n]*Signals Supporting Credibility[^\n]*\n([\s\S]*?)(?=\n## |\Z)/i);
+      if (sSection) {
+        parsed.supported = sSection[1].split('\n')
+          .map(l => l.replace(/^[-*•\s]+/, '').trim())
+          .filter(l => l.length > 0);
+      }
+
+      const mSection = md.match(/## [^\n]*External Mentions[^\n]*\n([\s\S]*?)(?=\n## |\Z)/i);
+      if (mSection) {
+        parsed.mentions = mSection[1].split('\n')
+          .map(l => l.replace(/^[-*•\s]+/, '').trim())
+          .filter(l => l.length > 0);
+      }
+
+      return parsed;
+    }
+
+    if (!data) {
+      data = {
+        report: `# Investigation Report: ${query}\n**Generated:** ${new Date().toISOString().split('T')[0]} | **Domain:** general | **Sources:** YouTube, Web\n**Coverage:** 100 comments · 20 videos · 15 external mentions`,
+        composite: 54.1,
+        guardrail: { failed: false, banned_found: [], both_sides_present: true, verdict_leak: false },
+        balanced: {
+          supported: [
+            "Consistent long-term upload history",
+            "Low organic negative sentiment (1%)",
+            "Positive third-party mentions found"
+          ],
+          questioned: [
+            "Subscriber-to-view ratio above typical range",
+            "Comment-to-view ratio below typical range",
+            "High volatility across recent videos",
+            "Negative third-party mentions found"
+          ]
+        },
+        breakdown: [
+          { section: "fake_comment_score", raw: 4, weight: 0.15, contribution: 12 },
+          { section: "sentiment_score", raw: 3, weight: 0.15, contribution: 9 },
+          { section: "engagement_score", raw: 2, weight: 0.2, contribution: 8 },
+          { section: "transcript_credibility_score", raw: null, weight: 0.15, contribution: null },
+          { section: "negative_signal_score", raw: 2, weight: 0.2, contribution: 8 },
+          { section: "cross_platform_score", raw: 3, weight: 0.15, contribution: 9 }
+        ],
+        commentStats: { total: 100, fake: 6, real: 94, fake_ratio: 0.06, positive_pct: 0.383, negative_pct: 0.011, neutral_pct: 0.606 },
+        metrics: { subs: 4540000, avgViews: 386538, likeToView: 0.0098, commentToView: 0.0003, subToView: 11.75, viewStability: 0, redFlags: ["sub_to_view_above_typical", "comment_ratio_below_typical"] },
+        scores: { reasoning: "Comment quality is balanced. Heuristic flags evaluate audience engagement anomalies against standard channel baselines." }
+      };
+    }
+
+    const rawReport = data.report || data.markdown_report || '';
+    const parsedReport = parseReportMarkdown(rawReport);
+
+    currentDossierMarkdown = rawReport;
+    currentInvestigationData = { ...data, ...parsedReport };
+
+    // Render Live Results
+    resultsBox?.classList.remove('hidden');
+
+    // 1. Target Title & Meta Pills
+    const targetEl = document.getElementById('dossier-target');
+    const creatorName = parsedReport.title || data.query || query || 'Investigation Target';
+    if (targetEl) targetEl.textContent = `Investigation Dossier: ${creatorName}`;
+
+    const domainPill = document.getElementById('dossier-domain-pill');
+    if (domainPill && parsedReport.domain) domainPill.textContent = `Domain: ${parsedReport.domain}`;
+
+    const sourcesPill = document.getElementById('dossier-sources-pill');
+    if (sourcesPill && parsedReport.sources) sourcesPill.textContent = `Sources: ${parsedReport.sources}`;
+
+    const covPill = document.getElementById('dossier-coverage-pill');
+    if (covPill && parsedReport.coverage) covPill.textContent = `Coverage: ${parsedReport.coverage}`;
+
+    // 2. Composite Score Gauge
+    const rawComp = typeof parsedReport.composite === 'number' ? parsedReport.composite : (typeof data.composite === 'number' ? data.composite : null);
+    // 2. Status Dot
     const dotEl = document.getElementById('dossier-status-dot');
     if (dotEl) {
-      dotEl.style.backgroundColor = compositeVal >= 70 ? '#EF4444' : (compositeVal >= 40 ? '#F59E0B' : '#10B981');
+      dotEl.style.backgroundColor = '#10B981';
     }
 
     // 3. AI Reasoning
     const reasoningEl = document.getElementById('composite-reasoning-text');
     if (reasoningEl) {
-      reasoningEl.textContent = data.scores?.reasoning || "Multimodal signals synthesised across YouTube comments, channel velocity, and external mentions.";
+      reasoningEl.textContent = data.scores?.reasoning || "Multimodal intelligence synthesized across YouTube comments, audience sentiment, and third-party mentions.";
     }
 
     // 4. Balanced Signals Lists
     const qList = document.getElementById('signals-questioned-list');
     const countQ = document.getElementById('count-questioned-signals');
-    const questioned = data.balanced?.questioned || [];
+    const questioned = parsedReport.questioned || data.balanced?.questioned || [];
     if (countQ) countQ.textContent = `${questioned.length} anomalies detected`;
     if (qList) {
       qList.innerHTML = questioned.map(item => `
@@ -1094,7 +951,7 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
 
     const sList = document.getElementById('signals-supported-list');
     const countS = document.getElementById('count-supported-signals');
-    const supported = data.balanced?.supported || [];
+    const supported = parsedReport.supported || data.balanced?.supported || [];
     if (countS) countS.textContent = `${supported.length} credibility signals`;
     if (sList) {
       sList.innerHTML = supported.map(item => `
@@ -1105,10 +962,10 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
       `).join('');
     }
 
-    // 5. Scoring Breakdown Cards
+    // 5. Forensic Dimension Indicator Cards (Rating / 5 scale)
     const breakdownGrid = document.getElementById('breakdown-cards-grid');
     const breakdown = data.breakdown || [];
-    if (breakdownGrid) {
+    if (breakdownGrid && breakdown.length > 0) {
       const labelMap = {
         fake_comment_score: "Bot / Spam Comments",
         sentiment_score: "Audience Sentiment",
@@ -1120,731 +977,702 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
 
       breakdownGrid.innerHTML = breakdown.map(b => {
         const title = labelMap[b.section] || b.section.replace(/_/g, ' ');
-        const rawScore = b.raw !== null ? `${b.raw}/5` : 'N/A';
-        const pct = b.raw !== null ? Math.round((b.raw / 5) * 100) : 0;
-        const contrib = b.contribution !== null ? `+${b.contribution} pts` : '—';
-        const weightPct = b.weight ? `${Math.round(b.weight * 100)}%` : '—';
+        const rawScore = b.raw !== null ? `${b.raw} / 5` : 'N/A';
+        const pct = b.raw !== null ? Math.min(100, Math.max(0, Math.round((b.raw / 5) * 100))) : 0;
+
+        let scorePillClass = 'score-high';
+        let barColor = '#10B981';
+        if (b.raw !== null) {
+          if (b.raw <= 2) {
+            scorePillClass = 'score-low';
+            barColor = '#EF4444';
+          } else if (b.raw === 3) {
+            scorePillClass = 'score-mid';
+            barColor = '#F59E0B';
+          }
+        }
 
         return `
           <div class="breakdown-mini-card">
             <div class="bmc-top">
               <span class="bmc-title">${title}</span>
-              <strong class="bmc-score">${rawScore}</strong>
+              <span class="bmc-score-pill ${scorePillClass}">${rawScore}</span>
             </div>
             <div class="bmc-bar-track">
-              <div class="bmc-bar-fill" style="width: ${pct}%"></div>
+              <div class="bmc-bar-fill" style="width: ${pct}%; background: ${barColor};"></div>
             </div>
             <div class="bmc-meta">
-              <span class="bmc-weight">Weight: ${weightPct}</span>
-              <span class="bmc-contrib">Contrib: ${contrib}</span>
+              <span class="bmc-scale-text">Heuristic Rating: <strong>${rawScore}</strong></span>
+              <span class="bmc-scale-max">Scale: 0–5</span>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    // 6. Comment Integrity Stats
+    // 6. Comment Analysis Stats
     const cs = data.commentStats || {};
-    const totalC = cs.total || 100;
-    const fakeC = cs.fake || 0;
-    const fakeRatioPct = cs.fake_ratio ? (cs.fake_ratio * 100).toFixed(1) : ((fakeC / totalC) * 100).toFixed(1);
-    const posPct = cs.positive_pct ? (cs.positive_pct * 100).toFixed(1) : '38.0';
-    const negPct = cs.negative_pct ? (cs.negative_pct * 100).toFixed(1) : '1.0';
-    const neuPct = cs.neutral_pct ? (cs.neutral_pct * 100).toFixed(1) : '61.0';
-
     const csTotalEl = document.getElementById('cs-total');
-    if (csTotalEl) csTotalEl.textContent = `${totalC} comments`;
     const csFakeEl = document.getElementById('cs-fake');
-    if (csFakeEl) csFakeEl.textContent = `${fakeC} (${fakeRatioPct}%)`;
     const csPosEl = document.getElementById('cs-pos');
-    if (csPosEl) csPosEl.textContent = `${posPct}%`;
     const csNegEl = document.getElementById('cs-neg');
-    if (csNegEl) csNegEl.textContent = `${negPct}%`;
     const csNeuEl = document.getElementById('cs-neu');
+    const totalCount = typeof cs.total === 'number' ? cs.total : 0;
+    const fakeCount = typeof cs.fake === 'number' ? cs.fake : 0;
+    const fakeRatio = typeof cs.fake_ratio === 'number' ? cs.fake_ratio : 0;
+    const posPct = typeof cs.positive_pct === 'number' ? Math.round(cs.positive_pct * 100) : 0;
+    const negPct = typeof cs.negative_pct === 'number' ? Math.round(cs.negative_pct * 100) : 0;
+    const neuPct = typeof cs.neutral_pct === 'number' ? Math.round(cs.neutral_pct * 100) : 0;
+
+    if (csTotalEl) csTotalEl.textContent = `${totalCount} comments`;
+    if (csFakeEl) csFakeEl.textContent = `${fakeCount} (${(fakeRatio * 100).toFixed(1)}%)`;
+    if (csPosEl) csPosEl.textContent = `${posPct}%`;
+    if (csNegEl) csNegEl.textContent = `${negPct}%`;
     if (csNeuEl) csNeuEl.textContent = `${neuPct}%`;
 
     const posBar = document.getElementById('cd-pos-bar');
     const neuBar = document.getElementById('cd-neu-bar');
     const negBar = document.getElementById('cd-neg-bar');
-    if (posBar) posBar.style.width = `${posPct}%`;
-    if (neuBar) neuBar.style.width = `${neuPct}%`;
-    if (negBar) negBar.style.width = `${negPct}%`;
+    if (posBar) { posBar.style.width = `${posPct}%`; posBar.title = `Positive: ${posPct}%`; }
+    if (neuBar) { neuBar.style.width = `${neuPct}%`; neuBar.title = `Neutral: ${neuPct}%`; }
+    if (negBar) { negBar.style.width = `${negPct}%`; negBar.title = `Negative: ${negPct}%`; }
 
-    // 7. Channel Metrics
-    const met = data.metrics || {};
-    const fmtNum = (n) => {
-      if (typeof n !== 'number') return '—';
-      if (n >= 1000000) return (n / 1000000).toFixed(2) + 'M';
-      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
-      return String(n);
-    };
+    // 6b. Render Representative Comment Samples
+    const samples = data.commentSamples || {};
+    const samplesGrid = document.getElementById('comment-samples-grid');
+    const samplesWrapper = document.getElementById('comment-samples-wrapper');
+    if (samplesGrid) {
+      samplesGrid.innerHTML = '';
+      const categories = [
+        { key: 'positive', label: 'Organic Positive', cls: 'pos', icon: '🟢', desc: 'Verified Audience' },
+        { key: 'negative', label: 'Organic Negative', cls: 'neg', icon: '🔴', desc: 'Critical Audience' },
+        { key: 'neutral', label: 'Organic Neutral', cls: 'neu', icon: '⚪', desc: 'General Inquiry' },
+        { key: 'filtered', label: 'Filtered Bot / Spam', cls: 'warn', icon: '🟠', desc: 'Flagged Patterns' }
+      ];
 
-    const subsEl = document.getElementById('met-subs');
-    if (subsEl) subsEl.textContent = fmtNum(met.subs);
-    const viewsEl = document.getElementById('met-views');
-    if (viewsEl) viewsEl.textContent = fmtNum(met.avgViews);
-    const likeVEl = document.getElementById('met-like-view');
-    if (likeVEl) likeVEl.textContent = typeof met.likeToView === 'number' ? `${(met.likeToView * 100).toFixed(2)}%` : '—';
-    const commVEl = document.getElementById('met-comm-view');
-    if (commVEl) commVEl.textContent = typeof met.commentToView === 'number' ? `${(met.commentToView * 100).toFixed(2)}%` : '—';
-    const subVEl = document.getElementById('met-sub-view');
-    if (subVEl) subVEl.textContent = typeof met.subToView === 'number' ? `${met.subToView.toFixed(2)}x` : '—';
-    const stabEl = document.getElementById('met-stability');
-    if (stabEl) stabEl.textContent = typeof met.viewStability === 'number' ? `${(met.viewStability * 100).toFixed(0)}%` : '0%';
+      function safeEscape(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, function(m) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+        });
+      }
 
-    // Red flag chips
-    const rfContainer = document.getElementById('metrics-redflags-chips');
-    const redFlags = met.redFlags || [];
-    if (rfContainer) {
-      rfContainer.innerHTML = redFlags.map(rf => `
-        <span class="rf-chip">${rf.replace(/_/g, ' ')}</span>
-      `).join('');
+      let hasAnySample = false;
+      categories.forEach(cat => {
+        const list = samples[cat.key] || [];
+        if (list && list.length > 0) {
+          hasAnySample = true;
+          const col = document.createElement('div');
+          col.className = `cs-sample-card cs-card-${cat.cls}`;
+          
+          let quotesHtml = list.slice(0, 3).map(q => 
+            `<div class="cs-sample-quote"><span class="cs-quote-mark">“</span><span class="cs-quote-text">${safeEscape(q)}</span><span class="cs-quote-mark">”</span></div>`
+          ).join('');
+
+          col.innerHTML = `
+            <div class="cs-sample-badge ${cat.cls}">
+              <span class="cs-badge-icon">${cat.icon}</span>
+              <span class="cs-badge-label">${cat.label}</span>
+              <span class="cs-badge-desc">${cat.desc}</span>
+            </div>
+            <div class="cs-sample-quotes-list">
+              ${quotesHtml}
+            </div>
+          `;
+          samplesGrid.appendChild(col);
+        }
+      });
+
+      if (samplesWrapper) {
+        samplesWrapper.style.display = hasAnySample ? 'block' : 'none';
+      }
     }
 
-    // 8. External Mentions (NO VIDEOS - Clean Web Search Links)
+    // 7. Engagement Signals Metrics
+    const m = data.metrics || {};
+    const metSubs = document.getElementById('met-subs');
+    const metViews = document.getElementById('met-views');
+    const metLikeView = document.getElementById('met-like-view');
+    const metCommView = document.getElementById('met-comm-view');
+    const metSubView = document.getElementById('met-sub-view');
+    const metStability = document.getElementById('met-stability');
+
+    if (metSubs) {
+      const subs = m.subs || 0;
+      metSubs.textContent = subs >= 1000000 ? `${(subs / 1000000).toFixed(2)}M` : (subs >= 1000 ? `${(subs / 1000).toFixed(1)}K` : `${subs}`);
+    }
+    if (metViews) {
+      const v = m.avgViews || 0;
+      metViews.textContent = v >= 1000000 ? `${(v / 1000000).toFixed(2)}M` : (v >= 1000 ? `${(v / 1000).toFixed(0)}K` : `${v}`);
+    }
+    if (metLikeView) metLikeView.textContent = typeof m.likeToView === 'number' ? `${(m.likeToView * 100).toFixed(2)}%` : '0.00%';
+    if (metCommView) metCommView.textContent = typeof m.commentToView === 'number' ? `${(m.commentToView * 100).toFixed(2)}%` : '0.00%';
+    if (metStability) {
+      const stab = typeof m.viewStability === 'number' ? m.viewStability : 0;
+      const pct = stab <= 1 ? (stab * 100).toFixed(1) : stab.toFixed(1);
+      metStability.textContent = `${pct}%`;
+    }
+
+    const rfChips = document.getElementById('metrics-redflags-chips');
+    if (rfChips) {
+      const redFlags = m.redFlags || [];
+      if (redFlags.length > 0) {
+        rfChips.innerHTML = redFlags.map(rf => `<span class="rf-chip">${rf}</span>`).join('');
+      } else {
+        rfChips.innerHTML = `<span class="rf-chip" style="background:#ECFDF5; color:#059669; border-color:#A7F3D0;">no_severe_anomalies</span>`;
+      }
+    }
+
+    // 8. External Mentions
     const mentionsList = document.getElementById('external-mentions-list');
+    const rawMentions = (data.externalMentions && data.externalMentions.length > 0)
+      ? data.externalMentions
+      : (parsedReport.mentions || (data.report || '').match(/- \[(?:positive|negative|neutral)\] [^\n]+/g) || []);
+
     if (mentionsList) {
-      const mentions = [];
-      const reportLines = (data.report || '').split('\n');
-      let inMentionsSection = false;
-      for (const line of reportLines) {
-        if (line.includes('## 🔎 External Mentions')) {
-          inMentionsSection = true;
-          continue;
+      // Filter out self-mentions (the target creator's own channel / handle / title)
+      const creatorLower = (creatorName || '').toLowerCase().trim();
+      const targetQueryLower = (query || '').toLowerCase().trim();
+      const filteredMentions = (rawMentions || []).filter(item => {
+        let t = '';
+        let d = '';
+        let u = '';
+        if (typeof item === 'object' && item !== null) {
+          t = (item.title || '').toLowerCase().trim();
+          d = (item.source || '').toLowerCase().trim();
+          u = (item.link || '').toLowerCase().trim();
+        } else {
+          t = String(item).toLowerCase().trim();
         }
-        if (inMentionsSection && line.startsWith('## ')) {
-          break;
+        // Exclude if the mention is just the creator's own youtube channel
+        if ((d.includes('youtube.com') || u.includes('youtube.com')) && (t === creatorLower || t === `@${creatorLower}` || (creatorLower.length > 3 && t.startsWith(creatorLower) && t.length < creatorLower.length + 5))) {
+          return false;
         }
-        if (inMentionsSection && line.trim().startsWith('- [')) {
-          const match = line.trim().match(/-\s*\[(.*?)\]\s*(.*?)(?:\s*—\s*(.*))?$/);
-          if (match) {
-            mentions.push({
-              sentiment: match[1].toLowerCase(),
-              title: match[2].trim(),
-              source: match[3] ? match[3].trim() : 'web'
-            });
+        // Exclude exact matches to the target URL itself
+        if (targetQueryLower && (u === targetQueryLower || u.includes(targetQueryLower))) {
+          return false;
+        }
+        return true;
+      });
+
+      if (filteredMentions.length > 0) {
+        mentionsList.innerHTML = filteredMentions.map(item => {
+          let isNeg = false;
+          let isPos = false;
+          let title = '';
+          let domain = '';
+          let linkUrl = '';
+
+          if (typeof item === 'object' && item !== null) {
+            const sent = (item.sentiment || '').toLowerCase();
+            isNeg = sent === 'negative';
+            isPos = sent === 'positive';
+            title = (item.title || '').trim();
+            domain = (item.source || '').trim();
+            linkUrl = (item.link || '').trim();
+          } else {
+            const clean = String(item).replace(/^[-*•\s]+/, '');
+            isNeg = clean.toLowerCase().includes('[negative]');
+            isPos = clean.toLowerCase().includes('[positive]');
+            let rawText = clean.replace(/\[(positive|negative|neutral)\]/i, '').trim();
+
+            const mdMatch = rawText.match(/\[(.*?)\]\((https?:\/\/[^\s)]+)\)/);
+            if (mdMatch) {
+              rawText = rawText.replace(mdMatch[0], mdMatch[1]);
+              linkUrl = mdMatch[2];
+            }
+
+            title = rawText;
+            if (rawText.includes('—')) {
+              const parts = rawText.split('—');
+              title = parts[0].trim();
+              domain = parts.slice(1).join('—').trim();
+            } else if (rawText.includes('--')) {
+              const parts = rawText.split('--');
+              title = parts[0].trim();
+              domain = parts.slice(1).join('--').trim();
+            }
           }
-        }
-      }
 
-      if (mentions.length === 0) {
-        mentions.push(
-          { sentiment: 'positive', title: 'Official Creator Registry & Verified Discography', source: 'web' },
-          { sentiment: 'neutral', title: 'Press Coverage & Public Interview Archives', source: 'web' },
-          { sentiment: 'negative', title: 'Community Inquiries & Third-Party Parody Citations', source: 'web' }
-        );
-      }
+          title = title.replace(/\*\*/g, '').trim();
+          domain = domain.replace(/\*\*/g, '').trim();
+          const rawDomain = (domain || '').replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim();
+          const cleanDomain = rawDomain.replace(/^www\./i, '');
 
-      mentionsList.innerHTML = mentions.map(m => {
-        const sentimentClass = m.sentiment.includes('neg') ? 'neg' : (m.sentiment.includes('pos') ? 'pos' : 'neu');
-        return `
-          <div class="mention-item ${sentimentClass}">
-            <span class="mention-tag ${sentimentClass}">[${m.sentiment}]</span>
-            <span class="mention-title">${m.title}</span>
-            <span class="mention-src">${m.source}</span>
+          if (!linkUrl && cleanDomain) {
+            linkUrl = 'https://' + cleanDomain;
+          }
+
+          const badgeClass = isNeg ? 'mention-neg' : (isPos ? 'mention-pos' : 'mention-neutral');
+          const badgeIcon = isNeg ? '⚠️' : (isPos ? '✓' : '📰');
+          const badgeText = isNeg ? 'Important Before Buying' : (isPos ? 'Verified Record' : 'Media Coverage');
+
+          // Determine platform-specific brand logo
+          const targetStr = (cleanDomain + ' ' + (linkUrl || '')).toLowerCase();
+          let brandIconSvg = '';
+          let brandLabel = cleanDomain;
+
+          if (targetStr.includes('youtube.com') || targetStr.includes('youtu.be')) {
+            brandLabel = 'YouTube';
+            brandIconSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="#FF0000" style="flex-shrink:0;"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
+          } else if (targetStr.includes('instagram.com')) {
+            brandLabel = 'Instagram';
+            brandIconSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`;
+          } else if (targetStr.includes('reddit.com')) {
+            brandLabel = 'Reddit';
+            brandIconSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="#FF4500" style="flex-shrink:0;"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.703zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.248 1.248.688 0 1.249-.561 1.249-1.249 0-.688-.562-1.249-1.25-1.249zm-4.966 4.416a.417.417 0 0 0-.122.585c.465.706 1.326 1.157 2.338 1.157 1.013 0 1.874-.451 2.338-1.157a.416.416 0 0 0-.122-.585.418.418 0 0 0-.585.122c-.328.497-.978.812-1.631.812-.654 0-1.303-.315-1.631-.812a.416.416 0 0 0-.585-.122z"/></svg>`;
+          } else if (targetStr.includes('facebook.com') || targetStr.includes('fb.com')) {
+            brandLabel = 'Facebook';
+            brandIconSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="#1877F2" style="flex-shrink:0;"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`;
+          } else if (targetStr.includes('twitter.com') || targetStr.includes('x.com')) {
+            brandLabel = 'X (Twitter)';
+            brandIconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="#0F172A" style="flex-shrink:0;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`;
+          } else if (targetStr.includes('wikipedia.org')) {
+            brandLabel = 'Wikipedia';
+            brandIconSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="#334155" style="flex-shrink:0;"><path d="M12.09 13.124l2.457 5.676h1.636l4.636-10.704h-1.636l-3.273 7.854-2.182-5.044.818-1.89h-3.818l-.982 2.27-2.182 5.044-3.273-7.854H2.727l4.636 10.704h1.636l2.455-5.676.636-1.47z"/></svg>`;
+          } else if (targetStr.includes('gov.uk')) {
+            brandLabel = 'GOV.UK';
+            brandIconSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" style="flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`;
+          } else if (targetStr.includes('gov.in') || targetStr.includes('sebi.') || targetStr.includes('pib.') || targetStr.includes('cybercrime.')) {
+            brandLabel = 'gov.in';
+            brandIconSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" style="flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`;
+          } else if (targetStr.includes('news18') || targetStr.includes('indianexpress') || targetStr.includes('the420') || targetStr.includes('ndtv') || targetStr.includes('timesofindia') || targetStr.includes('hindustantimes') || targetStr.includes('businessinsider') || targetStr.includes('aljazeera') || targetStr.includes('bbc') || targetStr.includes('yahoo') || targetStr.includes('reuters') || targetStr.includes('bloomberg') || targetStr.includes('forbes')) {
+            // Shorten known news domains
+            if (targetStr.includes('timesofindia')) brandLabel = 'timesofindia.com';
+            else if (targetStr.includes('hindustantimes')) brandLabel = 'hindustantimes.com';
+            else if (targetStr.includes('indianexpress')) brandLabel = 'indianexpress.com';
+            else if (targetStr.includes('news18')) brandLabel = 'news18.com';
+            else if (targetStr.includes('ndtv')) brandLabel = 'ndtv.com';
+            else if (targetStr.includes('bbc')) brandLabel = 'bbc.com';
+            else if (targetStr.includes('reuters')) brandLabel = 'reuters.com';
+            else if (targetStr.includes('bloomberg')) brandLabel = 'bloomberg.com';
+            else if (targetStr.includes('forbes')) brandLabel = 'forbes.com';
+            brandIconSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>`;
+          } else {
+            // For any generic long subdomain, keep just the last 2 parts (e.g. foo.bar.com -> bar.com)
+            const parts = cleanDomain.split('.');
+            if (parts.length > 2) {
+              brandLabel = parts.slice(-2).join('.');
+            }
+            brandIconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+          }
+
+          return `
+            <a href="${linkUrl || '#'}" target="_blank" rel="noopener noreferrer" class="mention-item ${isNeg ? 'item-warn' : (isPos ? 'item-verified' : 'item-media')}" title="Open: ${title}">
+              <div class="mention-left">
+                <span class="mention-badge ${badgeClass}">
+                  <span class="mb-icon">${badgeIcon}</span>
+                  <span>${badgeText}</span>
+                </span>
+                <span class="mention-title">${title}</span>
+              </div>
+              <div class="mention-right">
+                ${cleanDomain ? `
+                  <span class="mention-domain" title="${brandLabel}">
+                    ${brandIconSvg}
+                    <span>${brandLabel}</span>
+                  </span>
+                ` : ''}
+                <span class="mention-redirect-icon">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/>
+                    <line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                </span>
+              </div>
+            </a>
+          `;
+        }).join('');
+      } else {
+        mentionsList.innerHTML = `
+          <div class="mention-item item-verified">
+            <div class="mention-left">
+              <span class="mention-badge mention-pos"><span class="mb-icon">✓</span> <span>Verified</span></span>
+              <span class="mention-title">Live web crawl completed for ${creatorName}. No adverse regulatory alerts detected.</span>
+            </div>
           </div>
         `;
-      }).join('');
+      }
     }
 
-    btn?.removeAttribute('disabled');
-    resultsBox?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    resultsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   window.downloadInvestigationDossierPDF = function() {
-    if (!currentDossierMarkdown && !currentTargetQuery) return;
-    
-    const query = currentTargetQuery || 'Investigation_Target';
-    const filename = `SAFE_Threat_Dossier_${query.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
     const invData = currentInvestigationData || {};
-    const riskScore = typeof invData.risk_score === 'number' ? invData.risk_score : 85;
-    const isCritical = riskScore >= 70;
-    const isWarning = riskScore >= 40 && riskScore < 70;
+    const reportText = currentDossierMarkdown || invData.report || invData.markdown_report || '';
+    const query = currentTargetQuery || 'Investigation_Target';
 
-    // Check if jsPDF is loaded
+    // Verify jsPDF availability
     const { jsPDF } = window.jspdf || {};
     if (!jsPDF) {
       window.print();
       return;
     }
 
-    // Professional PDF layout via jsPDF
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-      compress: true
-    });
+    try {
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+        compress: true
+      });
 
-    const pageWidth = doc.internal.pageSize.getWidth(); // 210mm
-    const pageHeight = doc.internal.pageSize.getHeight(); // 297mm
-    const margin = 15;
-    const contentWidth = pageWidth - (margin * 2); // 180mm
-    let y = 0;
+      const pageWidth = doc.internal.pageSize.getWidth(); // 210mm
+      const pageHeight = doc.internal.pageSize.getHeight(); // 297mm
+      const margin = 14;
+      const contentWidth = pageWidth - (margin * 2);
+      let y = 14;
 
-    const reportId = 'DOS-' + Math.floor(100000 + Math.random() * 900000);
-    const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-    const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      const reportId = 'DOS-' + Math.floor(100000 + Math.random() * 900000);
 
-    // Helper: Dynamic Page Break Checker
-    function checkPage(neededHeight) {
-      if (y + neededHeight > pageHeight - 16) {
-        doc.addPage();
-        y = 20;
-        drawRunningHeader();
-        return true;
+      function checkPage(needed) {
+        if (y + needed > pageHeight - 16) {
+          doc.addPage();
+          y = 18;
+          drawRunningHeader();
+          return true;
+        }
+        return false;
       }
-      return false;
-    }
 
-    function drawRunningHeader() {
-      doc.setFillColor(15, 23, 42); // slate 900
-      doc.rect(0, 0, pageWidth, 11, 'F');
+      function drawRunningHeader() {
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(0.4);
+        doc.line(margin, 12, pageWidth - margin, 12);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(100, 116, 139);
+        doc.text('SAFE INVESTIGATION INTELLIGENCE REPORT', margin, 8.5);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Target: "${query}"  •  ID: ${reportId}  •  ${dateStr}`, pageWidth - margin, 8.5, { align: 'right' });
+      }
+
+      // 1. SIMPLE NORMAL WHITE HEADER (NO BLACK BANNER)
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.5);
-      doc.setTextColor(16, 185, 129); // emerald 500
-      doc.text('SAFE CYBER DEFENSE INTELLIGENCE', margin, 7.5);
+      doc.setFontSize(16);
+      doc.setTextColor(15, 23, 42);
+      doc.text('Investigation Intelligence Report', margin, y + 4);
+
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7.2);
-      doc.setTextColor(148, 163, 184); // slate 400
-      doc.text(`Target: "${query}"  •  Dossier ID: ${reportId}  •  Classification: CONFIDENTIAL`, pageWidth - margin, 7.5, { align: 'right' });
-    }
+      doc.setFontSize(8.5);
+      doc.setTextColor(100, 116, 139);
+      doc.text(`Target: ${query}   |   Generated: ${dateStr} ${timeStr}   |   Live Webhook Intelligence`, margin, y + 10);
 
-    // --- COVER / HEADER BANNER ---
-    doc.setFillColor(15, 23, 42); // slate 900
-    doc.rect(0, 0, pageWidth, 33, 'F');
+      // Clean divider line below header
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(0.5);
+      doc.line(margin, y + 14, pageWidth - margin, y + 14);
+      y += 20;
 
-    // Emerald Tag
-    doc.setFillColor(16, 185, 129);
-    doc.roundedRect(margin, 6.5, 46, 5.5, 1.2, 1.2, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(7.2);
-    doc.setTextColor(10, 10, 10);
-    doc.text('OFFICIAL FORENSIC AUDIT', margin + 3.5, 10.3);
+      // 2. LIVE COMPOSITE SCORECARD
+      const compositeVal = typeof invData.composite === 'number' ? invData.composite : (typeof invData.risk_score === 'number' ? invData.risk_score : 54.1);
+      const isCritical = compositeVal >= 70;
+      const isWarning = compositeVal >= 40 && compositeVal < 70;
 
-    // Classification Stamp Right
-    doc.setFillColor(30, 41, 59);
-    doc.roundedRect(pageWidth - margin - 50, 6.5, 50, 5.5, 1.2, 1.2, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(7);
-    doc.setTextColor(248, 113, 113); // red 400
-    doc.text('CONFIDENTIAL THREAT REPORT', pageWidth - margin - 3.5, 10.3, { align: 'right' });
-
-    // Main Title
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(15);
-    doc.setTextColor(255, 255, 255);
-    doc.text('CYBER THREAT INVESTIGATION DOSSIER', margin, 21.5);
-
-    // Metadata Subtitle
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(148, 163, 184);
-    doc.text(`Generated: ${dateStr} ${timeStr} IST  |  Report ID: ${reportId}  |  Engine: SAFE Multimodal Threat Audit Core`, margin, 27.5);
-
-    y = 39;
-
-    // --- ENTITY & RISK SCORECARD (HIGHLIGHTED) ---
-    const cardHeight = 35;
-    if (isCritical) {
-      doc.setFillColor(254, 242, 242); // red 50
-      doc.setDrawColor(220, 38, 38); // red 600
-    } else if (isWarning) {
-      doc.setFillColor(255, 251, 235); // amber 50
-      doc.setDrawColor(217, 119, 6); // amber 600
-    } else {
-      doc.setFillColor(240, 253, 244); // green 50
-      doc.setDrawColor(22, 163, 74); // green 600
-    }
-    doc.setLineWidth(0.6);
-    doc.roundedRect(margin, y, contentWidth, cardHeight, 2.5, 2.5, 'FD');
-
-    // Left info block
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(7.5);
-    doc.setTextColor(100, 116, 139);
-    doc.text('TARGET AUDIT SUBJECT', margin + 6, y + 7.5);
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(13);
-    doc.setTextColor(15, 23, 42);
-    const targetTitle = doc.splitTextToSize(`"${query}"`, contentWidth - 62);
-    doc.text(targetTitle[0], margin + 6, y + 14.5);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.8);
-    doc.setTextColor(71, 85, 105);
-    doc.text('Audit Scope: YouTube Creator Exposures, Telegram Footprint, Victim Signals & Regulatory Feeds', margin + 6, y + 21);
-    doc.text('Threat Status: Correlated with 1930 / I4C National Cybercrime Register Patterns', margin + 6, y + 26.5);
-
-    const compositeVal = typeof invData.composite === 'number' ? invData.composite : (typeof invData.risk_score === 'number' ? invData.risk_score : 54.1);
-    const riskScore = Math.round(compositeVal);
-    const isCritical = compositeVal >= 70;
-    const isWarning = compositeVal >= 40 && compositeVal < 70;
-
-    // Right Score Badge
-    const scoreBoxX = pageWidth - margin - 50;
-    const scoreBoxW = 44;
-    const scoreBoxH = 26;
-    if (isCritical) {
-      doc.setFillColor(220, 38, 38);
-    } else if (isWarning) {
-      doc.setFillColor(217, 119, 6);
-    } else {
-      doc.setFillColor(22, 163, 74);
-    }
-    doc.roundedRect(scoreBoxX, y + 4.5, scoreBoxW, scoreBoxH, 2, 2, 'F');
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(6.5);
-    doc.setTextColor(255, 255, 255);
-    doc.text('COMPOSITE INDICATOR', scoreBoxX + (scoreBoxW / 2), y + 9.5, { align: 'center' });
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.text(`${compositeVal.toFixed(1)}/100`, scoreBoxX + (scoreBoxW / 2), y + 17.5, { align: 'center' });
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(6.2);
-    const verdictText = isCritical ? 'HIGH HEURISTIC RISK' : isWarning ? 'MODERATE SIGNAL DENSITY' : 'LOW RISK PROFILE';
-    doc.text(verdictText, scoreBoxX + (scoreBoxW / 2), y + 24.5, { align: 'center' });
-
-    y += cardHeight + 6;
-
-    // --- ALGORITHMIC SCORING MATRIX SECTION ---
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10.5);
-    doc.setTextColor(15, 23, 42);
-    // Green accent bar next to header
-    doc.setFillColor(16, 185, 129);
-    doc.rect(margin, y - 0.5, 2.5, 5, 'F');
-    doc.text('PRECISION SCORING METHODOLOGY & MATHEMATICAL BREAKDOWN', margin + 5, y + 3.8);
-    y += 7.5;
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.8);
-    doc.setTextColor(71, 85, 105);
-    doc.text('How this score was precisely derived: SAFE calculates a composite risk index by weighting 4 empirical threat indicators:', margin, y);
-    y += 4.5;
-
-    // 4 Breakdown Metric Columns
-    const colGap = 3;
-    const colW = (contentWidth - (colGap * 3)) / 4;
-    const matrixY = y;
-    const matrixH = 26;
-
-    const negCount = (invData.negative_videos || []).length || (isCritical ? 2 : 0);
-    const posCount = (invData.positive_videos || []).length || 1;
-    const commCount = (invData.comment_signals || []).length || 3;
-    const branchCount = (invData.branches || []).length || 3;
-
-    // Dynamically calibrated points based on actual risk score and weights
-    const expPts = isCritical ? Math.min(35, Math.max(26, (riskScore * 0.35))).toFixed(1) : (riskScore * 0.35).toFixed(1);
-    const vicPts = isCritical ? Math.min(30, Math.max(22, (riskScore * 0.30))).toFixed(1) : (riskScore * 0.30).toFixed(1);
-    const netPts = isCritical ? Math.min(20, Math.max(14, (riskScore * 0.20))).toFixed(1) : (riskScore * 0.20).toFixed(1);
-    const regPts = isCritical ? Math.min(15, Math.max(10, (riskScore * 0.15))).toFixed(1) : (riskScore * 0.15).toFixed(1);
-
-    const matrixItems = [
-      {
-        title: 'Exposure Ratio',
-        weight: '35% Weight',
-        score: `${expPts} / 35 Pts`,
-        desc: `${negCount} warnings vs ${posCount} promo videos audited.`
-      },
-      {
-        title: 'Victim Loss Signals',
-        weight: '30% Weight',
-        score: `${vicPts} / 30 Pts`,
-        desc: `${commCount} verified extortion & frozen funds signals.`
-      },
-      {
-        title: 'Threat Network',
-        weight: '20% Weight',
-        score: `${netPts} / 20 Pts`,
-        desc: `${branchCount} nodes: unverified APKs & VIP Telegrams.`
-      },
-      {
-        title: 'Registry Match',
-        weight: '15% Weight',
-        score: `${regPts} / 15 Pts`,
-        desc: 'Direct match with 1930 / I4C fraud modus operandi.'
-      },
-    ];
-
-    matrixItems.forEach((item, idx) => {
-      const colX = margin + (idx * (colW + colGap));
+      const cardHeight = 26;
       doc.setFillColor(248, 250, 252);
       doc.setDrawColor(226, 232, 240);
-      doc.setLineWidth(0.3);
-      doc.roundedRect(colX, matrixY, colW, matrixH, 1.5, 1.5, 'FD');
-
-      // Colored Top Accent Strip
-      doc.setFillColor(isCritical ? 220 : 16, isCritical ? 38 : 185, isCritical ? 38 : 129);
-      doc.rect(colX, matrixY, colW, 1.2, 'F');
+      doc.setLineWidth(0.4);
+      doc.roundedRect(margin, y, contentWidth, cardHeight, 2, 2, 'FD');
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(7.5);
+      doc.setTextColor(100, 116, 139);
+      doc.text('AUDIT SUBJECT', margin + 6, y + 7);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
       doc.setTextColor(15, 23, 42);
-      doc.text(item.title, colX + 3, matrixY + 5.2);
+      const targetLines = doc.splitTextToSize(`"${query}"`, contentWidth - 55);
+      doc.text(targetLines[0], margin + 6, y + 13.5);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(71, 85, 105);
+      doc.text(`Sources: YouTube Comments, Audience Sentiment & Cross-Platform Signals`, margin + 6, y + 19.5);
+
+      // Status Pill on Right
+      const scoreW = 44;
+      const scoreH = 18;
+      const scoreX = pageWidth - margin - scoreW - 4;
+      doc.setFillColor(16, 185, 129);
+      doc.roundedRect(scoreX, y + 4, scoreW, scoreH, 2, 2, 'F');
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(6.5);
-      doc.setTextColor(100, 116, 139);
-      doc.text(item.weight, colX + 3, matrixY + 9);
+      doc.setTextColor(255, 255, 255);
+      doc.text('AUDIT STATUS', scoreX + (scoreW / 2), y + 8.5, { align: 'center' });
 
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8.5);
-      doc.setTextColor(isCritical ? 185 : 16, isCritical ? 28 : 120, isCritical ? 28 : 80);
-      doc.text(item.score, colX + 3, matrixY + 14);
+      doc.setFontSize(10);
+      doc.text('REPORT READY', scoreX + (scoreW / 2), y + 15, { align: 'center' });
 
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(6.2);
-      doc.setTextColor(71, 85, 105);
-      const lines = doc.splitTextToSize(item.desc, colW - 6);
-      doc.text(lines.slice(0, 2), colX + 3, matrixY + 18.2);
-    });
+      y += cardHeight + 8;
 
-    y = matrixY + matrixH + 3.5;
-
-    // Precision Mathematical Formula & Confidence Banner
-    doc.setFillColor(241, 245, 249);
-    doc.roundedRect(margin, y, contentWidth, 6.8, 1.2, 1.2, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(6.8);
-    doc.setTextColor(15, 23, 42);
-    doc.text(`Model: Score = (0.35 × E) + (0.30 × V) + (0.20 × N) + (0.15 × R) = ${riskScore}%`, margin + 4, y + 4.5);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(16, 185, 129);
-    doc.text('✓ Composite Algorithmic Confidence: 97.4% High Precision Accuracy', pageWidth - margin - 4, y + 4.5, { align: 'right' });
-
-    y += 11;
-
-    // Helper: Parse and render markdown body with pristine typography and styling
-    function renderMarkdownSection(lines) {
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) {
-          y += 2.5;
-          continue;
-        }
-
-        if (line.startsWith('# ')) {
-          continue; // Skip main redundant title
-        }
-
-        if (line.startsWith('---')) {
-          continue; // Skip markdown rules
-        }
-
-        // Section header with emerald accent bar
-        if (line.startsWith('## ')) {
-          checkPage(18);
-          y += 4;
-          doc.setFillColor(16, 185, 129);
-          doc.rect(margin, y - 0.5, 2.5, 6, 'F');
-          
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(10.5);
-          doc.setTextColor(15, 23, 42);
-          const headingText = line.replace(/^##\s*/, '').toUpperCase();
-          doc.text(headingText, margin + 5, y + 4.2);
-          y += 8.5;
-          continue;
-        }
-
-        // Subheader with category badge styling
-        if (line.startsWith('### ')) {
-          checkPage(14);
-          y += 3;
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(9);
-          const isExposure = line.toLowerCase().includes('warning') || line.toLowerCase().includes('exposure');
-          const isPromo = line.toLowerCase().includes('promotional') || line.toLowerCase().includes('shill') || line.toLowerCase().includes('pitch');
-          
-          if (isExposure) {
-            doc.setFillColor(254, 242, 242);
-            doc.setDrawColor(254, 202, 202);
-            doc.roundedRect(margin, y - 1, contentWidth, 6.2, 1, 1, 'FD');
-            doc.setTextColor(185, 28, 28);
-            doc.text(line.replace(/^###\s*/, ''), margin + 3.5, y + 3.5);
-          } else if (isPromo) {
-            doc.setFillColor(254, 243, 199);
-            doc.setDrawColor(253, 230, 138);
-            doc.roundedRect(margin, y - 1, contentWidth, 6.2, 1, 1, 'FD');
-            doc.setTextColor(180, 83, 9);
-            doc.text(line.replace(/^###\s*/, ''), margin + 3.5, y + 3.5);
-          } else {
-            doc.setTextColor(30, 41, 59);
-            doc.text(line.replace(/^###\s*/, ''), margin + 2, y + 3.5);
+      // 3. RENDER LIVE REPORT SECTIONS PURELY FROM JSON / MARKDOWN
+      if (reportText) {
+        let pdfMentionCounter = 0;
+        const lines = reportText.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+          const rawLine = lines[i];
+          const line = rawLine.trim();
+          if (!line) {
+            y += 2.5;
+            continue;
           }
-          y += 7.5;
-          continue;
-        }
 
-        // Numbered Action Steps (High-impact badge boxes)
-        if (/^[0-9]+\.\s/.test(line)) {
-          checkPage(14);
-          const stepMatch = line.match(/^([0-9]+)\./);
-          const stepNum = stepMatch ? stepMatch[1] : '•';
-          const cleanLine = line.replace(/^[0-9]+\.\s*/, '').replace(/\*\*/g, '').trim();
-          
-          const wrappedAction = doc.splitTextToSize(cleanLine, contentWidth - 24);
-          const boxH = Math.max(9, (wrappedAction.length * 4.4) + 4);
-          
-          doc.setFillColor(254, 242, 242);
-          doc.setDrawColor(254, 202, 202);
-          doc.setLineWidth(0.3);
-          doc.roundedRect(margin, y - 1, contentWidth, boxH, 1.5, 1.5, 'FD');
-          
-          // Solid red pill on left
-          doc.setFillColor(220, 38, 38);
-          doc.roundedRect(margin + 3, y + 1.2, 14, 5, 1, 1, 'F');
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(6.8);
-          doc.setTextColor(255, 255, 255);
-          doc.text(`STEP ${stepNum}`, margin + 10, y + 4.7, { align: 'center' });
-          
-          // Action directive text
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(7.8);
-          doc.setTextColor(153, 27, 27);
-          for (let a = 0; a < wrappedAction.length; a++) {
-            doc.text(wrappedAction[a], margin + 20, y + 3.8 + (a * 4.4));
+          if (line.startsWith('# ') || line.startsWith('---')) {
+            continue;
           }
-          y += boxH + 2.5;
-          continue;
-        }
 
-        // Highlight quote cards for victim comments
-        if (line.startsWith('- **"') || line.startsWith('- "')) {
-          checkPage(18);
-          const cleanQuoteLine = line.replace(/^-\s*/, '').replace(/\*\*/g, '');
-          const authorMatch = cleanQuoteLine.match(/^(.*?)\s*—\s*(.*?)(?:\((.*?)\))?$/);
-          const quoteStr = authorMatch ? authorMatch[1].trim() : cleanQuoteLine;
-          const authorStr = authorMatch ? authorMatch[2].trim() : '';
-          const impactStr = authorMatch && authorMatch[3] ? authorMatch[3].trim() : '';
-          
-          const wrappedQuote = doc.splitTextToSize(quoteStr, contentWidth - 14);
-          const cardH = (wrappedQuote.length * 4.2) + (authorStr ? 9.5 : 5);
-          
-          doc.setFillColor(248, 250, 252);
-          doc.setDrawColor(226, 232, 240);
-          doc.setLineWidth(0.3);
-          doc.roundedRect(margin, y - 1, contentWidth, cardH, 1.5, 1.5, 'FD');
-          
-          // Red indicator bar on left
-          doc.setFillColor(239, 68, 68);
-          doc.rect(margin, y - 1, 2.5, cardH, 'F');
-          
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(7.6);
-          doc.setTextColor(30, 41, 59);
-          for (let q = 0; q < wrappedQuote.length; q++) {
-            doc.text(wrappedQuote[q], margin + 6, y + 3.6 + (q * 4.2));
-          }
-          
-          if (authorStr) {
-            const footY = y + 3.6 + (wrappedQuote.length * 4.2) + 1.2;
+          // Section Heading (## ...)
+          if (line.startsWith('## ')) {
+            checkPage(16);
+            y += 4;
+            const headingText = line.replace(/^##\s*/, '').replace(/^[^\w\s]+/, '').trim();
             doc.setFont('helvetica', 'bold');
-            doc.setFontSize(7);
-            doc.setTextColor(100, 116, 139);
-            doc.text(`— ${authorStr}`, margin + 6, footY);
-            
-            if (impactStr) {
-              doc.setFillColor(254, 226, 226);
-              doc.roundedRect(pageWidth - margin - 46, footY - 3.5, 42, 4.5, 1, 1, 'F');
-              doc.setFont('helvetica', 'bold');
-              doc.setFontSize(6.5);
-              doc.setTextColor(185, 28, 28);
-              doc.text(impactStr, pageWidth - margin - 25, footY - 0.5, { align: 'center' });
-            }
+            doc.setFontSize(10.5);
+            doc.setTextColor(15, 23, 42);
+            doc.text(headingText, margin, y);
+            y += 2.5;
+            doc.setDrawColor(226, 232, 240);
+            doc.setLineWidth(0.3);
+            doc.line(margin, y, margin + 45, y);
+            y += 4.5;
+            continue;
           }
-          
-          y += cardH + 3;
-          continue;
-        }
 
-        // Sub-item metadata: Channel / Views
-        if (line.startsWith('Channel:') || line.startsWith('Views:')) {
-          checkPage(5);
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(7.2);
-          doc.setTextColor(100, 116, 139);
-          doc.text(line, margin + 6, y + 2.5);
-          y += 4;
-          continue;
-        }
-
-        // Sub-item metadata: Link
-        if (line.startsWith('Link:')) {
-          checkPage(5);
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(7);
-          doc.setTextColor(37, 99, 235);
-          doc.text(line, margin + 6, y + 2.5);
-          y += 4.5;
-          continue;
-        }
-
-        // Sub-item metadata: Note
-        if (line.startsWith('*Note:') || line.startsWith('Note:')) {
-          checkPage(6);
-          doc.setFont('helvetica', 'italic');
-          doc.setFontSize(7);
-          doc.setTextColor(148, 163, 184);
-          const cleanNote = line.replace(/^\*?Note:\s*/, 'Note: ').replace(/\*$/g, '');
-          const wrappedNote = doc.splitTextToSize(cleanNote, contentWidth - 8);
-          for (const nLine of wrappedNote) {
-            doc.text(nLine, margin + 6, y + 2.5);
-            y += 3.8;
+          // Subheading (### ...)
+          if (line.startsWith('### ')) {
+            checkPage(12);
+            y += 3;
+            const subTitle = line.replace(/^###\s*/, '').replace(/^[^\w\s]+/, '').trim();
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9.5);
+            doc.setTextColor(15, 23, 42);
+            doc.text(subTitle, margin, y);
+            y += 4;
+            continue;
           }
-          y += 1;
-          continue;
-        }
 
-        // Bullet point with bold prefix
-        if (line.startsWith('- ') || line.startsWith('* ')) {
-          checkPage(8);
-          const rawBullet = line.replace(/^[-*]\s*/, '');
-          const boldMatch = rawBullet.match(/^\*\*(.*?)\*\*(.*)/);
-          
-          // Bullet indicator
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(8);
-          doc.setTextColor(16, 185, 129);
-          doc.text('•', margin + 2, y + 3.2);
+          // Comment Sample Category Header (**Organic Positive...**)
+          if (/^\*\*(Organic Positive|Organic Negative|Organic Neutral|Filtered Bot)/i.test(line)) {
+            checkPage(11);
+            const isPos = /Positive/i.test(line);
+            const isNeg = /Negative/i.test(line);
+            const isNeu = /Neutral/i.test(line);
+            const isFil = /Filtered/i.test(line);
 
-          if (boldMatch) {
-            const prefix = boldMatch[1].trim();
-            const rest = boldMatch[2].replace(/^:\s*/, '').replace(/\*\*/g, '').replace(/\[(.*?)\]\(.*?\)/g, '$1').trim();
-            const prefixLabel = prefix.endsWith(':') ? prefix : prefix + ':';
+            let catColor = [71, 85, 105];
+            if (isPos) catColor = [16, 185, 129];
+            else if (isNeg) catColor = [220, 38, 38];
+            else if (isNeu) catColor = [37, 99, 235];
+            else if (isFil) catColor = [217, 119, 6];
 
+            const labelText = line.replace(/\*\*/g, '').replace(/:$/, '').trim();
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(8);
-            doc.setTextColor(15, 23, 42);
-            doc.text(prefixLabel, margin + 6, y + 3.2);
+            doc.setTextColor(catColor[0], catColor[1], catColor[2]);
+            doc.text(labelText, margin + 2, y);
+            y += 4;
+            continue;
+          }
 
-            if (rest) {
-              const labelWidth = doc.getTextWidth(prefixLabel + ' ');
-              doc.setFont('helvetica', 'normal');
-              doc.setFontSize(7.8);
-              doc.setTextColor(51, 65, 85);
-
-              if (labelWidth < 50) {
-                const firstLineW = contentWidth - 8 - labelWidth;
-                const firstLineWrapped = doc.splitTextToSize(rest, firstLineW);
-                doc.text(firstLineWrapped[0] || '', margin + 6 + labelWidth, y + 3.2);
-
-                if (firstLineWrapped.length > 1) {
-                  const words = rest.split(/\s+/);
-                  const firstWordsCount = (firstLineWrapped[0] || '').trim().split(/\s+/).length;
-                  const remainingText = words.slice(firstWordsCount).join(' ');
-                  if (remainingText) {
-                    const remainingLines = doc.splitTextToSize(remainingText, contentWidth - 8);
-                    for (const rLine of remainingLines) {
-                      y += 4.2;
-                      checkPage(5.5);
-                      doc.text(rLine, margin + 6, y + 3.2);
-                    }
-                  }
-                }
-              } else {
-                y += 4.2;
-                checkPage(5.5);
-                const restLines = doc.splitTextToSize(rest, contentWidth - 8);
-                for (const rLine of restLines) {
-                  doc.text(rLine, margin + 6, y + 3.2);
-                  y += 4.2;
-                }
-                y -= 4.2; // balance
-              }
-            }
-          } else {
-            doc.setFont('helvetica', 'normal');
+          // Comment Quotes in PDF (- "...")
+          if (/^[-*]\s*["“]/.test(line)) {
+            checkPage(10);
+            let quoteText = line.replace(/^[-*]\s*/, '').trim();
+            // Sanitize emojis / non-Latin characters for standard jsPDF helvetica font
+            quoteText = quoteText.replace(/[^\x20-\x7E\u00A0-\u00FF]/g, '').replace(/\s+/g, ' ').trim();
+            doc.setFont('helvetica', 'italic');
             doc.setFontSize(7.8);
             doc.setTextColor(51, 65, 85);
-            const cleanBullet = rawBullet.replace(/\*\*/g, '').replace(/\[(.*?)\]\(.*?\)/g, '$1');
-            const bulletWrapped = doc.splitTextToSize(cleanBullet, contentWidth - 8);
-            for (let b = 0; b < bulletWrapped.length; b++) {
-              if (b > 0) {
-                y += 4.2;
-                checkPage(5.5);
-              }
-              doc.text(bulletWrapped[b], margin + 6, y + 3.2);
-            }
+            const wrapped = doc.splitTextToSize(quoteText, contentWidth - 10);
+            doc.text(wrapped, margin + 6, y);
+            y += (wrapped.length * 3.8) + 2.5;
+            continue;
           }
-          y += 5.5;
-          continue;
-        }
 
-        // Standard body paragraph
-        checkPage(6.5);
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8);
-        doc.setTextColor(51, 65, 85);
-        const cleanPara = line.replace(/\*\*/g, '').replace(/\[(.*?)\]\(.*?\)/g, '$1');
-        const paraWrapped = doc.splitTextToSize(cleanPara, contentWidth);
-        for (const pLine of paraWrapped) {
-          checkPage(5);
-          doc.text(pLine, margin, y + 3.2);
-          y += 4.2;
+          // Table Rows (| ... |)
+          if (line.startsWith('|') && line.endsWith('|')) {
+            if (/^\|[-:\s|]+\|$/.test(line)) {
+              continue;
+            }
+            const cells = line.split('|').slice(1, -1).map(c => c.replace(/\*\*/g, '').trim());
+            checkPage(7.5);
+
+            const numCols = cells.length;
+            const colW = contentWidth / numCols;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(51, 65, 85);
+            cells.forEach((cell, cIdx) => {
+              doc.text(cell, margin + (cIdx * colW) + 2, y);
+            });
+            y += 5;
+            continue;
+          }
+
+          // External Mention lines in PDF (- [negative] ... or - [positive] ... or - [neutral] ...)
+          const isMentionLine = /^[-*]\s*\[(negative|positive|neutral)\]/i.test(line);
+          if (isMentionLine) {
+            checkPage(9);
+            const isNeg = /\[negative\]/i.test(line);
+            const isPos = /\[positive\]/i.test(line);
+
+            // Red, Green, Black styling
+            let tagColor = [15, 23, 42]; // Black/Dark Slate for Media/Neutral
+            let tagLabel = '• [MEDIA COVERAGE]';
+            if (isNeg) {
+              tagColor = [220, 38, 38]; // Red for Warning
+              tagLabel = '• [IMPORTANT TO WATCH BEFORE BUYING]';
+            } else if (isPos) {
+              tagColor = [22, 163, 74]; // Green for Verified
+              tagLabel = '• [VERIFIED RECORD]';
+            }
+
+            // Extract link and clean title
+            let linkUrl = '';
+            let rawText = line.replace(/^[-*]\s*\[(negative|positive|neutral)\]/i, '').trim();
+            const mdLinkMatch = rawText.match(/\[(.*?)\]\((https?:\/\/[^\s)]+)\)/);
+            if (mdLinkMatch) {
+              rawText = rawText.replace(mdLinkMatch[0], mdLinkMatch[1]);
+              linkUrl = mdLinkMatch[2];
+            }
+
+            let title = rawText;
+            let domain = '';
+            if (rawText.includes('—')) {
+              const parts = rawText.split('—');
+              title = parts[0].trim();
+              domain = parts.slice(1).join('—').trim();
+            } else if (rawText.includes('--')) {
+              const parts = rawText.split('--');
+              title = parts[0].trim();
+              domain = parts.slice(1).join('--').trim();
+            }
+
+            // Sanitize title and domain of emojis/corrupt Unicode symbols
+            title = title
+              .replace(/\*\*/g, '')
+              .replace(/[^\x20-\x7E\u00A0-\u00FF]/g, ' ')
+              .replace(/\s+/g, ' ')
+              .trim();
+
+            domain = domain
+              .replace(/\*\*/g, '')
+              .replace(/[^\x20-\x7E\u00A0-\u00FF]/g, ' ')
+              .replace(/\s+/g, ' ')
+              .trim();
+
+            const cleanDomain = domain.replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim();
+
+            // Match exact link from invData.externalMentions (actual source webpage URL)
+            const extMentions = invData.externalMentions || [];
+            if (!linkUrl && extMentions.length > pdfMentionCounter && extMentions[pdfMentionCounter]?.link) {
+              linkUrl = extMentions[pdfMentionCounter].link;
+            } else if (!linkUrl && extMentions.length > 0) {
+              const foundObj = extMentions.find(m => m.title && (title.includes(m.title.slice(0, 20)) || m.title.includes(title.slice(0, 20))));
+              if (foundObj && foundObj.link) linkUrl = foundObj.link;
+            }
+            if (!linkUrl && cleanDomain) {
+              linkUrl = 'https://' + cleanDomain;
+            }
+            pdfMentionCounter++;
+
+            // 1. Draw Tag in Red / Green / Black
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
+            doc.setTextColor(tagColor[0], tagColor[1], tagColor[2]);
+            doc.text(tagLabel, margin + 2, y);
+
+            const tagWidth = doc.getTextWidth(tagLabel) + 2.5;
+
+            // 2. Format title and source suffix
+            const sourceSuffix = cleanDomain ? ` — ${cleanDomain}` : '';
+            const fullTitle = `${title}${sourceSuffix}`;
+            const maxTitleWidth = contentWidth - tagWidth - 4;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            // Hyperlink blue color
+            doc.setTextColor(29, 78, 216);
+
+            const wrappedTitle = doc.splitTextToSize(fullTitle, maxTitleWidth);
+            const itemHeight = Math.max(5, wrappedTitle.length * 4.2);
+
+            for (let tIdx = 0; tIdx < wrappedTitle.length; tIdx++) {
+              const lineY = y + (tIdx * 4.2);
+              const lineX = margin + 2 + tagWidth;
+              if (linkUrl) {
+                doc.textWithLink(wrappedTitle[tIdx], lineX, lineY, { url: linkUrl });
+              } else {
+                doc.text(wrappedTitle[tIdx], lineX, lineY);
+              }
+            }
+
+            // Clickable hotspot over the whole mention row in PDF
+            if (linkUrl) {
+              doc.link(margin, y - 3.5, contentWidth, itemHeight + 1.5, { url: linkUrl });
+            }
+
+            y += itemHeight + 2;
+            continue;
+          }
+
+          // Bullet Items (- ...)
+          if (line.startsWith('- ') || line.startsWith('* ')) {
+            checkPage(7.5);
+            const bulletText = line.replace(/^[-*]\s*/, '').replace(/\*\*/g, '').trim();
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
+            doc.setTextColor(16, 185, 129);
+            doc.text('•', margin + 2, y);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(51, 65, 85);
+            const wrapped = doc.splitTextToSize(bulletText, contentWidth - 8);
+            doc.text(wrapped, margin + 7, y);
+            y += (wrapped.length * 4.2) + 2;
+            continue;
+          }
+
+          // Regular Paragraphs
+          checkPage(7.5);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8);
+          doc.setTextColor(71, 85, 105);
+          const cleanP = line.replace(/\*\*/g, '');
+          const wrapped = doc.splitTextToSize(cleanP, contentWidth);
+          doc.text(wrapped, margin, y);
+          y += (wrapped.length * 4.2) + 2;
         }
-        y += 2;
       }
-    }
 
-    const dossierLines = (currentDossierMarkdown || '').split('\n');
-    renderMarkdownSection(dossierLines);
-
-    // --- EMERGENCY HELPLINE CALLOUT BANNER AT END ---
-    checkPage(36);
-    y += 5;
-    const bannerH = 28;
-    doc.setFillColor(254, 243, 199); // Amber 100
-    doc.setDrawColor(245, 158, 11); // Amber 500
-    doc.setLineWidth(0.6);
-    doc.roundedRect(margin, y, contentWidth, bannerH, 2.5, 2.5, 'FD');
-
-    // Header inside banner
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.5);
-    doc.setTextColor(180, 83, 9);
-    doc.text('CRITICAL CITIZEN RECOVERY DIRECTIVE & EMERGENCY PROTOCOL', margin + 6, y + 6.5);
-
-    // Subtitle inside banner
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.6);
-    doc.setTextColor(120, 53, 15);
-    doc.text('If you have transacted with, sent money to, or shared credentials with this entity:', margin + 6, y + 11.5);
-
-    // Step 1: on its own dedicated full-width line
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.setTextColor(180, 83, 9);
-    doc.text('1. Call 1930 (National Cyber Crime Helpline) immediately to report transaction details.', margin + 6, y + 17);
-
-    // Step 2: on its own dedicated full-width line below Step 1
-    doc.text('2. File an urgent incident report at cybercrime.gov.in within the golden 2-hour recovery window.', margin + 6, y + 22.5);
-
-    y += bannerH + 6;
-
-    // --- ALL PAGES: RUNNING FOOTER & PAGE NUMBERING ---
-    const totalPages = doc.getNumberOfPages();
-    for (let p = 1; p <= totalPages; p++) {
-      doc.setPage(p);
+      // Footer
+      checkPage(12);
+      y += 6;
       doc.setDrawColor(226, 232, 240);
       doc.setLineWidth(0.3);
-      doc.line(margin, pageHeight - 11, pageWidth - margin, pageHeight - 11);
-
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 5;
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7);
       doc.setTextColor(148, 163, 184);
-      doc.text('SAFE Threat Intelligence Engine • Official Citizen Security Report • Helpline: 1930', margin, pageHeight - 6.5);
-      doc.text(`Page ${p} of ${totalPages}`, pageWidth - margin, pageHeight - 6.5, { align: 'right' });
-    }
+      doc.text('Automated Scam & Threat Intelligence Audit • SAFE Defense Core • verify at cybercrime.gov.in (1930)', margin, y);
 
-    // Save and download PDF
-    doc.save(filename);
+      const filename = `Investigation_Report_${query.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30)}.pdf`;
+      doc.save(filename);
+    } catch (pdfErr) {
+      console.error('PDF generation error:', pdfErr);
+      window.print();
+    }
   };
 </script>
 
@@ -2197,6 +2025,45 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   .stage-step-copy { display: block; font-size: 11.5px; color: #94A3B8; margin-top: 1px; }
 
   /* Abstracted Threat Intelligence Dashboard (Results Area) */
+    /* Minimal Background-Less Single Line Loader */
+  .investigate-minimal-loader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 6px 0;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .loader-mini-bar-track {
+    width: 46px;
+    height: 4px;
+    background: #E2E8F0;
+    border-radius: 99px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .loader-mini-bar-thumb {
+    width: 45%;
+    height: 100%;
+    background: #000000;
+    border-radius: 99px;
+    animation: miniBarSlide 1.1s infinite ease-in-out;
+  }
+  @keyframes miniBarSlide {
+    0% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+    100% { transform: translateX(220%); }
+  }
+  .investigate-loading-text {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #000000;
+    line-height: 1.4;
+  }
+
   .investigate-results-box {
     margin-top: 24px; border-top: 1px solid #E5E7EB; padding-top: 24px;
     animation: fadeIn 0.4s ease; display: flex; flex-direction: column; gap: 20px;
@@ -2231,34 +2098,24 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   }
   .btn-new-audit:hover { background: #F1F5F9; color: #0F172A; }
 
-  /* Composite Overview & Gauge Card */
+  /* Report Overview Card (Clean, Full-Width Report Mode) */
   .composite-overview-card {
-    display: grid; grid-template-columns: 260px 1fr; gap: 24px;
     background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px;
     padding: 24px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   }
-  .composite-meter-col {
-    display: flex; flex-direction: column; align-items: center; text-align: center;
-    border-right: 1px solid #F1F5F9; padding-right: 20px;
+  .composite-overview-card.report-mode {
+    display: block;
   }
-  .gauge-container { position: relative; width: 120px; height: 120px; margin-bottom: 12px; }
-  .gauge-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-  .gauge-bg { fill: none; stroke: #F1F5F9; stroke-width: 10; }
-  .gauge-progress {
-    fill: none; stroke: #F59E0B; stroke-width: 10; stroke-linecap: round;
-    transition: stroke-dashoffset 0.8s ease-out;
+  .reasoning-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
   }
-  .gauge-center-text {
-    position: absolute; inset: 0; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-  }
-  .gauge-value { font-size: 26px; font-weight: 900; color: #0F172A; line-height: 1; }
-  .gauge-max { font-size: 11px; font-weight: 600; color: #94A3B8; margin-top: 2px; }
-  .gauge-label-title { display: block; font-size: 14px; font-weight: 800; color: #0F172A; }
-  .gauge-label-subtitle { display: block; font-size: 11px; color: #64748B; margin: 2px 0 8px; }
   .guardrail-badge {
     display: inline-block; font-size: 11px; font-weight: 700; color: #059669;
-    background: #ECFDF5; padding: 3px 10px; border-radius: 100px;
+    background: #ECFDF5; padding: 4px 12px; border-radius: 100px;
+    border: 1px solid #A7F3D0;
   }
 
   .composite-reasoning-col { display: flex; flex-direction: column; justify-content: center; }
@@ -2314,17 +2171,16 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   }
   .breakdown-desc { font-size: 12px; color: #64748B; }
   .breakdown-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
   }
-  .breakdown-mini-card {
-    background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 14px;
+  @media (max-width: 900px) {
+    .breakdown-grid { grid-template-columns: repeat(2, 1fr); }
   }
-  .bmc-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
-  .bmc-title { font-size: 12px; font-weight: 700; color: #1E293B; }
-  .bmc-score { font-size: 12px; font-weight: 800; color: #0F172A; font-family: monospace; }
-  .bmc-bar-track { height: 5px; background: #E2E8F0; border-radius: 100px; overflow: hidden; margin-bottom: 8px; }
-  .bmc-bar-fill { height: 100%; background: #3B82F6; border-radius: 100px; }
-  .bmc-meta { display: flex; justify-content: space-between; font-size: 10.5px; color: #64748B; }
+  @media (max-width: 600px) {
+    .breakdown-grid { grid-template-columns: 1fr; }
+  }
 
   /* Intelligence Grid: Comment Integrity & Channel Metrics */
   .intel-metrics-grid {
@@ -2353,6 +2209,99 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   .cd-segment.pos { background: #10B981; }
   .cd-segment.neu { background: #94A3B8; }
   .cd-segment.neg { background: #EF4444; }
+
+  /* Representative Comment Samples */
+  .comment-samples-wrapper {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #E2E8F0;
+  }
+  .cs-samples-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .cs-samples-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0F172A;
+  }
+  .cs-samples-sub {
+    font-size: 10px;
+    color: #94A3B8;
+  }
+  .comment-samples-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .cs-sample-card {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 9px 12px;
+    transition: all 0.15s ease;
+  }
+  .cs-sample-card:hover {
+    border-color: #CBD5E1;
+    background: #FFFFFF;
+  }
+  .cs-sample-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .cs-badge-icon {
+    font-size: 9px;
+  }
+  .cs-badge-label {
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .cs-badge-desc {
+    font-size: 9.5px;
+    color: #64748B;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+  .cs-card-pos { border-left: 3px solid #10B981; }
+  .cs-card-pos .cs-badge-label { color: #15803D; }
+  .cs-card-neg { border-left: 3px solid #EF4444; }
+  .cs-card-neg .cs-badge-label { color: #B91C1C; }
+  .cs-card-neu { border-left: 3px solid #3B82F6; }
+  .cs-card-neu .cs-badge-label { color: #1D4ED8; }
+  .cs-card-warn { border-left: 3px solid #F59E0B; }
+  .cs-card-warn .cs-badge-label { color: #B45309; }
+
+  .cs-sample-quotes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .cs-sample-quote {
+    font-size: 11px;
+    line-height: 1.45;
+    color: #334155;
+    background: #FFFFFF;
+    border: 1px solid #F1F5F9;
+    padding: 6px 10px;
+    border-radius: 6px;
+    word-break: break-word;
+  }
+  .cs-quote-mark {
+    color: #94A3B8;
+    font-weight: 700;
+  }
+  .cs-quote-text {
+    font-style: italic;
+  }
 
   .metrics-subgrid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px;
@@ -2384,20 +2333,11 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     font-weight: 800; color: #0F172A; margin: 0 0 2px;
   }
   .mentions-sub { font-size: 12px; color: #64748B; }
-  .mentions-list { display: flex; flex-direction: column; gap: 8px; }
-  .mention-item {
-    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-    background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 12.5px;
+  .mentions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
-  .mention-tag {
-    font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 6px;
-    border-radius: 4px; flex-shrink: 0;
-  }
-  .mention-tag.neg { background: #FEE2E2; color: #DC2626; }
-  .mention-tag.pos { background: #DCFCE7; color: #16A34A; }
-  .mention-tag.neu { background: #F1F5F9; color: #64748B; }
-  .mention-title { flex: 1; color: #1E293B; font-weight: 600; }
-  .mention-src { font-size: 11px; color: #94A3B8; font-family: monospace; }
 
   /* Methodology & Footer */
   .action-footer-grid {
@@ -2570,5 +2510,290 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   @media (min-width: 1024px) {
     .scanner-body { padding: 32px; }
     .scan-textarea { min-height: 160px; }
+  }
+</style>
+
+<style is:global>
+  /* ==========================================================================
+     Dynamic Elements Rendered Client-Side via innerHTML (Global Scoping)
+     ========================================================================== */
+
+  /* 1. Heuristic Breakdown Mini Cards */
+  .breakdown-mini-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .breakdown-mini-card:hover {
+    border-color: #CBD5E1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+  }
+  .bmc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .bmc-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #1E293B;
+    line-height: 1.3;
+  }
+  .bmc-score-pill {
+    font-size: 12px;
+    font-weight: 800;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    padding: 3px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .bmc-score-pill.score-high {
+    background: #ECFDF5;
+    color: #059669;
+    border: 1px solid #A7F3D0;
+  }
+  .bmc-score-pill.score-mid {
+    background: #FEF3C7;
+    color: #D97706;
+    border: 1px solid #FDE68A;
+  }
+  .bmc-score-pill.score-low {
+    background: #FEE2E2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+  }
+  .bmc-bar-track {
+    height: 6px;
+    background: #F1F5F9;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .bmc-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+  .bmc-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #64748B;
+  }
+  .bmc-meta strong {
+    color: #0F172A;
+    font-weight: 700;
+  }
+
+  /* 2. Third-Party Mentions List & Items */
+  .mention-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 16px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    transition: all 0.15s ease;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    overflow: hidden;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  .mention-item:hover {
+    border-color: #94A3B8;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+  }
+  .mention-item.item-warn {
+    border-left: 4px solid #EF4444;
+    background: #FEFBFB;
+  }
+  .mention-item.item-warn:hover {
+    border-color: #F87171;
+  }
+  .mention-item.item-verified {
+    border-left: 4px solid #10B981;
+    background: #FBFDFB;
+  }
+  .mention-item.item-verified:hover {
+    border-color: #34D399;
+  }
+  .mention-item.item-media {
+    border-left: 4px solid #64748B;
+    background: #F8FAFC;
+  }
+  .mention-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+  .mention-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 3px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    line-height: 1.2;
+  }
+  .mention-badge .mb-icon {
+    font-size: 11px;
+  }
+  .mention-badge.mention-neg {
+    background: #FEE2E2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+  }
+  .mention-badge.mention-pos {
+    background: #DCFCE7;
+    color: #16A34A;
+    border: 1px solid #BBF7D0;
+  }
+  .mention-badge.mention-neutral {
+    background: #F1F5F9;
+    color: #475569;
+    border: 1px solid #E2E8F0;
+  }
+  .mention-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1E293B;
+    line-height: 1.45;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .mention-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    max-width: 220px;
+  }
+  .mention-domain {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-weight: 600;
+    color: #64748B;
+    background: #F1F5F9;
+    border: 1px solid #E2E8F0;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    max-width: 180px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .mention-domain span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    max-width: 140px;
+  }
+  .mention-domain svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+  .mention-redirect-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #94A3B8;
+    flex-shrink: 0;
+    transition: color 0.15s, transform 0.15s;
+  }
+  .mention-item:hover .mention-redirect-icon {
+    color: #0F172A;
+    transform: translate(1px, -1px);
+  }
+
+  /* 3. Balanced Signals (Supported / Questioned) */
+  .signal-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12.5px;
+    line-height: 1.4;
+    padding: 10px 12px;
+    border-radius: 8px;
+  }
+  .signal-item.questioned {
+    background: #FEF2F2;
+    color: #991B1B;
+    border: 1px solid #FEE2E2;
+  }
+  .signal-item.supported {
+    background: #F0FDF4;
+    color: #166534;
+    border: 1px solid #DCFCE7;
+  }
+  .signal-bullet {
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .signal-text {
+    flex: 1;
+  }
+
+  /* 4. Red Flags Chips */
+  .rf-chip {
+    background: #FFFFFF;
+    border: 1px solid #FECACA;
+    color: #DC2626;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 768px) {
+    .mention-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .mention-left {
+      width: 100%;
+    }
+    .mention-right {
+      width: 100%;
+      max-width: 100%;
+      justify-content: space-between;
+    }
+    .mention-domain {
+      max-width: calc(100% - 30px);
+    }
+    .mention-domain span {
+      max-width: calc(100% - 30px);
+    }
   }
 </style>

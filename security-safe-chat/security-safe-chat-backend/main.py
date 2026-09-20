@@ -351,6 +351,7 @@ class InvestigateRequest(BaseModel):
     query: Optional[str] = None
     input: Optional[str] = None
     url: Optional[str] = None
+    target: Optional[str] = None
 
 @app.post("/api/investigate", tags=["Investigate"], summary="YouTube & Threat Intelligence Investigation")
 async def api_investigate(req: InvestigateRequest):
@@ -358,7 +359,7 @@ async def api_investigate(req: InvestigateRequest):
     Accepts YouTube link or target query, calls n8n investigation webhook
     (or synthesized heuristic pipeline), and returns an abstracted threat intelligence report.
     """
-    raw_target = (req.input or req.url or req.query or "").strip()
+    raw_target = (req.input or req.url or req.query or req.target or "").strip()
     if not raw_target:
         raise HTTPException(400, "YouTube link or target query cannot be empty.")
     
