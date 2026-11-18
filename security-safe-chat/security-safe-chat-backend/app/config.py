@@ -30,7 +30,7 @@ class Settings(BaseSettings):
 
 
     # ── OCR.space ─────────────────────────────────────────────────────────────
-    ocr_space_api_key: str = "K84422890888957"
+    ocr_space_api_key: str = ""
     ocr_space_api_url: str = "https://api.ocr.space/parse/image"
     ocr_language: str = "eng"
 

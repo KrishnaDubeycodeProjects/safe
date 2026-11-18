@@ -22,7 +22,7 @@ _MAX_IMAGE_BYTES = 1024 * 1024  # 1 MB threshold for fast OCR upload
 
 def _common_params() -> dict[str, str]:
     return {
-        "apikey": settings.ocr_space_api_key or "K84422890888957",
+        "apikey": settings.ocr_space_api_key,
         "language": settings.ocr_language or "eng",
         "isOverlayRequired": "false",
         "detectOrientation": "true",
