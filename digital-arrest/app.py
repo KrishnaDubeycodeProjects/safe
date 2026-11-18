@@ -287,7 +287,8 @@ def receive_feedback(data: FeedbackRequest):
             userId='me',
             id=sent_message['id'],
             body={
-                "removeLabelIds": ["INBOX", "SENT", "UNREAD"]
+                # Gmail does not allow removing the system SENT label
+                "removeLabelIds": ["INBOX", "UNREAD"]
             }
         ).execute()
 

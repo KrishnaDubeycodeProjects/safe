@@ -1,0 +1,16 @@
+# Never send secrets or local junk to the Docker build context
+.env
+*.env
+!.env.example
+credentials.json
+token.json
+*.pem
+*.key
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+tests/
+feedback_submissions.jsonl
+aws-deploy.env

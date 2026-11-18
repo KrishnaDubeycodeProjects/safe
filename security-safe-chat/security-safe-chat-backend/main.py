@@ -35,9 +35,14 @@ from slowapi.util import get_remote_address
 # ── Internal modules ──────────────────────────────────────────────────────────
 from app import bedrock, ocr
 from app.config import settings
-from app.middleware import APIKeyMiddleware
+from app.middleware import APIKeyMiddleware, IPRateLimitMiddleware
 from app.schemas import HealthResponse, MessageVerdict, ImageVerdict
-from app.token_limiter import get_token_status
+from app.token_limiter import (
+    get_token_status,
+    check_token_limit,
+    check_ip_ban,
+    get_client_ip,
+)
 
 # ── Cascade engines ───────────────────────────────────────────────────────────
 from utils.link_cascade import LinkCascade
@@ -88,6 +93,7 @@ app.add_middleware(
     expose_headers=["*"],
     max_age=86400,
 )
+app.add_middleware(IPRateLimitMiddleware)
 app.add_middleware(APIKeyMiddleware)
 
 # ── AWS Lambda Handler (ASGI Adapter) ─────────────────────────────────────────
@@ -240,7 +246,7 @@ async def handle_request_validation_error(request: Request, exc: RequestValidati
             path = request.url.path
             if path == "/api/scan/text":
                 req_obj = TextScanRequest(**parsed_data)
-                return await api_scan_text(req_obj)
+                return await api_scan_text(req_obj, request)
             elif path == "/api/scan/link":
                 req_obj = LinkScanRequest(**parsed_data)
                 return api_scan_link(req_obj)
@@ -254,11 +260,16 @@ async def handle_request_validation_error(request: Request, exc: RequestValidati
 
 
 @app.post("/api/scan/text", response_model=MessageVerdict, tags=["Scan"], summary="Message scam-likelihood check")
-async def api_scan_text(req: TextScanRequest):
+async def api_scan_text(req: TextScanRequest, request: Request):
     """
     Sends the message to the LLM with a single system prompt and returns a
     one-line perspective plus a verdict tag: Safe, Likely Scam, or Scam Confirmed.
+    Enforces strict IP ban (30 requests) and strict daily 10,000 token limit.
     """
+    client_ip = get_client_ip(request)
+    check_ip_ban(client_ip)
+    check_token_limit()
+
     if not req.text.strip():
         raise HTTPException(400, "Text content cannot be empty.")
     try:
@@ -270,10 +281,11 @@ async def api_scan_text(req: TextScanRequest):
         raise HTTPException(503, "Message analysis is temporarily unavailable. Please try again shortly.")
 
 
-@app.get("/api/usage", tags=["System"], summary="Get daily AI token usage status")
-def api_get_token_usage():
-    """Returns today's token consumption, 10,000 limit, and block status."""
-    return get_token_status()
+@app.get("/api/usage", tags=["System"], summary="Get daily AI token usage status & IP quota")
+def api_get_token_usage(request: Request):
+    """Returns today's token consumption, 10,000 limit, block status, and IP quota."""
+    client_ip = get_client_ip(request)
+    return get_token_status(ip=client_ip)
 
 
 @app.post("/api/scan/image", response_model=ImageVerdict, tags=["Scan"], summary="Image scam & deepfake check with OCR")
@@ -283,9 +295,14 @@ async def api_scan_image(
 ):
     """
     Evaluates photos, screenshots, payment receipts, IDs, ads, profile pictures, and documents.
-    1. Extracts visible text via OCR model (OCR.space).
-    2. Runs multimodal analysis (Gemma-3-27b-it via Mantle) on Scam Usage (Axis A) and AI/Deepfake Likelihood (Axis B).
+    1. Enforces strict IP ban and 10k token limit before calling ANY external API.
+    2. Extracts visible text via OCR model (OCR.space).
+    3. Runs multimodal analysis (Gemma-3-27b-it via Mantle) on Scam Usage (Axis A) and AI/Deepfake Likelihood (Axis B).
     """
+    client_ip = get_client_ip(request)
+    check_ip_ban(client_ip)
+    check_token_limit()
+
     content_type = request.headers.get("content-type", "")
     image_bytes = None
     mime_type = "image/jpeg"
@@ -327,7 +344,7 @@ async def api_scan_image(
 
 
 @app.post("/api/scan/link", tags=["Scan"], summary="Link/URL cascade scan")
-def api_scan_link(req: LinkScanRequest):
+def api_scan_link(req: LinkScanRequest, request: Request = None):
     """
     Multi-layer URL analysis:
     • Whitelist / blocklist check
@@ -335,6 +352,9 @@ def api_scan_link(req: LinkScanRequest):
     • Domain heuristics (age, TLD, IP address, path patterns)
     • Landing page analysis (password fields, brand impersonation)
     """
+    if request:
+        client_ip = get_client_ip(request)
+        check_ip_ban(client_ip)
     if not req.url.strip():
         raise HTTPException(400, "URL cannot be empty.")
     res = link_cascade_engine.scan(req.url)
@@ -354,11 +374,16 @@ class InvestigateRequest(BaseModel):
     target: Optional[str] = None
 
 @app.post("/api/investigate", tags=["Investigate"], summary="YouTube & Threat Intelligence Investigation")
-async def api_investigate(req: InvestigateRequest):
+async def api_investigate(req: InvestigateRequest, request: Request):
     """
     Accepts YouTube link or target query, calls n8n investigation webhook
     (or synthesized heuristic pipeline), and returns an abstracted threat intelligence report.
+    Enforces strict IP ban (30 requests) and strict daily 10,000 token limit.
     """
+    client_ip = get_client_ip(request)
+    check_ip_ban(client_ip)
+    check_token_limit()
+
     raw_target = (req.input or req.url or req.query or req.target or "").strip()
     if not raw_target:
         raise HTTPException(400, "YouTube link or target query cannot be empty.")

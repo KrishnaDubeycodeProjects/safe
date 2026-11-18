@@ -36,6 +36,27 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
         </button>
       </div>
 
+      <!-- Strict Rate Limit / IP Ban Enforced Banner -->
+      <div id="scanner-rate-limit-banner" class="rate-limit-banner hidden">
+        <div class="limit-banner-box" id="limit-banner-box">
+          <div class="limit-banner-icon-wrap" id="limit-banner-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <div class="limit-banner-content">
+            <h4 class="limit-banner-title" id="limit-banner-title">Rate Limit Enforced</h4>
+            <p class="limit-banner-desc" id="limit-banner-desc">Daily quota exhausted. External API calls are strictly paused.</p>
+            <div class="limit-banner-meta" id="limit-banner-meta">
+              <span class="limit-badge" id="limit-badge-status">Locked</span>
+              <span class="limit-meta-text" id="limit-meta-reset">Zero external API calls allowed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="scanner-body">
         <!-- Input Form Panels -->
         <div class="forms-panel">
@@ -460,6 +481,110 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   let currentTargetQuery = '';
   let currentInvestigationData = null;
 
+  // ── Strict Rate Limiting & Abuse Prevention Guard ──────────
+  function getTodayKey() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function isClientRateBlocked() {
+    try {
+      if (localStorage.getItem('safe_ip_banned') === 'true') {
+        return {
+          blocked: true,
+          type: 'ban',
+          msg: 'Access Denied: Your IP has reached the 30-request quota limit and is permanently restricted from making further API requests.'
+        };
+      }
+      const today = getTodayKey();
+      if (localStorage.getItem('safe_token_blocked_' + today) === 'true') {
+        return {
+          blocked: true,
+          type: 'token',
+          msg: "Daily Token Limit Reached: Today's 10,000 token limit has been exhausted. External API calls are strictly paused until 00:00 UTC."
+        };
+      }
+    } catch (e) {}
+    return { blocked: false };
+  }
+
+  function applyRateLimitLock(type, detail) {
+    const banner = document.getElementById('scanner-rate-limit-banner');
+    const title = document.getElementById('limit-banner-title');
+    const desc = document.getElementById('limit-banner-desc');
+    const badge = document.getElementById('limit-badge-status');
+    const meta = document.getElementById('limit-meta-reset');
+    const formsPanel = document.querySelector('.forms-panel');
+
+    if (banner) {
+      banner.classList.remove('hidden');
+      if (type === 'ban') {
+        banner.classList.add('is-ban');
+        if (title) title.textContent = 'IP Quota Exceeded · Permanent Ban (403)';
+        if (desc) desc.textContent = detail || 'Your IP address has reached the strict 30-request quota and has been banned to prevent API abuse.';
+        if (badge) badge.textContent = 'Banned (30/30)';
+        if (meta) meta.textContent = 'Zero further requests permitted for this IP address';
+      } else {
+        banner.classList.remove('is-ban');
+        if (title) title.textContent = 'Daily Token Limit Reached · 10,000 Tokens (429)';
+        if (desc) desc.textContent = detail || "Today's system-wide quota of 10,000 tokens has been exhausted. External APIs (Bedrock, OCR, YouTube, Tavily) are strictly paused until tomorrow.";
+        if (badge) badge.textContent = 'Locked (10k Tokens)';
+        if (meta) meta.textContent = 'Resets daily at 00:00 UTC · Zero external APIs will be invoked';
+      }
+    }
+
+    // Disable all 3 action buttons & input fields
+    document.getElementById('investigate-btn')?.setAttribute('disabled', 'true');
+    document.getElementById('scan-text-btn')?.setAttribute('disabled', 'true');
+    document.getElementById('scan-image-btn')?.setAttribute('disabled', 'true');
+    
+    const textInput = document.getElementById('scan-text-input');
+    if (textInput) textInput.setAttribute('disabled', 'true');
+    const investInput = document.getElementById('investigate-query-input');
+    if (investInput) investInput.setAttribute('disabled', 'true');
+
+    formsPanel?.classList.add('inputs-disabled');
+  }
+
+  function handleRateLimitBlocked(type, detail) {
+    if (type === 'ban') {
+      try { localStorage.setItem('safe_ip_banned', 'true'); } catch (e) {}
+    } else {
+      try { localStorage.setItem('safe_token_blocked_' + getTodayKey(), 'true'); } catch (e) {}
+    }
+    applyRateLimitLock(type, detail);
+  }
+
+  function initRateLimitGuard() {
+    const status = isClientRateBlocked();
+    if (status.blocked) {
+      applyRateLimitLock(status.type, status.msg);
+      return;
+    }
+
+    // Ping /api/usage silently to check server-side token quota & IP ban status
+    fetch(`${API_BASE}/api/usage`)
+      .then(res => {
+        if (res.status === 403) {
+          handleRateLimitBlocked('ban', 'Access Denied: Your IP has reached the 30-request quota limit.');
+          return null;
+        }
+        if (res.status === 429) {
+          handleRateLimitBlocked('token', "Daily Token Limit Reached: Today's 10,000 token limit has been exhausted.");
+          return null;
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (!data) return;
+        if (data.ip_banned || data.is_ip_banned) {
+          handleRateLimitBlocked('ban', data.message || `IP banned (${data.ip_requests || 30}/30 requests used).`);
+        } else if (data.limit_reached || (typeof data.remaining_tokens === 'number' && data.remaining_tokens <= 0)) {
+          handleRateLimitBlocked('token', data.message || `Daily token limit reached (${data.total_tokens_used || 10000}/10000 tokens).`);
+        }
+      })
+      .catch(() => {});
+  }
+
   window.switchScannerTab = function(tab) {
     activeTab = tab;
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -508,9 +633,13 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
 
   window.addEventListener('hashchange', checkUrlHash);
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', checkUrlHash);
+    document.addEventListener('DOMContentLoaded', () => {
+      checkUrlHash();
+      initRateLimitGuard();
+    });
   } else {
     checkUrlHash();
+    initRateLimitGuard();
   }
 
   window.setInvestigateQuery = function(text) {
@@ -594,6 +723,13 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   async function runScanFlow(apiCall, isImage = false) {
+    const blockCheck = isClientRateBlocked();
+    if (blockCheck.blocked) {
+      applyRateLimitLock(blockCheck.type, blockCheck.msg);
+      alert(blockCheck.msg);
+      return;
+    }
+
     const loader = document.getElementById('scanner-loader');
     const formsPanel = document.querySelector('.forms-panel');
     const inputSection = document.getElementById('scanner');
@@ -663,11 +799,31 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
       console.error('Scan failed:', err);
       loader?.classList.add('hidden');
       formsPanel?.classList.remove('hidden');
+
+      const isBan = err.status === 403 || (err.detail && (err.detail.includes('IP_BANNED') || err.detail.includes('banned') || err.detail.includes('limit reached')));
+      const isToken = err.status === 429 || (err.detail && (err.detail.includes('TOKEN_LIMIT_REACHED') || err.detail.includes('token limit')));
+
+      if (isBan) {
+        handleRateLimitBlocked('ban', err.detail || 'Access Denied: Your IP has reached the 30-request quota limit and is permanently restricted.');
+        return;
+      }
+      if (isToken) {
+        handleRateLimitBlocked('token', err.detail || "Daily Token Limit Reached: Today's 10,000 token limit has been exhausted. External API calls are strictly paused.");
+        return;
+      }
+
       alert(err.message || 'Safety scan failed. Please try again.');
     }
   }
 
   window.startTextScan = function() {
+    const blockCheck = isClientRateBlocked();
+    if (blockCheck.blocked) {
+      applyRateLimitLock(blockCheck.type, blockCheck.msg);
+      alert(blockCheck.msg);
+      return;
+    }
+
     const input = document.getElementById('scan-text-input');
     const text = input ? input.value.trim() : '';
 
@@ -689,13 +845,23 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.detail || `Server returned error (${res.status})`);
+        const err = new Error(errorData.detail || `Server returned error (${res.status})`);
+        err.status = res.status;
+        err.detail = errorData.detail;
+        throw err;
       }
       return await res.json();
     }, false);
   };
 
   window.startImageScan = function() {
+    const blockCheck = isClientRateBlocked();
+    if (blockCheck.blocked) {
+      applyRateLimitLock(blockCheck.type, blockCheck.msg);
+      alert(blockCheck.msg);
+      return;
+    }
+
     if (!selectedFile) return;
 
     runScanFlow(async () => {
@@ -709,7 +875,10 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.detail || `Server returned error (${res.status})`);
+        const err = new Error(errorData.detail || `Server returned error (${res.status})`);
+        err.status = res.status;
+        err.detail = errorData.detail;
+        throw err;
       }
       return await res.json();
     }, true);
@@ -730,6 +899,13 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
   };
 
   window.startInvestigate = async function() {
+    const blockCheck = isClientRateBlocked();
+    if (blockCheck.blocked) {
+      applyRateLimitLock(blockCheck.type, blockCheck.msg);
+      alert(blockCheck.msg);
+      return;
+    }
+
     const input = document.getElementById('investigate-query-input');
     const query = input ? input.value.trim() : '';
     const validationMsg = document.getElementById('investigate-validation-msg');
@@ -786,6 +962,17 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
         console.warn("API_BASE fetch failed, trying Lambda fallback:", e);
       }
 
+      if (res && res.status === 403) {
+        const errJson = await res.json().catch(() => ({}));
+        handleRateLimitBlocked('ban', errJson.detail || 'Your IP has reached the 30-request quota limit.');
+        return;
+      }
+      if (res && res.status === 429) {
+        const errJson = await res.json().catch(() => ({}));
+        handleRateLimitBlocked('token', errJson.detail || "Daily token limit reached (10,000 tokens).");
+        return;
+      }
+
       // 2. If localhost or direct fails, fallback to AWS Lambda Function URL
       if (!res || !res.ok) {
         const fallbackUrl = 'https://ixil3ly75uaxbvmqzs6mdlfj4m0kdtud.lambda-url.us-east-1.on.aws';
@@ -800,6 +987,17 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
             console.warn("Fallback fetch error:", e2);
           }
         }
+      }
+
+      if (res && res.status === 403) {
+        const errJson = await res.json().catch(() => ({}));
+        handleRateLimitBlocked('ban', errJson.detail || 'Your IP has reached the 30-request quota limit.');
+        return;
+      }
+      if (res && res.status === 429) {
+        const errJson = await res.json().catch(() => ({}));
+        handleRateLimitBlocked('token', errJson.detail || "Daily token limit reached (10,000 tokens).");
+        return;
       }
 
       if (res && res.ok) {
@@ -1740,6 +1938,102 @@ const MAIN_API = import.meta.env.PUBLIC_MAIN_API_URL || 'https://ixil3ly75uaxbvm
     .scanner-card {
       padding: 14px;
     }
+  }
+
+  /* Rate Limit & IP Ban Enforced Banner */
+  .rate-limit-banner {
+    margin-bottom: 16px;
+    border-radius: 14px;
+    padding: 14px 16px;
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.08);
+    animation: fadeInDown 0.3s ease;
+  }
+  .rate-limit-banner.is-ban {
+    background: #FEF2F2;
+    border-color: #FECACA;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.08);
+  }
+  .rate-limit-banner.hidden {
+    display: none;
+  }
+  .limit-banner-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .limit-banner-icon-wrap {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FEF3C7;
+    color: #D97706;
+  }
+  .rate-limit-banner.is-ban .limit-banner-icon-wrap {
+    background: #FEE2E2;
+    color: #DC2626;
+  }
+  .limit-banner-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .limit-banner-title {
+    margin: 0 0 3px 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #92400E;
+    letter-spacing: -0.01em;
+  }
+  .rate-limit-banner.is-ban .limit-banner-title {
+    color: #991B1B;
+  }
+  .limit-banner-desc {
+    margin: 0 0 8px 0;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: #B45309;
+  }
+  .rate-limit-banner.is-ban .limit-banner-desc {
+    color: #B91C1C;
+  }
+  .limit-banner-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .limit-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 999px;
+    background: #F59E0B;
+    color: #FFFFFF;
+  }
+  .rate-limit-banner.is-ban .limit-badge {
+    background: #EF4444;
+  }
+  .limit-meta-text {
+    font-size: 11.5px;
+    color: #78350F;
+    font-weight: 500;
+  }
+  .rate-limit-banner.is-ban .limit-meta-text {
+    color: #7F1D1D;
+  }
+  .inputs-disabled {
+    pointer-events: none !important;
+    opacity: 0.5 !important;
+    filter: grayscale(0.5) !important;
+    user-select: none !important;
   }
 
   /* Segmented Control matching screenshot */
